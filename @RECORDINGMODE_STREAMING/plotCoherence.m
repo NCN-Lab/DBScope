@@ -47,8 +47,10 @@ switch nargin
             [wcoh,~,f] = wcoherence(LFP_raw{1}, LFP_raw{2}, 250);
             
             cla( ax, 'reset');
-            h = pcolor(ax, t, f, wcoh);
-            h.EdgeColor = 'none';
+            imagesc(ax, t, f, wcoh);
+            set( ax, 'YDir','normal' );
+%             h = pcolor(ax, t, f, wcoh);
+%             h.EdgeColor = 'none';
 %             ytick=round(pow2(get(ax, 'YTick')),3);
 %             ax.YTickLabel = ytick;
             ax.XLabel.String= 'Time';

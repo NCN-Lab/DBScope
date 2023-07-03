@@ -131,19 +131,20 @@ end
 cla( ax, 'reset' );
 imagesc( ax, t, f, power2plot );
 xlabel( ax, 'Time [sec]' );
-set( ax, 'YDir','normal' )
+set( ax, 'YDir','normal' );
 ylabel( ax, 'Frequency [Hz]' );
 rec = colorbar( ax );
 rec.Label.String = 'Power/Frequency [dB/Hz]';
 switch contrast
     case "normal"
-        dmax = max( quantile(power2plot, 0.9) );
+        dmax = prctile(power2plot, 99, "all");
     case "high"
-        dmax = min( 5 * ( floor( max(quantile(power2plot, 0.9), [], 'all' ) / 5 ) - 1 ), 10 );
+        dmax = min( 5 * ( floor( prctile(power2plot, 99, "all") / 5 ) - 1 ), 10 );
 end
 dmin = -40;
 clim( ax, [dmin dmax] );
 title( ax, 'Spectrogram' );
+axtoolbar( ax, {'export'} );
 
 end
 

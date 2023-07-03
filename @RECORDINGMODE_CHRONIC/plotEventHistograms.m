@@ -71,8 +71,8 @@ switch nargin
             end
             dt_since = dt_since(2:end);
 
-            disp("Number of " + event_type + " co-registered (<3 min) with " + other_events_names{i-1} + ": " + ...
-                num2str(numel(dt_since(time(dt_since)<minutes(3)))));
+%             disp("Number of " + event_type + " co-registered (<3 min) with " + other_events_names{i-1} + ": " + ...
+%                 num2str(numel(dt_since(time(dt_since)<minutes(3)))));
 
             cla(ax(i), 'reset');
             temp_elapsed = caldays(dt_since)*24 + hms(time(dt_since));

@@ -109,8 +109,12 @@ ylabel( ax, 'Frequency [Hz]');
 c = colorbar( ax );
 colormap( ax, 'hot');
 c.Label.String = 'Power/Frequency (dB/Hz)';
+dmax = max( prctile(abs(cfs), 99, "all") );
+dmin = 0;
+clim( ax, [dmin dmax] );
 set( ax, 'YDir', 'normal', 'YScale', 'log');
 %set( ax, 'YDir', 'reverse', 'YScale', 'log');
 title( ax, 'Scalogram' );
+axtoolbar( ax, {'export'} );
 
 end

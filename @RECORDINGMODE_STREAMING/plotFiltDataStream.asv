@@ -245,9 +245,80 @@ if iscell(obj.streaming_parameters.time_domain.data)
 
 end
 
-obj.plotSignalAndStimulation( ax(1), 'Raw', rec, channel );
-obj.plotSignalAndStimulation( ax(2), 'Latest Filtered', rec, channel );
-obj.plotSpectrogram( ax(3), 'Raw',  rec, channel, contrast );
-obj.plotSpectrogram( ax(4), 'Latest Filtered',  rec, channel, contrast );
+plotSignalAndStimulation( axes(1), 'Raw', rec, channel );
+plotSignalAndStimulation( axes(2), 'Latest Filtered', rec, channel );
+plotSpectrogram( axes(3), 'Raw',  rec, channel );
+plotSpectrogram( axes(4), 'Latest Filtered',  rec, channel );
+
+% LFP_raw = obj.streaming_parameters.time_domain.data{rec}(:,channel);
+% 
+% if filter_indx == -1
+%     LFP_filtered = obj.streaming_parameters.filtered_data.data{end};
+% else
+%     LFP_filtered = obj.streaming_parameters.filtered_data.data{filter_indx};
+% end
+% LFP_filtered = LFP_filtered{rec}(:,channel);
+% 
+% tms = (0:numel( LFP_raw )-1)/sampling_freq_Hz;
+% 
+% [~, f_raw, t_raw, p_raw] = spectrogram(LFP_raw, window, noverlap, fmin:0.5:fmax, sampling_freq_Hz, 'yaxis');
+% if normalizePower == 1
+%     power2plot_raw = 10*log10(p_raw./mean(p_raw, 2));
+% else
+%     power2plot_raw = 10*log10(p_raw);
+% end
+% 
+% [~, f_filtered, t_filtered, p_filtered] = spectrogram(LFP_filtered, window, noverlap, fmin:0.5:fmax, sampling_freq_Hz, 'yaxis');
+% if normalizePower == 1
+%     power2plot_filtered = 10*log10(p_filtered./mean(p_filtered, 2));
+% else
+%     power2plot_filtered = 10*log10(p_filtered);
+% end
+
+% cla( ax(1), 'reset');
+% plot( ax(1), tms, LFP_raw);
+% ylabel( ax(1), ' Magnitude [\muVp]' );
+% title(ax(1), 'Raw Signal ' );
+% xlabel( ax(1), 'Time [sec]');
+% 
+% cla( ax(2), 'reset');
+% plot( ax(2), tms, LFP_filtered);
+% ylabel( ax(2), ' Magnitude [\muVp]' );
+% title( ax(2), 'Filtered signal ' );
+% xlabel( ax(2), 'Time [sec]');
+
+% cla(ax(3), 'reset');
+% imagesc( ax(3), t_raw, f_raw, power2plot_raw);
+% xlabel( ax(3), 'Time [sec]');
+% set(ax(3), 'YDir','normal')
+% ylabel( ax(3), 'Frequency [Hz]');
+% rec = colorbar( ax(3) );
+% rec.Label.String = 'Power/Frequency [dB/Hz]';
+% switch contrast
+%     case "normal"
+%         dmax = max(quantile(power2plot_raw, 0.9));
+%     case "high"
+%         dmax = min(5*(floor(max(quantile(power2plot_raw, 0.9),[],'all')/5)-1), 10);
+% end
+% dmin = -40;
+% clim( ax(3), [dmin dmax]);
+% title( ax(3), 'Spectrogram Raw Signal');
+
+% cla(ax(4), 'reset');
+% imagesc( ax(4), t_filtered, f_filtered, power2plot_filtered);
+% xlabel( ax(4), 'Time [sec]');
+% set(ax(4), 'YDir','normal')
+% ylabel( ax(4), 'Frequency [Hz]');
+% rec = colorbar( ax(4) );
+% rec.Label.String = 'Power/Frequency [dB/Hz]';
+% switch contrast
+%     case "normal"
+%         dmax = max(quantile(power2plot_filtered, 0.9));
+%     case "high"
+%         dmax = min(5*(floor(max(quantile(power2plot_filtered, 0.9),[],'all')/5)-1), 10);
+% end
+% dmin = -40;
+% clim( ax(4), [dmin dmax]);
+% title( ax(4), 'Spectrogram Filtered Signal');
 
 end

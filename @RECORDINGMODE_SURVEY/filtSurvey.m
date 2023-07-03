@@ -63,7 +63,7 @@ else
 end
 
 % Apply filter
-LFP_filtdata = obj.applyFilt_ordered( LFP_ordered, fs, filterType, order, {bounds} );
+LFP_filtdata = obj.applyFilt_ordered( LFP_ordered, fs, filterType, order, bounds );
 
 % Save filtered data
 if isequal( class(obj),'RECORDINGMODE_SURVEY' )

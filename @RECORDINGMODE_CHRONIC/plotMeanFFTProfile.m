@@ -190,7 +190,7 @@ switch nargin
 
             for type = 1:length(events_names)
                 if ~isempty(type_FFT.(['evnt' num2str(type)]))
-                    subplot(2,2,type);
+                    ax(type) = subplot(2,2,type);
                     plot(freq, [type_FFT.(['evnt' num2str(type)])], 'Color', [color(type,:), 0.3], 'HandleVisibility', 'off');
                     hold on;
                     % Plot mean FFT
@@ -205,7 +205,7 @@ switch nargin
                 end
             end
            
-%             linkaxes(ax,'xy');
+            linkaxes(ax,'xy');
 
         end
 
