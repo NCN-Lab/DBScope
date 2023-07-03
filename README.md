@@ -14,8 +14,8 @@ Contact: pauloaguiar@i3s.up.pt
 For more information regarding the structure of the toolbox ( Figura 1 & 2) , workflow ( Figure 3 ), and case-studies ( Figura 4 & 5 ), please consult publication (doi: XXX).
 For more information regarding the utilization the toolbox, please refer to the USER GUIDE, available in the Github page.
 
-# Before running the toolbox, add folder ( with subfolders ) to path.
-# Code is accessible through the command window or through the UI 'DBScope'
+**Before running the toolbox, add folder (with subfolders) to path.
+**Code is accessible through the command window or through the UI 'DBScope'
 
 # Structure
 The toolbox is built in Object Oriented Programming.  For more information, see figure 1 of the publication (doi: XXX),
