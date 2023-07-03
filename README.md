@@ -15,6 +15,7 @@ For more information regarding the structure of the toolbox ( Figura 1 & 2) , wo
 For more information regarding the utilization the toolbox, please refer to the USER GUIDE, available in the Github page.
 
 **Before running the toolbox, add folder (with subfolders) to path.
+
 **Code is accessible through the command window or through the UI 'DBScope'
 
 # Structure
