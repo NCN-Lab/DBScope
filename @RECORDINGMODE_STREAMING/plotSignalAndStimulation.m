@@ -68,7 +68,6 @@ switch nargin
                 aux_plotSignalAndStimulation( obj, ax, LFP_selected, rec, channel );
             end
         end
-        return;
 end
 
 
