@@ -27,7 +27,6 @@ for file = 1:numel( filenames )
     obj.data(file).task             = string(metadata(3));
     obj.data(file).titration        = string(metadata(4));
     obj.data(file).sampling_freq_Hz = str2double(metadata{5});
-%     obj.data(file).session_start    = datetime('19-May-2023 09:05:24');
     obj.data(file).session_start    = datetime( metadata(6), "InputFormat", 'yyyy-MM-dd''T''HH-mm-ss''.csv''' );
 
     data                    = readtable( [path filenames{file}] );
@@ -36,9 +35,6 @@ for file = 1:numel( filenames )
         obj.data(file).(data.Properties.VariableNames{field}) = data{:,field};
     end
     
-%     correct_dt = datetime('19-May-2023 09:46:55');
-%     diff = between(correct_dt, obj.data(file).time(1));
-%     obj.data(file).time = obj.data(file).time - diff;
 end
 
 
