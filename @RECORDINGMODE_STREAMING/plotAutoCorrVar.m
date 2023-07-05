@@ -1,17 +1,20 @@
 function  plotAutoCorrVar( obj, varargin )
-% Plot autocorrelation and autocovariance for LFP online streaming mode
+% PLOTAUTOCORRVAR Plot autocorrelation and autocovariance for LFP online streaming mode
 % recording
 %
 % Syntax:
-%   PLOTAUTOCORRVAR( obj, data_type, varargin );
+%   PLOTAUTOCORRVAR( obj, varargin );
 %
 % Input parameters:
 %    * obj - object containg data
-%    * data_type - type of input data (raw, ecg cleaned or filtered)
 %    * ax (optional) - axis where you want to plot
+%    * data_type (optional) - type of input data (raw, ecg cleaned or filtered)
+%    * rec (optional) - recording index
+%    * channel (optional) - hemisphere
 %
 % Example:
-%   PLOTAUTOCORRVAR(  data_type, varargin );
+%   PLOTAUTOCORRVAR( obj );
+%   PLOTAUTOCORRVAR( obj, ax, data_type, rec, channel );
 %
 % Available at: https://github.com/NCN-Lab/DBScope
 % For referencing, please use: Andreia M. Oliveira, Eduardo Carvalho, Beatriz Barros, Carolina Soares, Manuel Ferreira-Pinto, Rui Vaz, Paulo Aguiar, DBScope: 

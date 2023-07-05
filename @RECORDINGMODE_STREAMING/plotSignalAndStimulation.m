@@ -3,15 +3,18 @@ function plotSignalAndStimulation( obj, varargin )
 % Use with LFP online streaming recordings
 %
 % Syntax:
-%   PLOTSIGNALANDSTIMULATION( obj, data_type, varargin );
+%   PLOTSIGNALANDSTIMULATION( obj, varargin );
 %
 % Input parameters:
 %    * obj - object containg data
-%    * data_type - type of input data (raw, ecg cleaned or filtered)
 %    * ax (optional) - axis where you want to plot
+%    * data_type (optional) - type of input data (raw, ecg cleaned or filtered)
+%    * rec (optional) - recording index
+%    * channel (optional) - hemisphere
 %
 % Example:
-%   PLOTSIGNALANDSTIMULATION(  data_type, varargin );
+%   PLOTSIGNALANDSTIMULATION( obj );
+%   PLOTSIGNALANDSTIMULATION( obj, ax, data_type, rec, channel );
 %
 % Available at: https://github.com/NCN-Lab/DBScope
 % For referencing, please use: Andreia M. Oliveira, Eduardo Carvalho, Beatriz Barros, Carolina Soares, Manuel Ferreira-Pinto, Rui Vaz, Paulo Aguiar, DBScope: 

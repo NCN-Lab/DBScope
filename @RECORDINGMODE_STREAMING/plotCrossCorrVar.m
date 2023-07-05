@@ -1,16 +1,18 @@
 function  plotCrossCorrVar( obj, varargin )
-% Plot cross-correlation and cross-variance for LFP online streaming mode
+% PLOTCROSSCORRVAR Plot cross-correlation and cross-variance for LFP online streaming mode
 %
 % Syntax:
-%   PLOTCROSSCORRVAR( obj, data_type, varargin );
+%   PLOTCROSSCORRVAR( obj, varargin );
 %
 % Input parameters:
 %    * obj - object containg data
-%    * data_type - type of input data (raw, ecg cleaned or filtered)
 %    * ax (optional) - axis where you want to plot
+%    * data_type (optional) - type of input data (raw, ecg cleaned or filtered)
+%    * rec (optional) - recording index
 %
 % Example:
-%   PLOTCROSSCORRVAR( data_type, varargin );
+%   PLOTCROSSCORRVAR( obj );
+%   PLOTCROSSCORRVAR( obj, ax, data_type, rec );
 %
 % Available at: https://github.com/NCN-Lab/DBScope
 % For referencing, please use: Andreia M. Oliveira, Eduardo Carvalho, Beatriz Barros, Carolina Soares, Manuel Ferreira-Pinto, Rui Vaz, Paulo Aguiar, DBScope: 
@@ -26,9 +28,9 @@ sampling_freq_Hz = obj.streaming_parameters.time_domain.fs;
 
 switch nargin
     case 4
-        ax = varargin{1};
-        data_type = varargin{2};
-        record = varargin{3};
+        ax          = varargin{1};
+        data_type   = varargin{2};
+        record      = varargin{3};
 
         switch data_type
             case 'Raw'

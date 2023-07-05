@@ -1,5 +1,5 @@
 function plotPWelch ( obj, varargin )
-% Plot Pwelch (PSD along frequencies) for each channel
+% PLOTWELCH Plot Pwelch (PSD along frequencies) for each channel
 % Use LFP online streaming recordings
 %
 % Syntax:
@@ -7,11 +7,14 @@ function plotPWelch ( obj, varargin )
 %
 % Input parameters:
 %    * obj - object containg data
-%    * data_type - type of input data (raw, ecg cleaned or filtered)
 %    * ax (optional) - axis where you want to plot
+%    * data_type (optional) - type of input data (raw, ecg cleaned or filtered)
+%    * rec (optional) - recording index
+%    * channel (optional) - hemisphere
 %
 % Example:
-%   PLOTWELCH( varargin );
+%   PLOTWELCH( obj );
+%   PLOTWELCH( obj, ax, data_type, rec, channel );
 %
 % Available at: https://github.com/NCN-Lab/DBScope
 % For referencing, please use: Andreia M. Oliveira, Eduardo Carvalho, Beatriz Barros, Carolina Soares, Manuel Ferreira-Pinto, Rui Vaz, Paulo Aguiar, DBScope: 
@@ -32,10 +35,10 @@ fmax = sampling_freq_Hz/2; %Hz
 
 switch nargin
     case 5
-        ax = varargin{1};
-        data_type = varargin{2};
-        record = varargin{3};
-        indx = varargin{4};
+        ax          = varargin{1};
+        data_type   = varargin{2};
+        rec         = varargin{3};
+        channel     = varargin{4};
 
         switch data_type
             case 'Raw'
@@ -46,7 +49,7 @@ switch nargin
                 LFP_ordered = obj.streaming_parameters.time_domain.ecg_clean;
         end
 
-        [Pxx, F] = pwelch(LFP_ordered{record}(:,indx), window, noverlap, fmin:freqResolution:fmax, sampling_freq_Hz);
+        [Pxx, F] = pwelch(LFP_ordered{rec}(:,channel), window, noverlap, fmin:freqResolution:fmax, sampling_freq_Hz);
 
         plot( ax, F, Pxx, 'LineWidth', 1);
         ylabel( ax, 'PSD [\muVp^2/Hz]');

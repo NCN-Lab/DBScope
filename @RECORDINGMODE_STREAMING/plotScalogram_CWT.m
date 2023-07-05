@@ -1,17 +1,20 @@
 function plotScalogram_CWT( obj, varargin )
-% Continuous 1-D wavelet transform using Morlet wavelet
+% PLOT_SCALOGRAM_CWT Continuous 1-D wavelet transform using Morlet wavelet
 % Use LFP online streaming recordings
 %
 % Syntax:
-%   PLOT_SCALOGRAM_CWT( obj data_type, varargin );
+%   PLOT_SCALOGRAM_CWT( obj, varargin );
 %
 % Input parameters:
 %    * obj - object containg data
-%    * data_type - type of input data (raw, ecg cleaned or filtered)
 %    * ax (optional) - axis where you want to plot
+%    * data_type (optional) - type of input data (raw, ecg cleaned or filtered)
+%    * rec (optional) - recording index
+%    * channel (optional) - hemisphere
 %
 % Example:
-%   PLOT_SCALOGRAM_CWT(  data_type, varargin );
+%   PLOT_SCALOGRAM_CWT( obj );
+%   PLOT_SCALOGRAM_CWT( obj, ax, data_type, rec, channel );
 %
 % Available at: https://github.com/NCN-Lab/DBScope
 % For referencing, please use: Andreia M. Oliveira, Eduardo Carvalho, Beatriz Barros, Carolina Soares, Manuel Ferreira-Pinto, Rui Vaz, Paulo Aguiar, DBScope: 
