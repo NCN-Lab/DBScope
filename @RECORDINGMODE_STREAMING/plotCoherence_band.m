@@ -20,6 +20,8 @@ function plotCoherence_band ( obj, varargin )
 % INEB/i3S 2022
 % pauloaguiar@i3s.up.pt
 % -----------------------------------------------------------------------
+% Get sampling frequency parameters
+sampling_freq_Hz        = obj.streaming_parameters.time_domain.fs;
 
 switch nargin
     case 4
@@ -44,13 +46,14 @@ switch nargin
 
         if numel(LFP_ordered{rec}(1,:)) == 2
 
-            [Cxy,f] = mscohere( LFP_raw{1}, LFP_raw{2}, hann(256));
+            [Cxy,f] = mscohere( LFP_raw{1}, LFP_raw{2}, hann(256), sampling_freq_Hz/2, [], sampling_freq_Hz);
 
-            plot( ax, 125*f/pi, Cxy)
+            plot( ax, f, Cxy)
             xlabel( ax, 'Frequency [Hz]')
             ylabel( ax, 'Magnitude-Squared Coherence' )
-            xlim( ax, [125*min(f/pi) 125*max(f/pi)])
-            title( ax, 'Coherence LFP' )
+            xlim( ax, [min(f) max(f)])
+            ylim( ax, [0 1] );
+            title( ax, 'Overall Coherence' )
 
 
             disp( [ 'channel 1: ' char(obj.streaming_parameters.time_domain.channel_names{rec}(:,1)),...

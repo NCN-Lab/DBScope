@@ -75,7 +75,7 @@ sampling_freq_Hz        = obj.streaming_parameters.time_domain.fs;
 
 % Get data
 LFP         = LFP_selected{rec};
-tms         = ( 0:numel( LFP ) - 1 ) / sampling_freq_Hz;
+tms         = ( 0:size( LFP, 1 ) - 1 ) / sampling_freq_Hz;
 
 % Check if both hemisphere are available
 if size(LFP, 2) ~= 2
@@ -85,19 +85,21 @@ end
 
 % Calculate coherence
 [wcoh,~,f,coi] = wcoherence(LFP(:,1), LFP(:,2), sampling_freq_Hz);
+wcoh(wcoh<0) = 0; % MATLAB sucks
 
 % Plot data
 cla( ax, 'reset');
 % plot( ax, t, log2(coi), 'w--', 'LineWidth', 2);
 % hold( ax, 'on');
-imagesc(ax, tms, f, wcoh);
+imagesc(ax, tms, f, wcoh.*0.9999 );
 set( ax, 'YDir','normal' );
 %             h = pcolor(ax, tms, f, wcoh);
 %             h.EdgeColor = 'none';
 %             ytick=round(pow2(get(ax, 'YTick')),3);
 %             ax.YTickLabel = ytick;
 ax.XLabel.String    = 'Time';
-ax.YLabel.String    = 'Frequency';
+% ax.YLabel.String    = 'Frequency';
+yticklabels( ax, [] );
 ax.Title.String     = 'Cross-hemispherical Coherence';
 ylim(ax, [min(f) max(f)]);
 xlim(ax, [min(tms) max(tms)]);
