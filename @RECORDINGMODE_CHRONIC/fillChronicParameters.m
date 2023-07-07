@@ -54,7 +54,7 @@ else
     obj.chronic_parameters.time_domain.channel_names = {};
 end
 obj.chronic_parameters.time_domain.hemispheres = LFPTrendLogs.LFP.hemispheres;
-obj.chronic_parameters.time_domain.sensing = obj_file.parameters.groups.initial.sensing;
+obj.chronic_parameters.time_domain.sensing = obj_file.parameters.groups.initial(strcmp({obj_file.parameters.groups.initial.group_name}, "BrainSense")).sensing;
 obj.chronic_parameters.time_domain.data = LFPTrendLogs.LFP.data;
 obj.chronic_parameters.time_domain.time = LFPTrendLogs.LFP.time;
 obj.chronic_parameters.time_domain.xlabel = LFPTrendLogs.LFP.xlabel;

@@ -70,22 +70,19 @@ switch nargin
 
             end
             dt_since = dt_since(2:end);
+            [y, m, d, t] = split(dt_since, {'years', 'months', 'days', 'time'});
 
 %             disp("Number of " + event_type + " co-registered (<3 min) with " + other_events_names{i-1} + ": " + ...
 %                 num2str(numel(dt_since(time(dt_since)<minutes(3)))));
 
             cla(ax(i), 'reset');
-            temp_elapsed = caldays(dt_since)*24 + hms(time(dt_since));
+            temp_elapsed = y*24*365 + m*24*30 + d*24 + hms(t);
             temp_elapsed(temp_elapsed>24) = 24;
             H = histogram(ax(i), temp_elapsed, 'BinMethod', 'integers');
             hold(ax(i), 'on');
 
             % Highlight bins of selected event
-            hh = caldays(dt_since(strcmp(datestr(selected_eventtype_datetimes), string(event_date))))*24 + ...
-                hms(time(dt_since(strcmp(datestr(selected_eventtype_datetimes), string(event_date)))));
-            if hh>24
-                hh = 24;
-            end
+            hh = temp_elapsed(strcmp(datestr(selected_eventtype_datetimes), string(event_date)));
             if ~isnan(hh)
                 temp_x = H.BinEdges(H.BinEdges==hh-0.5 | H.BinEdges==hh+0.5);
                 temp_x = [temp_x fliplr(temp_x)];

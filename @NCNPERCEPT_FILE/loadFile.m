@@ -234,6 +234,8 @@ obj.parameters.system_information.end_of_session = strrep(data.SessionEndDate(1:
 obj.parameters.system_information.initial_stimulation_status = data.Stimulation.InitialStimStatus;
 obj.parameters.system_information.final_stimulation_status = data.Stimulation.FinalStimStatus;
 obj.parameters.system_information.medication_state = nan; % Clinician can add here information
+obj.parameters.system_information.programmer_version = data.ProgrammerVersion;
+obj.parameters.system_information.programmer_utc = data.ProgrammerUtcOffset;
 
 if ~isempty(data.MostRecentInSessionSignalCheck)
     obj.parameters.mostrecent.artifactstatus = {data.MostRecentInSessionSignalCheck.ArtifactStatus};
