@@ -32,15 +32,6 @@ LFP = obj.chronic_parameters.time_domain;
 n_channels = LFP.n_channels;
 stimAmp = obj.chronic_parameters.stim_amp;
 
-if any(contains(LFP.hemispheres,'Left'))
-    if contains(LFP.hemispheres(1),'Left')
-        hemisphere_indx = [1, 2];
-    else
-        hemisphere_indx = [2, 1];
-    end
-end
-lbl_subplot = ["Left Hemipshere", "Right Hemisphere"];
-
 events_available = false;
 if ~isempty(obj.chronic_parameters.events.lfp_frequency_snapshots_events)
 
@@ -73,6 +64,31 @@ else
     end
 end
 
+switch n_channels
+    case 1
+        hemisphere_indx = 1;
+        if contains(LFP.hemispheres,'Left')
+            lbl_subplot = "Left Hemipshere";
+            ax(2).Visible = false;
+            ax = ax(1);
+        else
+            lbl_subplot = "Right Hemipshere";
+            ax(1).Visible = false;
+            ax = ax(2);
+        end
+    case 2
+        for i = 1:n_channels
+            ax(i).Visible = true;
+        end
+        lbl_subplot = ["Left Hemipshere", "Right Hemisphere"];
+        if contains(LFP.hemispheres(1),'Left')
+            hemisphere_indx = [1, 2];
+        else
+            hemisphere_indx = [2, 1];
+        end
+end
+
+cfs = [LFP.sensing.hemispheres.center_frequency];
 
 for i = 1:n_channels
     if nargin == 2
@@ -125,7 +141,7 @@ for i = 1:n_channels
 
 
     title(ax(hemisphere_indx(i)), lbl_subplot(hemisphere_indx(i)) + " (CF: " + ...
-        num2str(LFP.sensing.hemispheres(hemisphere_indx(i)).center_frequency,'%.2f') + " Hz)");
+        num2str(cfs(hemisphere_indx(i)),'%.2f') + " Hz)");
     hold(ax(hemisphere_indx(i)),'on');
     
 

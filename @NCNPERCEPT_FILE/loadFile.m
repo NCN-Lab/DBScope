@@ -42,6 +42,8 @@ obj.parameters.fname = fname;
 obj.parameters.session_date = datetime( data.SessionDate, "InputFormat", 'yyyy-MM-dd''T''HH:mm:ss''Z''' );
 obj.parameters.save_pathname = [ file_pathname filesep regexprep(data.SessionDate, {':', '-', 'Z'}, {''}) ];
 obj.parameters.correct_4_missing_samples = false; %set as 'true' if device synchronization is required
+obj.parameters.programmer_version = data.ProgrammerVersion;
+obj.parameters.programmer_utc = data.ProgrammerUtcOffset;
 
 obj.parameters.patient_information.patient_id = data.PatientInformation.Final.PatientId;
 obj.parameters.patient_information.patient_gender = data.PatientInformation.Final.PatientGender;
@@ -63,8 +65,14 @@ for m = moments
                     data.Groups.(m)(group).ProgramSettings.(hemisphere_labels(hemisphere)).Programs.AmplitudeInMilliAmps;
                 obj.parameters.groups.(lower(m))(group).stimulation.hemispheres(hemisphere).pulse_width = ...
                     data.Groups.(m)(group).ProgramSettings.(hemisphere_labels(hemisphere)).Programs.PulseWidthInMicroSecond;
-                obj.parameters.groups.(lower(m))(group).stimulation.hemispheres(hemisphere).frequency = ...
-                    data.Groups.(m)(group).ProgramSettings.(hemisphere_labels(hemisphere)).Programs.RateInHertz;
+                switch obj.parameters.programmer_version(1)
+                    case '2'
+                        obj.parameters.groups.(lower(m))(group).stimulation.hemispheres(hemisphere).frequency = ...
+                            data.Groups.(m)(group).ProgramSettings.RateInHertz;
+                    case '3'
+                        obj.parameters.groups.(lower(m))(group).stimulation.hemispheres(hemisphere).frequency = ...
+                            data.Groups.(m)(group).ProgramSettings.(hemisphere_labels(hemisphere)).Programs.RateInHertz;
+                end
             else
                 obj.parameters.groups.(lower(m))(group).stimulation = [];
             end
@@ -81,8 +89,14 @@ for m = moments
                     data.Groups.(m)(group).ProgramSettings.SensingChannel(hemisphere).BrainSensingStatus;
                 obj.parameters.groups.(lower(m))(group).sensing.hemispheres(hemisphere).pulse_width = ...
                     data.Groups.(m)(group).ProgramSettings.SensingChannel(hemisphere).PulseWidthInMicroSecond;
-                obj.parameters.groups.(lower(m))(group).sensing.hemispheres(hemisphere).rate = ...
-                    data.Groups.(m)(group).ProgramSettings.SensingChannel(hemisphere).RateInHertz;
+                switch obj.parameters.programmer_version(1)
+                    case '2'
+                        obj.parameters.groups.(lower(m))(group).sensing.hemispheres(hemisphere).frequency = ...
+                            data.Groups.(m)(group).ProgramSettings.RateInHertz;
+                    case '3'
+                        obj.parameters.groups.(lower(m))(group).sensing.hemispheres(hemisphere).frequency = ...
+                            data.Groups.(m)(group).ProgramSettings.SensingChannel(hemisphere).RateInHertz;
+                end
                 obj.parameters.groups.(lower(m))(group).sensing.hemispheres(hemisphere).center_frequency = ...
                     data.Groups.(m)(group).ProgramSettings.SensingChannel(hemisphere).SensingSetup.FrequencyInHertz;
                 obj.parameters.groups.(lower(m))(group).sensing.hemispheres(hemisphere).artifact_status = ...
@@ -234,8 +248,6 @@ obj.parameters.system_information.end_of_session = strrep(data.SessionEndDate(1:
 obj.parameters.system_information.initial_stimulation_status = data.Stimulation.InitialStimStatus;
 obj.parameters.system_information.final_stimulation_status = data.Stimulation.FinalStimStatus;
 obj.parameters.system_information.medication_state = nan; % Clinician can add here information
-obj.parameters.system_information.programmer_version = data.ProgrammerVersion;
-obj.parameters.system_information.programmer_utc = data.ProgrammerUtcOffset;
 
 if ~isempty(data.MostRecentInSessionSignalCheck)
     obj.parameters.mostrecent.artifactstatus = {data.MostRecentInSessionSignalCheck.ArtifactStatus};

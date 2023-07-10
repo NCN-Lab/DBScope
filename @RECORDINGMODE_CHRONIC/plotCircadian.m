@@ -26,16 +26,6 @@ color = lines(4);
 LFP = obj.chronic_parameters.time_domain;
 n_channels = LFP.n_channels;
 
-if any(contains(LFP.hemispheres,'Left'))
-    if contains(LFP.hemispheres(1),'Left')
-        hemisphere_indx = [1, 2];
-    else
-        hemisphere_indx = [2, 1];
-    end
-end
-
-lbl_subplot = ["Left Hemipshere", "Right Hemisphere"];
-
 % Parse input variables
 if nargin == 2
     ax = varargin{1};
@@ -45,6 +35,32 @@ else
         ax(i) = subplot(2,1,i);
     end
 end
+
+switch n_channels
+    case 1
+        hemisphere_indx = 1;
+        if contains(LFP.hemispheres,'Left')
+            lbl_subplot = "Left Hemipshere";
+            ax(2).Visible = false;
+            ax = ax(1);
+        else
+            lbl_subplot = "Right Hemipshere";
+            ax(1).Visible = false;
+            ax = ax(2);
+        end
+    case 2
+        for i = 1:n_channels
+            ax(i).Visible = true;
+        end
+        lbl_subplot = ["Left Hemipshere", "Right Hemisphere"];
+        if contains(LFP.hemispheres(1),'Left')
+            hemisphere_indx = [1, 2];
+        else
+            hemisphere_indx = [2, 1];
+        end
+end
+
+cfs = [LFP.sensing.hemispheres.center_frequency];
 
 temp_time = datevec(LFP.time);
 temp_time(:, 5) = 10*floor(temp_time(:, 5)/10);
@@ -79,7 +95,7 @@ for i = 1:n_channels
     ylim(ax(i),[0 1.3*max(upper_qrtl_power)]);
     title(ax(i), lbl_subplot(i));
     title(ax(i), lbl_subplot(hemisphere_indx(i)) + " (CF: " + ...
-        num2str(LFP.sensing.hemispheres(hemisphere_indx(i)).center_frequency,'%.2f') + " Hz)");
+        num2str(cfs(hemisphere_indx(i)),'%.2f') + " Hz)");
     legend(ax(i), '25th, 50th and 75th percentiles');
     hold(ax(i),'on');
 
