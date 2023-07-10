@@ -1,4 +1,4 @@
-function cleanECGsurvey( obj, fs )
+function text = cleanECGsurvey( obj, fs )
 % Filters ECG artifacts from LFP Survey recordings.
 %
 % Syntax:
@@ -20,13 +20,16 @@ function cleanECGsurvey( obj, fs )
 % Get LFP data
 LFP_ordered = obj.survey_parameters.time_domain.data;
 
+text = "";
+
 % Apply ECG artifact filter
 if iscell(LFP_ordered)
     for i = 1:length( LFP_ordered )
         LFP_raw = LFP_ordered{i}';
 
         for e = 1:size( LFP_raw,1 )
-            LFP_ECGdata{i}{e} = obj.filterEcg( LFP_raw(e,:), fs );
+            [~, txt]    = obj.filterEcg( LFP_raw(e,:), fs );
+            text        = text + newline + string([obj.survey_parameters.time_domain.channel_names{i}{e} ': ' txt]);
         end
 
     end

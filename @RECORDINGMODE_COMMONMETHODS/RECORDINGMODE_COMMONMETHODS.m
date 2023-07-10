@@ -27,7 +27,7 @@ classdef RECORDINGMODE_COMMONMETHODS < handle
 
         % Filter methods
         [ LFP_filtdata ] = applyFilt_ordered( obj, LFP_ordered, fs, filterType, order, varargin )
-        [ LFP_ECGdata ]   = filterEcg( obj, data, fs )
+        [ LFP_ECGdata, text ]   = filterEcg( obj, data, fs )
 
         % Extract methods
         [ LFP ] = extractLFP( obj, data, obj_file )

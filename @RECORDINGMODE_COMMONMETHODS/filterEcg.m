@@ -1,4 +1,4 @@
-function [ LFP_ECGdata ]   = filterEcg( obj, data, fs )
+function [ LFP_ECGdata, text ]   = filterEcg( obj, data, fs )
 % Filter ECG artifacts from LFP recordings - streaming
 %
 % Syntax:
@@ -182,7 +182,8 @@ if ~isempty(i)
     else
         ecg.detected = 1;
     end
-    disp([detstring{ecg.detected+1} ' detected.'])
+    text = [detstring{ecg.detected+1} ' detected.'];
+    disp(text);
 
     %     %% plot
     %

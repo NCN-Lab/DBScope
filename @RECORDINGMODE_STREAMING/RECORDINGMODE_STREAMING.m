@@ -60,7 +60,7 @@ classdef RECORDINGMODE_STREAMING < RECORDINGMODE_COMMONMETHODS
         %filt
         %[ data_type ] = aux_batchStreaming_filt( obj )
         filtStreaming( obj, fs, data_type, filterType, order, varargin )
-        cleanECG( obj,  fs, varargin )
+        text = cleanECG( obj,  fs, varargin )
         deleteFilter( obj, filt_list )
 
         %Correlation, covariance and coherence methods

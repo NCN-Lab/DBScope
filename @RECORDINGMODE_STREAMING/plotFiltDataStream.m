@@ -250,4 +250,10 @@ obj.plotSignalAndStimulation( ax(2), 'Latest Filtered', rec, channel );
 obj.plotSpectrogram( ax(3), 'Raw',  rec, channel, contrast );
 obj.plotSpectrogram( ax(4), 'Latest Filtered',  rec, channel, contrast );
 
+% Change Titles
+title(ax(1), "Raw - Signal & Stimulation");
+title(ax(3), "Raw - Spectrogram");
+title(ax(2), "Filtered - Signal & Stimulation");
+title(ax(4), "Filtered - Spectrogram");
+
 end

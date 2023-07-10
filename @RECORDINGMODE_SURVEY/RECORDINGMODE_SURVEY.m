@@ -63,7 +63,7 @@ classdef RECORDINGMODE_SURVEY < RECORDINGMODE_COMMONMETHODS
         plotFFTSurvey( obj, varargin )
         status = filtSurvey( obj,  fs, filterType, order, bounds )
         plotFiltDataSurvey ( obj, varargin )
-        cleanECGsurvey( obj, fs )
+        text = cleanECGsurvey( obj, fs )
 
     end
 

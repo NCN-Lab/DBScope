@@ -1,4 +1,4 @@
-function cleanECG( obj, fs )
+function text = cleanECG( obj, fs )
 % filter ECG artifacts from LFP online streaming recordings
 %
 % Syntax:
@@ -24,12 +24,16 @@ function cleanECG( obj, fs )
 % Get LFP data
 LFP_ordered = obj.streaming_parameters.time_domain.data;
 
+text = "";
+
 %Apply ECG artifact filter
 if iscell(LFP_ordered)
     for i = 1:length(LFP_ordered)
         LFP_raw = LFP_ordered{i}';
+        text = text + newline + "Recording " + string(i) + ":";
         for e = 1:size(LFP_raw,1)
-            LFP_ECGdata{i}{e} = obj.filterEcg(LFP_raw(e,:),fs );
+            [LFP_ECGdata{i}{e}, txt]    = obj.filterEcg( LFP_raw(e,:), fs );
+            text        = text + newline + string([obj.streaming_parameters.time_domain.channel_names{i}{e} ': ' txt]);
         end
     end
 end

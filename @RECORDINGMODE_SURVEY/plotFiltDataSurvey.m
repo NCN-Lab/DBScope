@@ -90,7 +90,7 @@ switch nargin
         end
         signal_FFT_abs_filt = 2.3*mean(window_fft_filt, 1);
 
-        plot( ax(1), tms, y );
+        plot( ax(1), time{rec}, y );
         xlabel( ax(1), 'Time [s]' );
         ylabel( ax(1), 'Amplitude [\muVp]' );
         title( ax(1), 'Raw signal' );
@@ -102,7 +102,7 @@ switch nargin
         ylim( ax(2), [min(signal_FFT_abs) 1.1*max(signal_FFT_abs)]);
         title( ax(2), 'Fourier Transform Raw signal' );
 
-        plot( ax(3), tms , y_filt );
+        plot( ax(3), time{rec}, y_filt );
         xlabel( ax(3), 'Time [s]' );
         ylabel( ax(3), 'Amplitude [\muVp]' );
         title( ax(3), 'Filtered signal' );
