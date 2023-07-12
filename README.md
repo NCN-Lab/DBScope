@@ -8,7 +8,7 @@ Andreia M. Oliveira, Eduardo Carvalho, Beatriz Barros, Carolina Soares, Manuel F
 
 BDScope version 0.1, 2023
 
-Contributors: Andreia M Oliveira, Eduardo Carvalho, Beatriz Barros, Paulo Aguiar
+Core coontributors: Andreia M Oliveira, Eduardo Carvalho, Beatriz Barros, Paulo Aguiar
 
 Neuroengineering and Computational Neuroscience (NCN) Lab,
 
