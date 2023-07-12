@@ -1,7 +1,5 @@
 # DBScope: Toolbox for import, preprocessing, visualization and analysis of sensing recordings extracted from Deep Brain Stimulation neurostimulators
 
-https://github.com/NCN-Lab/DBScope
-
 DBScope is currently under review and is described in the following medRxiv preprint:
 
 Andreia M. Oliveira, Eduardo Carvalho, Beatriz Barros, Carolina Soares, Manuel Ferreira-Pinto, Rui Vaz, Paulo Aguiar, DBScope: a versatile computational toolbox for the visualization and analysis of sensing data from Deep Brain Stimulation, doi: XXX
@@ -24,7 +22,9 @@ Contact: pauloaguiar@i3s.up.pt
 
 For more information regarding the structure of the toolbox, workflows and case-studies, please check the medRxiv preprint with doi: XXX.
 
-For more information regarding the use of the toolbox, please refer to the USER GUIDE and DEMO VIDEO, available in the Github page.
+For more information regarding the use of the toolbox, please refer to the **USER GUIDE** and **DEMO VIDEO**, available in the Github page.
+
+https://github.com/NCN-Lab/DBScope
 
 
 **Note for MATLAB users:**
