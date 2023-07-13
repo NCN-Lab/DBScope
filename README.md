@@ -6,9 +6,9 @@ Andreia M. Oliveira, Eduardo Carvalho, Beatriz Barros, Carolina Soares, Manuel F
 
 ******************************************************************************************************************************************
 
-BDScope version 0.1, 2023
+DBScope version 0.1, 2023
 
-Core coontributors: Andreia M Oliveira, Eduardo Carvalho, Beatriz Barros, Paulo Aguiar
+Core contributors: Andreia M Oliveira, Eduardo Carvalho, Beatriz Barros, Paulo Aguiar
 
 Neuroengineering and Computational Neuroscience (NCN) Lab,
 
@@ -29,4 +29,4 @@ https://github.com/NCN-Lab/DBScope
 
 **Note for MATLAB users:**
 
-Before running the toolbox, add the BDScope folder (with subfolders) to the MATLAB's search path.
+Before running the toolbox, add the DBScope folder (with subfolders) to the MATLAB's search path.
