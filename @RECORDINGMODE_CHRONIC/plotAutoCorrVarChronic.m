@@ -1,21 +1,21 @@
 function  plotAutoCorrVarChronic( obj, varargin )
-% Plot autocorrelation and autocovariance for chronic LFP recordings.
+% PLOTAUTOCORRVARCHRONIC Plot autocorrelation and autocovariance for chronic LFP recordings.
 %
 % Syntax:
-%   PLOTAUTOCORRVAR( obj, ax );
+%   PLOTAUTOCORRVARCHRONIC( obj, ax );
 %
 % Input parameters:
 %    * obj - object containg data
 %    * ax (optional) - axis where you want to plot
 %
 % Example:
-%   obj.PlotAutoCorrVar();
-%   PLOTCIRCADIAN( obj );
-%   PLOTCIRCADIAN( obj, ax );
+%   obj.PlotAutoCorrVarChronic();
+%   PLOTAUTOCORRVARCHRONIC( obj );
+%   PLOTAUTOCORRVARCHRONIC( obj, ax );
 %
 % Available at: https://github.com/NCN-Lab/DBScope
 % For referencing, please use: Andreia M. Oliveira, Eduardo Carvalho, Beatriz Barros, Carolina Soares, Manuel Ferreira-Pinto, Rui Vaz, Paulo Aguiar, DBScope: 
-% a versatile computational toolbox for the visualization and analysis of sensing data from Deep Brain Stimulation, XXX doi: XXX.
+% a versatile computational toolbox for the visualization and analysis of sensing data from Deep Brain Stimulation, doi: https://doi.org/10.1101/2023.07.23.23292136.
 %
 % Andreia M. Oliveira, Eduardo Carvalho, Beatriz Barros & Paulo Aguiar - NCN
 % INEB/i3S 2022

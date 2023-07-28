@@ -1,5 +1,5 @@
 function [ LFP_ON ] = fillSetupParametersON( obj, data, fname, obj_file )
-% Fill setup LFP recordings ON stimulation class
+% FILLSETUPPARAMETERSON Fill setup LFP recordings ON stimulation class
 %
 % Syntax:
 %   [ LFP_ON ] = FILLSETUPPARAMETERSON( obj, data, fname, obj_file );
@@ -21,7 +21,7 @@ function [ LFP_ON ] = fillSetupParametersON( obj, data, fname, obj_file )
 %
 % Available at: https://github.com/NCN-Lab/DBScope
 % For referencing, please use: Andreia M. Oliveira, Eduardo Carvalho, Beatriz Barros, Carolina Soares, Manuel Ferreira-Pinto, Rui Vaz, Paulo Aguiar, DBScope: 
-% a versatile computational toolbox for the visualization and analysis of sensing data from Deep Brain Stimulation, XXX doi: XXX.
+% a versatile computational toolbox for the visualization and analysis of sensing data from Deep Brain Stimulation, doi: https://doi.org/10.1101/2023.07.23.23292136.
 %
 % Andreia M. Oliveira, Eduardo Carvalho, Beatriz Barros & Paulo Aguiar - NCN
 % INEB/i3S 2022

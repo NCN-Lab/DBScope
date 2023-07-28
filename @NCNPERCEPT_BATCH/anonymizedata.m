@@ -1,5 +1,5 @@
 function [ anon ] = anonymizedata( obj )
-% Import and Anonymize Medtronic Percept PC json files
+% ANONYMIZEDATA Import and Anonymize Medtronic Percept PC json files
 % This funtion anonymizes selected parameters from json files, Percept PC.
 % The variables are the following: 
 % from Patient Information Initial / Final:
@@ -20,7 +20,7 @@ function [ anon ] = anonymizedata( obj )
 %
 % Available at: https://github.com/NCN-Lab/DBScope
 % For referencing, please use: Andreia M. Oliveira, Eduardo Carvalho, Beatriz Barros, Carolina Soares, Manuel Ferreira-Pinto, Rui Vaz, Paulo Aguiar, DBScope: 
-% a versatile computational toolbox for the visualization and analysis of sensing data from Deep Brain Stimulation, XXX doi: XXX.
+% a versatile computational toolbox for the visualization and analysis of sensing data from Deep Brain Stimulation, doi: https://doi.org/10.1101/2023.07.23.23292136.
 %
 % Andreia M. Oliveira &  Paulo de Castro Aguiar  - NCN
 % INEB/i3S 2022

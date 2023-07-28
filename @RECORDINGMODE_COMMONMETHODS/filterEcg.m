@@ -1,5 +1,5 @@
 function [ LFP_ECGdata, text ]   = filterEcg( obj, data, fs )
-% Filter ECG artifacts from LFP recordings - streaming
+% FILTERECG Filter ECG artifacts from LFP recordings - streaming
 %
 % Syntax:
 %   [ LFP_ECGdata ]   = FILTERECG( obj, data, fs );
@@ -10,14 +10,14 @@ function [ LFP_ECGdata, text ]   = filterEcg( obj, data, fs )
 %    * fs - sampling frequency
 %
 % Example:
-%   [ LFP_ECGdata ]   = FILTERECG( data, fs );
+%   [ LFP_ECGdata ] = FILTERECG( data, fs );
 %
 % Adapted from Wolf-Julian Neumann 22.11.2021 - ICN Charité Berlin, Germany
 % https://github.com/neuromodulation/perceive
 %
 % Available at: https://github.com/NCN-Lab/DBScope
 % For referencing, please use: Andreia M. Oliveira, Eduardo Carvalho, Beatriz Barros, Carolina Soares, Manuel Ferreira-Pinto, Rui Vaz, Paulo Aguiar, DBScope: 
-% a versatile computational toolbox for the visualization and analysis of sensing data from Deep Brain Stimulation, XXX doi: XXX.
+% a versatile computational toolbox for the visualization and analysis of sensing data from Deep Brain Stimulation, doi: https://doi.org/10.1101/2023.07.23.23292136.
 %
 % Andreia M. Oliveira, Eduardo Carvalho, Beatriz Barros & Paulo Aguiar - NCN
 % INEB/i3S 2022
