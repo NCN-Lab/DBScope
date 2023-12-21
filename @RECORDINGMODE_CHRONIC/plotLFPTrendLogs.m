@@ -55,10 +55,15 @@ if ~isempty(obj.chronic_parameters.events.lfp_frequency_snapshots_events)
     
 end
 % Parse input variables
-if nargin == 2
+if nargin == 3
     ax = varargin{1};
+    utc = varargin{2};
+elseif nargin == 2
+    ax = varargin{1};
+    utc = 0;
 else
     figure;
+    utc = 0;
     for i = 1:n_channels
         ax(i) = subplot(2,1,i);
     end
@@ -91,51 +96,18 @@ end
 cfs = [LFP.sensing.hemispheres.center_frequency];
 
 for i = 1:n_channels
-    if nargin == 2
+    if nargin >= 2
         cla(ax(hemisphere_indx(i)), 'reset');
     end
     yyaxis(ax(hemisphere_indx(i)), 'right');
 
-%     plot(ax(hemisphere_indx(i)), datenum(stimAmp.time), stimAmp.data(:,hemisphere_indx(i)));
-%     ylabel(ax(hemisphere_indx(i)), stimAmp.ylabel);
-%     ylim(ax(hemisphere_indx(i)),[0 max(stimAmp.data(:,hemisphere_indx(i)))+0.5]);
-%     yyaxis(ax(hemisphere_indx(i)), 'left');
-%     plot(ax(hemisphere_indx(i)), datenum(LFP.time), LFP.data(:,hemisphere_indx(i)));
-%     ylabel(ax(hemisphere_indx(i)), LFP.ylabel);
-%     datetick(ax(hemisphere_indx(i)), 'x','dd-mmm-yy','keeplimits');
-%     xlim(ax(hemisphere_indx(i)), [min(datenum(LFP.time)) max(datenum(LFP.time))]);
-%     xtickangle(ax(hemisphere_indx(i)), 20);
-%     ylim(ax(hemisphere_indx(i)),[0 1.1*max(LFP.data(:,hemisphere_indx(i)))]);
-%     set(ax(hemisphere_indx(i)), 'XMinorTick','on');
-%     ax(hemisphere_indx(i)).XAxis.MinorTickValues = [];
-
-
-    plot(ax(hemisphere_indx(i)), stimAmp.time, stimAmp.data(:,hemisphere_indx(i)));
+    plot(ax(hemisphere_indx(i)), stimAmp.time + hours(utc), stimAmp.data(:,hemisphere_indx(i)));
     ylabel(ax(hemisphere_indx(i)), stimAmp.ylabel);
     ylim(ax(hemisphere_indx(i)),[0 max(stimAmp.data(:,hemisphere_indx(i)))+0.5]);
     yyaxis(ax(hemisphere_indx(i)), 'left');
-    plot(ax(hemisphere_indx(i)), LFP.time, LFP.data(:,hemisphere_indx(i)));
+    plot(ax(hemisphere_indx(i)), LFP.time + hours(utc), LFP.data(:,hemisphere_indx(i)));
     ylabel(ax(hemisphere_indx(i)), LFP.ylabel);
-    xl = xlim(ax(hemisphere_indx(i)));
-    span = dateshift(LFP.time, 'start', 'day', 'nearest');
-    tick_values = span(1):days(1):span(end);
-    if numel(tick_values) < 3 
-%         xtickformat(ax(hemisphere_indx(i)), 'dd-MMM-yy HH');
-        span = dateshift(xl, 'start', 'hour', 'nearest');
-        tick_values = span(1):hours(1):span(end);
-        xticks(ax(hemisphere_indx(i)), tick_values);
-    else
-        scale_factor = floor( numel(tick_values) / 10);
-%         xtickformat(ax(hemisphere_indx(i)), 'dd-MMM-yy');
-        tick_values = span(1):scale_factor*days(1):span(end);
-        xticks(ax(hemisphere_indx(i)), tick_values);
-        set(ax(hemisphere_indx(i)), 'XMinorTick','on');
-        xl = xlim(ax(hemisphere_indx(i)));
-        xl = dateshift(xl, 'start', 'hour', 'nearest');
-        ax(hemisphere_indx(i)).XAxis.MinorTickValues = xl(1):scale_factor*hours(1):xl(2);
-    end
-    xticks(ax(hemisphere_indx(i)), 'manual');
-    xlim(ax(hemisphere_indx(i)), [min(LFP.time) max(LFP.time)]);
+    xlim(ax(hemisphere_indx(i)), [min(LFP.time)+ hours(utc) max(LFP.time)+ hours(utc)]);
     xtickangle(ax(hemisphere_indx(i)), 20);
     ylim(ax(hemisphere_indx(i)),[0 1.1*max(LFP.data(:,hemisphere_indx(i)))]);
 
@@ -147,10 +119,7 @@ for i = 1:n_channels
 
     if events_available
         for eventId = 1:numel(event_names)
-            event_DateTime = events.date_time(strcmp(events.event_name, event_names(eventId)));
-
-%             hi = plot(datenum([event_DateTime event_DateTime]), [0 1.1*max(LFP.data(:,hemisphere_indx(i)))], '--', ...
-%                 'Color', colors(2 + eventId, :), 'Parent', ax(hemisphere_indx(i)));
+            event_DateTime = events.date_time(strcmp(events.event_name, event_names(eventId))) + hours(utc);
             
             hi = plot([event_DateTime event_DateTime], [0 1.1*max(LFP.data(:,hemisphere_indx(i)))], '--', ...
                 'Color', colors(2 + eventId, :), 'Parent', ax(hemisphere_indx(i)));

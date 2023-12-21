@@ -19,8 +19,8 @@ function [ text ] = getGroupsInformation( obj )
 % pauloaguiar@i3s.up.pt
 % -----------------------------------------------------------------------
 
-indx_sensing_initial = cellfun(@(c) isstruct(c) && numel(c.hemispheres) == 2, {obj.parameters.groups.initial(:).sensing});
-indx_sensing_final = cellfun(@(c) isstruct(c) && numel(c.hemispheres) == 2, {obj.parameters.groups.final(:).sensing});
+indx_sensing_initial    = cellfun(@(c) isstruct(c) && numel(c.hemispheres) == 2, {obj.parameters.groups.initial(:).sensing});
+indx_sensing_final      = cellfun(@(c) isstruct(c) && numel(c.hemispheres) == 2, {obj.parameters.groups.final(:).sensing});
 
 text = [ newline, 'Initial Channel Left: ', obj.parameters.groups.(lower("Initial"))(indx_sensing_initial).sensing.hemispheres(1).channel, newline...
     '  ', newline...

@@ -27,10 +27,16 @@ LFP = obj.chronic_parameters.time_domain;
 n_channels = LFP.n_channels;
 
 % Parse input variables
-if nargin == 2
+% Parse input variables
+if nargin == 3
     ax = varargin{1};
+    utc = varargin{2};
+elseif nargin == 2
+    ax = varargin{1};
+    utc = 0;
 else
     figure;
+    utc = 0;
     for i = 1:n_channels
         ax(i) = subplot(2,1,i);
     end
@@ -62,13 +68,13 @@ end
 
 cfs = [LFP.sensing.hemispheres.center_frequency];
 
-temp_time = datevec(LFP.time);
+temp_time = datevec(LFP.time + hours(utc));
 temp_time(:, 5) = 10*floor(temp_time(:, 5)/10);
 rounded_time = duration([temp_time(:, 4:5) zeros(size(temp_time,1), 1)]);
 x = unique(rounded_time);
 
 for i = 1:n_channels
-    if nargin == 2
+    if nargin >= 2
         cla(ax(i), 'reset');
     end
 
