@@ -1,8 +1,9 @@
 function [ status_events, status_fft, LFP_ordered ] = fillChronicParameters( obj, data, fname, obj_file  )
-% FILLCHRONICPARAMETERS Extract and visualize LFPs from chronic LFP data.
+% Extract and visualize LFPs from chronic LFP data.
 %
 % Syntax:
-%   [ LFP, stimAmp, LFPTrendLogs, status_fft ] = FILLCHRONICPARAMETERS( obj, data, fname, obj_file  );
+%   [ LFP, stimAmp, LFPTrendLogs, status_fft ] = FILLCHRONICPARAMETERS(
+%   obj, data, fname, obj_file  );
 %
 % Input parameters:
 %   * data - data from json file(s)
@@ -24,7 +25,7 @@ function [ status_events, status_fft, LFP_ordered ] = fillChronicParameters( obj
 %
 % Available at: https://github.com/NCN-Lab/DBScope
 % For referencing, please use: Andreia M. Oliveira, Eduardo Carvalho, Beatriz Barros, Carolina Soares, Manuel Ferreira-Pinto, Rui Vaz, Paulo Aguiar, DBScope: 
-% a versatile computational toolbox for the visualization and analysis of sensing data from Deep Brain Stimulation, doi: https://doi.org/10.1101/2023.07.23.23292136.
+% a versatile computational toolbox for the visualization and analysis of sensing data from Deep Brain Stimulation, doi: 10.1101/2023.07.23.23292136.
 %
 % Andreia M. Oliveira, Eduardo Carvalho, Beatriz Barros & Paulo Aguiar - NCN
 % INEB/i3S 2022
@@ -53,13 +54,11 @@ else
     obj.chronic_parameters.time_domain.channel_names = {};
 end
 obj.chronic_parameters.time_domain.hemispheres = LFPTrendLogs.LFP.hemispheres;
-% obj.chronic_parameters.time_domain.sensing = obj_file.parameters.groups.initial(strcmp({obj_file.parameters.groups.initial.group_name}, "BrainSense")).sensing;
 obj.chronic_parameters.time_domain.sensing = obj_file.parameters.groups.initial(find([obj_file.parameters.groups.initial.active], 1)).sensing;
 obj.chronic_parameters.time_domain.data = LFPTrendLogs.LFP.data;
 obj.chronic_parameters.time_domain.time = LFPTrendLogs.LFP.time;
 obj.chronic_parameters.time_domain.xlabel = LFPTrendLogs.LFP.xlabel;
 obj.chronic_parameters.time_domain.ylabel = LFPTrendLogs.LFP.ylabel;
-obj.chronic_parameters.time_domain.filtered_data = {};
 %obj.chronic_parameters.time_domain.fs = 2; % adapt to PERCEPT specifications
 if isfield(data.DiagnosticData.LFPTrendLogs,'HemisphereLocationDef_Left' )
     datetime_list = fieldnames(data.DiagnosticData.LFPTrendLogs.HemisphereLocationDef_Left);
@@ -118,10 +117,8 @@ elseif isfield(data.DiagnosticData, 'EventLogs')
     obj.chronic_parameters.events.cycling = [];
     obj.chronic_parameters.events.lfp_frequency_snapshots_events = [];
     obj.chronic_parameters.events.eventslist = [];
-    obj.chronic_parameters.events.events = [];
     obj.chronic_parameters.events.amp_summary = [];
     obj.chronic_parameters.events.type_event = [];
-    obj.chronic_parameters.events.lfp_frequency_snapshots_clustering = [];
 else
     obj.chronic_parameters.events.date_time = [];
     obj.chronic_parameters.events.event_id = [];
@@ -130,10 +127,8 @@ else
     obj.chronic_parameters.events.cycling = [];
     obj.chronic_parameters.events.lfp_frequency_snapshots_events = [];
     obj.chronic_parameters.events.eventslist = [];
-    obj.chronic_parameters.events.events = [];
     obj.chronic_parameters.events.amp_summary = [];
     obj.chronic_parameters.events.type_event = [];
-    obj.chronic_parameters.events.lfp_frequency_snapshots_clustering = [];
 end
 
 % Check available hemispheres

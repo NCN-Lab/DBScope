@@ -18,7 +18,7 @@ function plotPWelch ( obj, varargin )
 %
 % Available at: https://github.com/NCN-Lab/DBScope
 % For referencing, please use: Andreia M. Oliveira, Eduardo Carvalho, Beatriz Barros, Carolina Soares, Manuel Ferreira-Pinto, Rui Vaz, Paulo Aguiar, DBScope: 
-% a versatile computational toolbox for the visualization and analysis of sensing data from Deep Brain Stimulation, doi: https://doi.org/10.1101/2023.07.23.23292136.
+% a versatile computational toolbox for the visualization and analysis of sensing data from Deep Brain Stimulation, doi: 10.1101/2023.07.23.23292136.
 %
 % Andreia M. Oliveira, Eduardo Carvalho, Beatriz Barros & Paulo Aguiar - NCN
 % INEB/i3S 2022
@@ -55,32 +55,7 @@ switch nargin
         ylabel( ax, 'PSD [\muVp^2/Hz]');
         xlabel( ax, 'Frequency [Hz]');
         title( ax, 'PWelch');
-
-%         LFP_aux = {};
-%         for d = 1:numel(LFP_ordered{record}(1,:))
-%             LFP_aux{end+1} = LFP_ordered{record}(:,d);
-%         end
-% 
-%         if indx == 1
-% 
-%             [Pxx_left, F_left] = pwelch(LFP_aux{1}, window, noverlap, fmin:freqResolution:fmax, sampling_freq_Hz);
-% 
-%             plot( ax, F_left, Pxx_left, 'LineWidth', 1)
-%             ylabel( ax, 'Amplitude [\muVp]')
-%             xlabel( ax, 'Frequency [Hz]')
-%             title( ax, 'PWelch' )
-% 
-%         elseif indx == 2
-% 
-%             [Pxx_right, F_right] = pwelch(LFP_aux{2}, window, noverlap, fmin:freqResolution:fmax, sampling_freq_Hz);
-% 
-%             plot( ax, F_right, Pxx_right, 'LineWidth', 1)
-%             ylabel( ax, 'Amplitude [\muVp]')
-%             xlabel( ax, 'Frequency [Hz]')
-%             title( ax, 'PWelch' )
-% 
-%         end
-
+        
     case 1
 
         % Check if data is filtered and select data

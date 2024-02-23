@@ -1,130 +1,121 @@
 function plotSpectrogram( obj, varargin )
-% PLOTSPECTROGRAM PLOTSPECTROGRAM Computes and plot standard spectrogram
+% PLOTSPECTROGRAM Computes and plot standard spectrogram
 % Use with LFP online streaming recordings
 %
 % Syntax:
 %   PLOTSPECTROGRAM( obj, varargin );
 %
 % Input parameters:
-%    * obj - object containg data
-%    * ax (optional) - axis where you want to plot
-%    * data_type (optional) - type of input data (raw, ecg cleaned or filtered)
-%    * rec (optional) - recording index
-%    * channel (optional) - hemisphere
+%    * obj              DBScope object containg streaming data.
+%    * (optional) ax    Axis where to plot.
+%    * rec              Index of recording.
+%    * channel          Index of channel.
 %
 % Example:
-%   PLOTSPECTROGRAM( obj );
-%   PLOTSPECTROGRAM( obj, ax, data_type, rec, channel );
+%   PLOTSPECTROGRAM( obj, rec, channel );
+%   PLOTSPECTROGRAM( obj, ax, rec, channel );
+%
+%
+% PLOTSPECTROGRAM(..., 'PARAM1', val1, 'PARAM2', val2, ...)
+%   specifies optional name/value pairs:
+%     'DataType'            Type of input data. Can be of three types: 
+%                           'Raw', 'ECG Cleaned' or 'Latest Filtered'.
+%                           Defaults to 'Raw'
+%     'Contrast'            Type of constrast in plot. Can be of two types:
+%                           'normal' or 'high'. High contrast reduces the
+%                           the upper limit of the colorbar.
+%                           Defaults to 'normal'
+%     'NormalizePower'      Whether to normalize the power of the
+%                           spectrogram.
+%                           Defaults to false
+%     'Window'              Number of samples per segment.
+%                           Defaults to half the sampling frequency
+%     'Overlap'             Number of samples that overlap adjoining
+%                           segments.
+%                           Defaults to a quarter of the sampling frequency
+%     'Frequencies'         Cyclical frequencies
+%                           Defaults to 1:0.5:sampling_frequency/2
 %
 % Available at: https://github.com/NCN-Lab/DBScope
 % For referencing, please use: Andreia M. Oliveira, Eduardo Carvalho, Beatriz Barros, Carolina Soares, Manuel Ferreira-Pinto, Rui Vaz, Paulo Aguiar, DBScope: 
-% a versatile computational toolbox for the visualization and analysis of sensing data from Deep Brain Stimulation, doi: https://doi.org/10.1101/2023.07.23.23292136.
+% a versatile computational toolbox for the visualization and analysis of sensing data from Deep Brain Stimulation, doi: 10.1101/2023.07.23.23292136.
 %
 % Andreia M. Oliveira, Eduardo Carvalho, Beatriz Barros & Paulo Aguiar - NCN
 % INEB/i3S 2022
 % pauloaguiar@i3s.up.pt
 % -----------------------------------------------------------------------
 
-% Parse input variables
-switch nargin
-    case 6
-        ax          = varargin{1};
-        data_type   = varargin{2};
-        rec         = varargin{3};
-        channel     = varargin{4};
-        contrast    = varargin{5};
+sampling_frequency = obj.streaming_parameters.time_domain.fs;
 
-        switch data_type
-            case 'Raw'
-                LFP_selected = obj.streaming_parameters.time_domain.data;
-            case 'ECG Cleaned'
-                LFP_selected = obj.streaming_parameters.time_domain.ecg_clean;
-            case 'Latest Filtered'
-                LFP_selected = obj.streaming_parameters.filtered_data.data{end};
-        end
+% Create an input parser object
+parser = inputParser;
 
-        aux_plotSpectrogram( obj, ax, LFP_selected, rec, channel, contrast );
+validScalarNum  = @(x) isnumeric(x) && isscalar(x) && (x > 0);
+defaultDataType = 'Raw';
+validDataType   = {'Raw','ECG Cleaned','Latest Filtered'};
+defaultContrast = 'normal';
+validContrast   = {'normal','high'};
 
-    case 5
-        ax          = varargin{1};
-        data_type   = varargin{2};
-        rec         = varargin{3};
-        channel     = varargin{4};
-        contrast    = "normal";
+% Define input parameters and their default values
+% Data parameters
+addRequired(parser, 'Recording', validScalarNum);
+addRequired(parser, 'Channel', validScalarNum);
+addParameter(parser, 'DataType', defaultDataType, @(x) any(validatestring(x,validDataType))); % Default value is 'Raw'
+% Spectrogram parameters
+addParameter(parser, 'Contrast', defaultContrast, @(x) any(validatestring(x,validContrast))); % Default value is 'normal'
+addParameter(parser, 'NormalizePower', false); % Default value is false
+addParameter(parser, 'Window', round(0.5*sampling_frequency)); % Default value is half the sampling frequency
+addParameter(parser, 'Overlap', round(0.25*sampling_frequency)); % Default value is a quarter of the sampling frequency
+addParameter(parser, 'Frequencies', 1:0.5:sampling_frequency/2);
 
-        switch data_type
-            case 'Raw'
-                LFP_selected = obj.streaming_parameters.time_domain.data;
-            case 'ECG Cleaned'
-                LFP_selected = obj.streaming_parameters.time_domain.ecg_clean;
-            case 'Latest Filtered'
-                LFP_selected = obj.streaming_parameters.filtered_data.data{end};
-        end
-        
-        aux_plotSpectrogram( obj, ax, LFP_selected, rec, channel, contrast );
-
-
-    case 1 % No interface; returns at the end
-        if isempty( obj.streaming_parameters.filtered_data.data )
-            disp( 'Data is not filtered' );
-            data_type = questdlg( 'Which data do you want to visualize?', ...
-                '', 'Raw', 'ECG Cleaned', 'ECG Cleaned' );
-        else
-            disp( 'Data is filtered' );
-            data_type = questdlg( 'Which data do you want to visualize?', ...
-                '', 'Raw', 'ECG Cleaned', 'Latest Filtered', 'Latest Filtered' );
-        end
-
-        switch data_type
-            case 'Raw'
-                LFP_selected = obj.streaming_parameters.time_domain.data;
-            case 'ECG Cleaned'
-                LFP_selected = obj.streaming_parameters.time_domain.ecg_clean;
-            case 'Latest Filtered'
-                LFP_selected = obj.streaming_parameters.filtered_data.data{end};
-        end
-
-        for rec = 1:numel( LFP_selected )
-            figure;
-            for channel = 1:numel( LFP_selected{rec}(1,:) )
-                ax(1) = subplot( numel( LFP_selected{rec}(1,:) ), 2, channel );
-                ax(2) = subplot( numel( LFP_selected{rec}(1,:) ), 2, channel + 2 );
-
-                plotSignalAndStimulation( obj, ax(1), data_type, rec, channel );
-                aux_plotSpectrogram( obj, ax(2), LFP_selected, rec, channel, "normal" );
-                    
-                set(ax(2), 'PositionConstraint', 'innerposition');
-                set(ax(1), 'PositionConstraint', 'innerposition');
-                pos2 = get(ax(2), 'InnerPosition');
-                pos1 = get(ax(1), 'InnerPosition');
-
-                if pos1(3) ~= pos2(3)
-                    pos1(1) = pos2(1);
-                    pos1(3) = pos2(3);
-                    set(ax(1),'InnerPosition', pos1);
-                end
-            end
-        end
-        return;
+% Parse the input arguments
+if isa(varargin{1}, 'matlab.ui.control.UIAxes') || isa(varargin{1}, 'matlab.graphics.axis.Axes')
+    ax = varargin{1};
+    parse(parser, varargin{2:end});
+else
+    ax = [];
+    parse(parser, varargin{:});
 end
 
+% Access the values of inputs
+rec             = parser.Results.Recording;
+channel         = parser.Results.Channel;
+data_type       = parser.Results.DataType;
+contrast        = parser.Results.Contrast;
+normalize_power = parser.Results.NormalizePower;
+window          = parser.Results.Window;
+noverlap        = parser.Results.Overlap;
+f               = parser.Results.Frequencies;
+
+
+switch data_type
+    case 'Raw'
+        LFP_selected = obj.streaming_parameters.time_domain.data;
+    case 'ECG Cleaned'
+        LFP_selected = obj.streaming_parameters.time_domain.ecg_clean;
+        if isempty(LFP_selected)
+            warning(['To visualize an ECG clean recording, you have to apply' ...
+                ' the cleanECG() function first.']);
+            return
+        end
+    case 'Latest Filtered'
+        LFP_selected = obj.streaming_parameters.filtered_data.data{end};
+        if isempty(LFP_selected)
+            warning(['To visualize a filtered recording, you have to create' ...
+                ' a new filter.']);
+            return
+        end
 end
 
-function aux_plotSpectrogram( obj, ax, LFP_selected, rec, channel, contrast )
-% Get sampling frequency parameters
-sampling_freq_Hz        = obj.streaming_parameters.time_domain.fs;
-
-% Define spectrogram parameters
-window                  = round(0.5*sampling_freq_Hz);
-noverlap                = round(window/2);
-fmin                    = 1; %Hz
-fmax                    = 125; %Hz
-normalizePower          = 0;
+if isempty(ax)
+    figure("Position", [100 300 1200 300]);
+    ax = axes();
+end
 
 % Get data
 LFP                     = LFP_selected{rec}(:, channel);
-[~, f, t, p]            = spectrogram( LFP, window, noverlap, fmin:0.5:fmax, sampling_freq_Hz, 'yaxis' );
-if normalizePower == 1
+[~, freq, t, p]         = spectrogram( LFP, window, noverlap, f, sampling_frequency, 'yaxis' );
+if normalize_power
     power2plot          = 10 * log10( p ./ mean(p, 2) );
 else
     power2plot          = 10 * log10( p );
@@ -132,10 +123,10 @@ end
 
 % Plot data
 cla( ax, 'reset' );
-imagesc( ax, t, f, power2plot );
-xlabel( ax, 'Time [sec]' );
+imagesc( ax, t, freq, power2plot );
+xlabel( ax, 'Time (s)' );
 set( ax, 'YDir','normal' );
-ylabel( ax, 'Frequency [Hz]' );
+ylabel( ax, 'Frequency (Hz)' );
 rec = colorbar( ax );
 rec.Label.String = 'Power/Frequency [dB/Hz]';
 switch contrast
@@ -150,5 +141,7 @@ title( ax, 'Spectrogram' );
 axtoolbar( ax, {'export'} );
 
 end
+
+
 
 

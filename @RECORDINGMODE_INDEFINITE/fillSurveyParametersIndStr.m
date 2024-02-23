@@ -1,5 +1,5 @@
 function lfp_indefinite = fillSurveyParametersIndStr( obj, data, fname, obj_file  )
-% FILLSURVEYPARAMETERS Extract and visualize LFPs from survey Indefinite Streaming mode
+% Extract and visualize LFPs from survey Indefinite Streaming mode
 %
 % Syntax:
 %   FILLSURVEYPARAMETERS( obj, data, fname, obj_file );
@@ -8,7 +8,7 @@ function lfp_indefinite = fillSurveyParametersIndStr( obj, data, fname, obj_file
 %    * obj - object containg data
 %    * data - data from json file(s)
 %    * fname
-%    * obj_file - object containg data
+%    * obj_file
 %
 %   Example:
 %      FILLSURVEYPARAMETERS(  data, fname, obj_file );
@@ -18,7 +18,7 @@ function lfp_indefinite = fillSurveyParametersIndStr( obj, data, fname, obj_file
 %
 % Available at: https://github.com/NCN-Lab/DBScope
 % For referencing, please use: Andreia M. Oliveira, Eduardo Carvalho, Beatriz Barros, Carolina Soares, Manuel Ferreira-Pinto, Rui Vaz, Paulo Aguiar, DBScope: 
-% a versatile computational toolbox for the visualization and analysis of sensing data from Deep Brain Stimulation, doi: https://doi.org/10.1101/2023.07.23.23292136.
+% a versatile computational toolbox for the visualization and analysis of sensing data from Deep Brain Stimulation, doi: 10.1101/2023.07.23.23292136.
 %
 % Andreia M. Oliveira, Eduardo Carvalho, Beatriz Barros & Paulo Aguiar - NCN
 % INEB/i3S 2022
@@ -43,8 +43,6 @@ if isfield( data, 'IndefiniteStreaming' )
     obj.indefinite_parameters.time_domain.data = {lfp_indefinite.data};
     obj.indefinite_parameters.time_domain.fs = {lfp_indefinite.Fs};
     obj.indefinite_parameters.time_domain.time = {lfp_indefinite.time};
-    obj.indefinite_parameters.time_domain.xlabel = {lfp_indefinite.xlabel};
-    obj.indefinite_parameters.time_domain.ylabel = {lfp_indefinite.ylabel};
 
 end
 

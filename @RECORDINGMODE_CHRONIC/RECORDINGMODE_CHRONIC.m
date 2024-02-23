@@ -3,7 +3,7 @@ classdef RECORDINGMODE_CHRONIC < RECORDINGMODE_COMMONMETHODS
     %
     % Available at: https://github.com/NCN-Lab/DBScope
     % For referencing, please use: Andreia M. Oliveira, Eduardo Carvalho, Beatriz Barros, Carolina Soares, Manuel Ferreira-Pinto, Rui Vaz, Paulo Aguiar, DBScope:
-    % a versatile computational toolbox for the visualization and analysis of sensing data from Deep Brain Stimulation, doi: https://doi.org/10.1101/2023.07.23.23292136.
+    % a versatile computational toolbox for the visualization and analysis of sensing data from Deep Brain Stimulation, doi: 10.1101/2023.07.23.23292136.
     %
     % Andreia M. Oliveira, Eduardo Carvalho, Beatriz Barros & Paulo Aguiar - NCN
     % INEB/i3S 2022
@@ -26,17 +26,10 @@ classdef RECORDINGMODE_CHRONIC < RECORDINGMODE_COMMONMETHODS
             obj.chronic_parameters.time_domain.channel_names = nan;
             obj.chronic_parameters.time_domain.data = nan;
             obj.chronic_parameters.time_domain.time = nan;
-            obj.chronic_parameters.time_domain.xlabel = nan;
-            obj.chronic_parameters.time_domain.ylabel = nan;
-            obj.chronic_parameters.time_domain.ecg_clean = nan;
-            %obj.chronic_parameters.time_domain.fs = nan;
             obj.chronic_parameters.time_domain.days.datetime_list = nan;
             obj.chronic_parameters.time_domain.days.number = nan;
             obj.chronic_parameters.time_domain.days.left =  nan;
             obj.chronic_parameters.time_domain.days.right = nan;
-
-            obj.chronic_parameters.chronic_aux.hem_left = nan;
-            obj.chronic_parameters.chronic_aux.hem_right = nan;
 
             % Initiate all defined properties for stimulation as NaN
             obj.chronic_parameters.stim_amp.data = nan;
@@ -58,16 +51,7 @@ classdef RECORDINGMODE_CHRONIC < RECORDINGMODE_COMMONMETHODS
             % Format for events functions
             obj.chronic_parameters.events.eventslist = nan;
             obj.chronic_parameters.events.amp_summary = nan;
-            obj.chronic_parameters.events.type_event = nan;
-            obj.chronic_parameters.events.lfp_frequency_snapshots_clustering = nan;
-            obj.chronic_parameters.events.events = nan;
 
-            % Initiate all defined properties for filtered data as NaN
-            obj.chronic_parameters.filtered_data.filter_type = nan;
-            obj.chronic_parameters.filtered_data.up_bound = nan;
-            obj.chronic_parameters.filtered_data.low_bound = nan;
-            obj.chronic_parameters.filtered_data.data = nan;
-            obj.chronic_parameters.filtered_data.typeofdata = nan;
 
         end
 

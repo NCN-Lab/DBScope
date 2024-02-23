@@ -4,7 +4,7 @@ classdef RECORDINGMODE_SETUP < RECORDINGMODE_COMMONMETHODS
     %
     % Available at: https://github.com/NCN-Lab/DBScope
     % For referencing, please use: Andreia M. Oliveira, Eduardo Carvalho, Beatriz Barros, Carolina Soares, Manuel Ferreira-Pinto, Rui Vaz, Paulo Aguiar, DBScope:
-    % a versatile computational toolbox for the visualization and analysis of sensing data from Deep Brain Stimulation, doi: https://doi.org/10.1101/2023.07.23.23292136.
+    % a versatile computational toolbox for the visualization and analysis of sensing data from Deep Brain Stimulation, XXX doi: XXX.
     %
     % Andreia M. Oliveira, Eduardo Carvalho, Beatriz Barros & Paulo Aguiar - NCN
     % INEB/i3S 2022
@@ -21,34 +21,30 @@ classdef RECORDINGMODE_SETUP < RECORDINGMODE_COMMONMETHODS
 
             % Initiate all defined properties for time domain LFP with stimulation off as NaN
             obj.setup_parameters.stim_off.recording_mode = nan;
-            obj.setup_parameters.stim_off.nchannels = nan;
-            obj.setup_parameters.stim_off.channel_map = nan;
+            obj.setup_parameters.stim_off.num_channels = nan;
             obj.setup_parameters.stim_off.channel_names = nan;
             obj.setup_parameters.stim_off.data = nan;
             obj.setup_parameters.stim_off.fs = nan;
             obj.setup_parameters.stim_off.time = nan;
-            obj.setup_parameters.stim_off.xlabel = nan;
-            obj.setup_parameters.stim_off.ylabel = nan;
-            obj.setup_parameters.stim_off.stimulationstatus = nan;
 
             % Initiate all defined properties for time domain LFP with stimulation on as NaN
             obj.setup_parameters.stim_on.recording_mode = nan;
-            obj.setup_parameters.stim_on.nchannels = nan;
-            obj.setup_parameters.stim_on.channel_map = nan;
+            obj.setup_parameters.stim_on.num_channels = nan;
             obj.setup_parameters.stim_on.channel_names = nan;
             obj.setup_parameters.stim_on.fs = nan;
             obj.setup_parameters.stim_on.time = nan;
-            obj.setup_parameters.stim_on.xlabel = nan;
-            obj.setup_parameters.stim_on.ylabel = nan;
-            obj.setup_parameters.stim_on.stimulationstatus = nan;
             obj.setup_parameters.stim_on.data = nan;
         end
-
-        % Plot methods
+        
+        % Parsing methods
         [ LFP_OFF ] = fillSetupParametersOFF( obj, data, fname, obj_file )
         [ LFP_ON ] = fillSetupParametersON( obj, data, fname, obj_file )
+
+        % Plot methods
         plotRawDataSetupOFF( obj, varargin )
         plotRawDataSetupON( obj, varargin )
+        plotFFTSetupOFF( obj, varargin )
+        plotFFTSetupON( obj, varargin )
     end
 
     methods ( Hidden )

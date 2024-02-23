@@ -1,13 +1,13 @@
 function [ status, text ] = loadFile( obj, file_pathname, filename )
-% LOADFILE Upload json data from file.
+% Upload json data from file.
 %
 % Syntax:
 %   LOADFILE(obj, file_pathname, filename);
 %
 % Input parameters:
 %    * obj - object containg data
-%    * file_pathname - path for file location
-%    * filename 
+%    * file_pathname
+%    * filename
 %
 % Output parameters:
 %   status
@@ -21,7 +21,7 @@ function [ status, text ] = loadFile( obj, file_pathname, filename )
 %
 % Available at: https://github.com/NCN-Lab/DBScope
 % For referencing, please use: Andreia M. Oliveira, Eduardo Carvalho, Beatriz Barros, Carolina Soares, Manuel Ferreira-Pinto, Rui Vaz, Paulo Aguiar, DBScope: 
-% a versatile computational toolbox for the visualization and analysis of sensing data from Deep Brain Stimulation, doi: https://doi.org/10.1101/2023.07.23.23292136.
+% a versatile computational toolbox for the visualization and analysis of sensing data from Deep Brain Stimulation, doi: 10.1101/2023.07.23.23292136.
 %
 % Andreia M. Oliveira, Eduardo Carvalho, Beatriz Barros & Paulo Aguiar - NCN
 % INEB/i3S 2022
@@ -38,7 +38,6 @@ data = jsondecode( fileread( fname ) );
 
 % Save obj parameters
 obj.parameters.fname = fname;
-% obj.parameters.session_date = regexprep(data.SessionDate, {':', '-'}, {''});
 obj.parameters.session_date = datetime( data.SessionDate, "InputFormat", 'yyyy-MM-dd''T''HH:mm:ss''Z''' );
 obj.parameters.save_pathname = [ file_pathname filesep regexprep(data.SessionDate, {':', '-', 'Z'}, {''}) ];
 obj.parameters.correct_4_missing_samples = false; %set as 'true' if device synchronization is required
@@ -117,7 +116,6 @@ if isfield( data, 'LFPMontage' )
     survey = 1;
     survey_str = ('Available');
     field = 1;
-%     obj.timeseries_obj.writeLoadData( lfp_time_domain, field )
 end
 
 indefinite_streaming = 0;
@@ -127,7 +125,6 @@ if isfield( data, 'IndefiniteStreaming' ) % Survey Indefinite Streaming
     indefinite_streaming = 1;
     indefinite_streaming_str = ('Available');
     field = 2;
-%     obj.timeseries_obj.writeLoadData( lfp_indefinite, field )
 end
 
 setup = 0;
@@ -144,7 +141,6 @@ if isfield( data, 'SenseChannelTests' ) % Setup OFF stimulation
     setup_off_stim = 1;
     setup_off_stim_str = ('Available');
     field = 3;
-%     obj.timeseries_obj.writeLoadData( LFP_OFF, field )
 end
 
 setup_on_stim = 0;
@@ -154,18 +150,16 @@ if isfield( data, 'CalibrationTests' ) % Setup ON stimulation
     setup_on_stim = 1;
     setup_on_stim_str = ('Available');
     field = 4;
-%     obj.timeseries_obj.writeLoadData( LFP_ON , field )
 end
 
 time_domain = 0;
 time_domain_str = ('Not available');
 if isfield( data, 'BrainSenseTimeDomain' ) % Streaming on-line ( in clinic ) after Setup
-    obj.recording_mode.mode_stim = 'BrainSenseLFP'; % Raw Data
-    [LFP, stimAmp] = obj.streaming_obj.fillStreamingParameters( data, fname, obj );
+    obj.recording_mode.mode_stim = 'BrainSenseLFP'; 
+    [LFP, stimAmp] = obj.streaming_obj.fillStreamingParameters( data, obj );
     time_domain = 1;
     time_domain_str = ('Available');
     field = 5;
-%     obj.timeseries_obj.writeLoadData( LFP, field )
 end
 
 timeline_events = 0;
@@ -180,7 +174,6 @@ if isfield( data, 'DiagnosticData' ) && isfield( data.DiagnosticData, 'LFPTrendL
     events_present = status_events;
     events_FFT = status_fft;
     field = 6;
-%     obj.timeseries_obj.writeLoadData( LFP_ordered, field )
 end
 
 disp([ 'File name: ', filename , newline...

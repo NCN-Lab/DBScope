@@ -1,5 +1,5 @@
 function [ stimAmp ] = extractStimAmp( obj, data, obj_file )
-% EXTRACTSTIMAMP Extract and visualize stimulation amplitude from Percept PC JSON files
+% Extract and visualize stimulation amplitude from Percept PC JSON files
 %
 % Syntax:
 %   [ stimAmp ] = EXTRACTSTIMAMP( obj, data, obj_file );
@@ -20,7 +20,7 @@ function [ stimAmp ] = extractStimAmp( obj, data, obj_file )
 %
 % Available at: https://github.com/NCN-Lab/DBScope
 % For referencing, please use: Andreia M. Oliveira, Eduardo Carvalho, Beatriz Barros, Carolina Soares, Manuel Ferreira-Pinto, Rui Vaz, Paulo Aguiar, DBScope: 
-% a versatile computational toolbox for the visualization and analysis of sensing data from Deep Brain Stimulation, doi: https://doi.org/10.1101/2023.07.23.23292136.
+% a versatile computational toolbox for the visualization and analysis of sensing data from Deep Brain Stimulation, doi: 10.1101/2023.07.23.23292136.
 %
 % Andreia M. Oliveira, Eduardo Carvalho, Beatriz Barros & Paulo Aguiar - NCN
 % INEB/i3S 2022
@@ -57,6 +57,9 @@ for recId = 1:nRecs
         mA(sampleId, 2) = data.(recordingMode)(recId).LfpData(sampleId).Right.mA;
     end
 
+    stimAmp.global_packets_ID = [data.(recordingMode)(recId).LfpData.Seq];
+    stimAmp.global_packets_ticks = [data.(recordingMode)(recId).LfpData.TicksInMs];
+
     %Make time start at 0 and convert to seconds
     TicksInS = (TicksInMs - TicksInMs(1))/1000;
 
@@ -66,11 +69,27 @@ for recId = 1:nRecs
     stimAmp.data = mA;
     stimAmp.time = TicksInS;
     stimAmp.Fs = Fs;
-    stimAmp.ylabel = 'Stimulation amplitude (mA)';
-    stimAmp.channel_names = {'Left', 'Right'};
+    stimAmp.channel_names = cellstr(strrep(strsplit(data.(recordingMode)(recId).Channel, ','), '_', ' '));
     stimAmp.firstTickInSec = TicksInMs(1)/1000; %first tick time (s)
-    stimAmp.json = obj_file.fname;
+    stimAmp.group = strrep(data.(recordingMode)(recId).TherapySnapshot.ActiveGroup, 'GroupIdDef.GROUP_', '');
+    
+    
+    stimAmp.therapy_snapshot = data.(recordingMode)(recId).TherapySnapshot;
+    % Get stimulating electrodes
+    hemispheres = ["Left", "Right"];
+    stim_channel_names = {};
+    for h = hemispheres
+        if ~isfield(stimAmp.therapy_snapshot, h) || ~isfield( stimAmp.therapy_snapshot.(h), "ElectrodeState")
+            continue
+        end
+        electrode_names = cellfun(@(x) x.Electrode, stimAmp.therapy_snapshot.(h).ElectrodeState, 'UniformOutput', false);
+        electrode_names = electrode_names(contains(electrode_names, 'Sensight'));
+        electrode_names = strrep(electrode_names, 'ElectrodeDef.Sensight_', '');
+        stim_channel_names{end+1} = strjoin(electrode_names, ' & ');
+    end
+    stimAmp.stim_channel_names = stim_channel_names;
 
+   
     stimAmp_out = [stimAmp_out stimAmp] ;
 
     %save name
@@ -79,7 +98,6 @@ for recId = 1:nRecs
 
 end
 
-stimAmp = [];
 stimAmp = stimAmp_out;
 
 end

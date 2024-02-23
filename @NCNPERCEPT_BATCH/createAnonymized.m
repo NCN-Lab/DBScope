@@ -1,5 +1,6 @@
-function [ anon ] = anonymizedata( obj )
-% ANONYMIZEDATA Import and Anonymize Medtronic Percept PC json files
+function [ anon ] = createAnonymized( obj )
+% CREATEANONYMIZED
+% Import and Anonymize Medtronic Percept PC json files
 % This funtion anonymizes selected parameters from json files, Percept PC.
 % The variables are the following: 
 % from Patient Information Initial / Final:
@@ -13,14 +14,14 @@ function [ anon ] = anonymizedata( obj )
 % ImplantDate
 %
 % Syntax:
-%   [ anon ] = ANONYMIZEDATA( );
+%   [ anon ] = CREATEANONYMIZED( );
 %
 % Input parameters:
 %    * obj - object containg data
 %
 % Available at: https://github.com/NCN-Lab/DBScope
 % For referencing, please use: Andreia M. Oliveira, Eduardo Carvalho, Beatriz Barros, Carolina Soares, Manuel Ferreira-Pinto, Rui Vaz, Paulo Aguiar, DBScope: 
-% a versatile computational toolbox for the visualization and analysis of sensing data from Deep Brain Stimulation, doi: https://doi.org/10.1101/2023.07.23.23292136.
+% a versatile computational toolbox for the visualization and analysis of sensing data from Deep Brain Stimulation, doi: 10.1101/2023.07.23.23292136.
 %
 % Andreia M. Oliveira &  Paulo de Castro Aguiar  - NCN
 % INEB/i3S 2022
@@ -40,16 +41,17 @@ for f = 1 : numel( filelist )
 
     % Find expression and anonymize
 
-    %Patient Information Initial / Final:
+    % Patient Information Initial / Final:
     anon = regexprep( json, '\"PatientFirstName\": \"[\w- ]*\"', '"PatientFirstName": "XXXXXX"' );
     anon = regexprep( anon, '\"PatientLastName\": \"[\w- ]*\"', '"PatientLastName": "XXXXXX"' );
     anon = regexprep( anon, '\"PatientGender\": \"[\w- ]*\"', '"PatientGender": "XXXXXX"' );
     anon = regexprep( anon, '\"PatientDateOfBirth\": \"[\d\S- ]*\"', '"PatientDateOfBirth": "XXXXXX"' );
     %anon = regexprep( anon, '\"PatientId\": \"[\w- ]*\"', '"PatientId": "XXXXXX"' );
 
-    % Divide Information Initial/Final:
+    % Device Information Initial/Final:
     anon = regexprep( anon, '\"ImplantDate\": \"[\d\S- ]*\"', '"ImplantDate": "XXXXXX"' );
     anon = regexprep( anon, '\"NeurostimulatorSerialNumber\": \"[\d\S- ]*\"', '"NeurostimulatorSerialNumber": "XXXXXX"' );
+    anon = regexprep( anon, '\"DeviceName\": \"[\w- ]*\"', '"DeviceName": "XXXXXX"' );
 
     % Save to new json file
     fid = fopen([pathname,'\_ANONYMIZED_',filename], 'w');

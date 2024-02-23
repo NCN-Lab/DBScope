@@ -1,5 +1,5 @@
 function h = plotCircadian( obj, varargin )
-% PLOTCIRCADIAN Plot the circadian mean power.
+% Plot the circadian mean power.
 %
 % Syntax:
 %   h = PLOTCIRCADIAN( obj, ax );
@@ -15,7 +15,7 @@ function h = plotCircadian( obj, varargin )
 %
 % Available at: https://github.com/NCN-Lab/DBScope
 % For referencing, please use: Andreia M. Oliveira, Eduardo Carvalho, Beatriz Barros, Carolina Soares, Manuel Ferreira-Pinto, Rui Vaz, Paulo Aguiar, DBScope: 
-% a versatile computational toolbox for the visualization and analysis of sensing data from Deep Brain Stimulation, doi: https://doi.org/10.1101/2023.07.23.23292136.
+% a versatile computational toolbox for the visualization and analysis of sensing data from Deep Brain Stimulation, doi: 10.1101/2023.07.23.23292136.
 %
 % Andreia M. Oliveira, Eduardo Carvalho, Beatriz Barros & Paulo Aguiar - NCN
 % INEB/i3S 2022
@@ -26,7 +26,6 @@ color = lines(4);
 LFP = obj.chronic_parameters.time_domain;
 n_channels = LFP.n_channels;
 
-% Parse input variables
 % Parse input variables
 if nargin == 3
     ax = varargin{1};
@@ -82,8 +81,6 @@ for i = 1:n_channels
     upper_qrtl_power = length(x);
     lower_qrtl_power = length(x);
     for j = 1:numel(x)
-%         mean_circadian_power(j) = mean(LFP.data(rounded_time==x(j),i));
-%         std_circadian(j) = std(LFP.data(rounded_time==x(j),i),1);
         median_circadian_power(j) = prctile(LFP.data(rounded_time==x(j), hemisphere_indx(i)),50,'all');
         upper_qrtl_power(j) = prctile(LFP.data(rounded_time==x(j), hemisphere_indx(i)),75,'all');
         lower_qrtl_power(j) = prctile(LFP.data(rounded_time==x(j), hemisphere_indx(i)),25,'all');

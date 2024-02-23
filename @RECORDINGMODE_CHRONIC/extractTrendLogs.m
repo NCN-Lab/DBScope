@@ -1,5 +1,5 @@
 function [ LFPTrendLogs ] = extractTrendLogs( obj, data, obj_file )
-% EXTRACTTRENDLOGS Extract LFP and Event logs from Percept PC JSON files
+%Extract LFP and Event logs from Percept PC JSON files
 %
 % Trends: LFP power / power domain
 %         Sampling frequency = 2Hz
@@ -27,7 +27,7 @@ function [ LFPTrendLogs ] = extractTrendLogs( obj, data, obj_file )
 %
 % Available at: https://github.com/NCN-Lab/DBScope
 % For referencing, please use: Andreia M. Oliveira, Eduardo Carvalho, Beatriz Barros, Carolina Soares, Manuel Ferreira-Pinto, Rui Vaz, Paulo Aguiar, DBScope: 
-% a versatile computational toolbox for the visualization and analysis of sensing data from Deep Brain Stimulation, doi: https://doi.org/10.1101/2023.07.23.23292136.
+% a versatile computational toolbox for the visualization and analysis of sensing data from Deep Brain Stimulation, doi: 10.1101/2023.07.23.23292136.
 %
 % Andreia M. Oliveira, Eduardo Carvalho, Beatriz Barros & Paulo Aguiar - NCN
 % INEB/i3S 2022
@@ -68,7 +68,6 @@ for hemisphereId = 1:nHemisphereLocations
 end
 
 %Extract LFP, stimulation amplitude and date-time information
-% DateTime = cellfun(@(x) datetime(regexprep(x(1:end-1),'T',' ')), allDays.DateTime);
 nTimepoints = size(allDays, 1);
 for recId = 1:nTimepoints
     DateTime(recId) = datetime(regexprep(allDays.DateTime{recId}(1:end-1),'T',' '));

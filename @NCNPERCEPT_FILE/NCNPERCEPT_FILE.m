@@ -3,7 +3,7 @@ classdef NCNPERCEPT_FILE < handle
     %
     % Available at: https://github.com/NCN-Lab/DBScope
     % For referencing, please use: Andreia M. Oliveira, Eduardo Carvalho, Beatriz Barros, Carolina Soares, Manuel Ferreira-Pinto, Rui Vaz, Paulo Aguiar, DBScope:
-    % a versatile computational toolbox for the visualization and analysis of sensing data from Deep Brain Stimulation, doi: https://doi.org/10.1101/2023.07.23.23292136.
+    % a versatile computational toolbox for the visualization and analysis of sensing data from Deep Brain Stimulation, doi: 10.1101/2023.07.23.23292136.
     %
     % Andreia M. Oliveira, Eduardo Carvalho, Beatriz Barros & Paulo Aguiar - NCN
     % INEB/i3S 2022
@@ -17,7 +17,6 @@ classdef NCNPERCEPT_FILE < handle
         setup_obj
         streaming_obj
         chronic_obj
-        %timeseries_obj 
         wearables_obj
         status
     end
@@ -46,17 +45,7 @@ classdef NCNPERCEPT_FILE < handle
             obj.parameters.annotations = nan;
 
             obj.parameters.impedance.monopolar.hemispheres.results = nan;
-%             obj.parameters.impedance.monopolar.hemisphere_left.electrode1 = nan;
-%             obj.parameters.impedance.monopolar.hemisphere_left.electrode2 = nan;
-%             obj.parameters.impedance.monopolar.hemisphere_right.results = nan;
-%             obj.parameters.impedance.monopolar.hemisphere_right.electrode1 = nan;
-%             obj.parameters.impedance.monopolar.hemisphere_right.electrode2 = nan;
-            obj.parameters.impedance.monopolar.hemispheres.results = nan;
-%             obj.parameters.impedance.bipolar.hemisphere_left.electrode1 = nan;
-%             obj.parameters.impedance.bipolar.hemisphere_left.electrode2 = nan;
-%             obj.parameters.impedance.bipolar.hemisphere_right.results  = nan;
-%             obj.parameters.impedance.bipolar.hemisphere_right.electrode1 = nan;
-%             obj.parameters.impedance.bipolar.hemisphere_right.electrode2 = nan;
+            obj.parameters.impedance.bipolar.hemispheres.results = nan;
 
             obj.parameters.system_information.battery_percentage = nan;
             obj.parameters.system_information.battery_status = nan;
@@ -99,13 +88,15 @@ classdef NCNPERCEPT_FILE < handle
             obj.setup_obj = RECORDINGMODE_SETUP;
             obj.streaming_obj = RECORDINGMODE_STREAMING;
             obj.chronic_obj = RECORDINGMODE_CHRONIC;
-            %obj.timeseries_obj = TIMESERIES;
             obj.wearables_obj = WEARABLE_EXTERNAL;
 
         end
 
         % Load data from single json 
         [status, text] = loadFile( obj, file_pathname, filename )
+
+        % Export methods
+        exportFieldtrip( obj )
 
         % Get session information
         [ text ] = getBatteryInformation( obj )

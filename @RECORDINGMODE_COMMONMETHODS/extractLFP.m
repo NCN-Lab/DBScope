@@ -1,5 +1,5 @@
 function [ LFP ] = extractLFP( obj, data, obj_file )
-% EXTRACTLFP Extract and visualize LFPs from Percept PC - JSON structure
+% Extract and visualize LFPs from Percept PC - JSON structure
 %
 % Syntax:
 %   [ LFP ] = EXTRACTLFP( obj, data, obj_file );
@@ -20,7 +20,7 @@ function [ LFP ] = extractLFP( obj, data, obj_file )
 %
 % Available at: https://github.com/NCN-Lab/DBScope
 % For referencing, please use: Andreia M. Oliveira, Eduardo Carvalho, Beatriz Barros, Carolina Soares, Manuel Ferreira-Pinto, Rui Vaz, Paulo Aguiar, DBScope: 
-% a versatile computational toolbox for the visualization and analysis of sensing data from Deep Brain Stimulation, doi: https://doi.org/10.1101/2023.07.23.23292136.
+% a versatile computational toolbox for the visualization and analysis of sensing data from Deep Brain Stimulation, doi: 10.1101/2023.07.23.23292136.
 %
 % Andreia M. Oliveira, Eduardo Carvalho, Beatriz Barros & Paulo Aguiar - NCN
 % INEB/i3S 2022
@@ -65,16 +65,20 @@ for recId = 1:nRecs
     LFP.first_packet_datetimes = datetime( datafield(1).FirstPacketDateTime, "InputFormat", 'yyyy-MM-dd''T''HH:mm:ss.SSS''Z''' );
 
     %Extract size of received packets
-    GlobalPacketSizes = str2num(datafield(1).GlobalPacketSizes); %#ok<ST2NM>
+    GlobalPacketSizes = str2num(datafield(1).GlobalPacketSizes);
     if sum(GlobalPacketSizes) ~= size(LFP.data, 1) && ~strcmpi(recordingMode, 'SenseChannelTests') && ~strcmpi(recordingMode, 'CalibrationTests')
         warning([recordingMode ': data length (' num2str(size(LFP.data, 1)) ' samples) differs from the sum of packet sizes (' num2str(sum(GlobalPacketSizes)) ' samples)'])
     end
 
-    %Extract timestamps of received packets
-    TicksInMses = str2num(datafield(1).TicksInMses); %#ok<ST2NM>
+    % Calculate first sample tick
+    TicksInMses = str2num(datafield(1).TicksInMses);
     if ~isempty(TicksInMses)
         LFP.firstTickInSec = TicksInMses(1)/1000; %first tick time (s)
     end
+    
+    LFP.global_packets_ID = str2num(datafield(1).GlobalSequences);
+    LFP.global_packets_size = GlobalPacketSizes;
+    LFP.global_packets_ticks = TicksInMses;
 
     LFP.time = (1:length(LFP.data))/LFP.Fs; % [s]
     if LFP.nChannels <= 2

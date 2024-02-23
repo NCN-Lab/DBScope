@@ -1,5 +1,5 @@
 function [ text ] = getSessionInformation( obj )
-% GETSESSIONINFORMATION Display information about session date.
+% Display information about session date.
 %
 % Syntax:
 %   GETSESSIONINFORMATION( obj );
@@ -12,7 +12,7 @@ function [ text ] = getSessionInformation( obj )
 %
 % Available at: https://github.com/NCN-Lab/DBScope
 % For referencing, please use: Andreia M. Oliveira, Eduardo Carvalho, Beatriz Barros, Carolina Soares, Manuel Ferreira-Pinto, Rui Vaz, Paulo Aguiar, DBScope: 
-% a versatile computational toolbox for the visualization and analysis of sensing data from Deep Brain Stimulation, doi: https://doi.org/10.1101/2023.07.23.23292136.
+% a versatile computational toolbox for the visualization and analysis of sensing data from Deep Brain Stimulation, doi: 10.1101/2023.07.23.23292136.
 %
 % Andreia M. Oliveira, Eduardo Carvalho, Beatriz Barros & Paulo Aguiar - NCN
 % INEB/i3S 2022

@@ -1,5 +1,5 @@
 function plotMeanFFTProfile ( obj, varargin )
-% PLOTMEANFFTPROFILE Plot mean FFT profile for the selected event types
+% Plot mean FFT profile for the selected event types
 %
 % Syntax:
 %   PLOTMEANFFTPROFILE( obj, event_type, date_range, ax );
@@ -19,7 +19,7 @@ function plotMeanFFTProfile ( obj, varargin )
 %
 % Available at: https://github.com/NCN-Lab/DBScope
 % For referencing, please use: Andreia M. Oliveira, Eduardo Carvalho, Beatriz Barros, Carolina Soares, Manuel Ferreira-Pinto, Rui Vaz, Paulo Aguiar, DBScope: 
-% a versatile computational toolbox for the visualization and analysis of sensing data from Deep Brain Stimulation, doi: https://doi.org/10.1101/2023.07.23.23292136.
+% a versatile computational toolbox for the visualization and analysis of sensing data from Deep Brain Stimulation, doi: 10.1101/2023.07.23.23292136.
 %
 % Andreia M. Oliveira, Eduardo Carvalho, Beatriz Barros & Paulo Aguiar - NCN
 % INEB/i3S 2022
@@ -63,6 +63,7 @@ switch nargin
             % Plot mean FFT
 %             plot(ax(channel), freq, mean([temp_FFT{:}], 2), 'black', 'LineWidth', 1, 'DisplayName', 'Mean FFT');
             plot(ax(channel), freq, median([temp_FFT{:}], 2), 'black', 'LineWidth', 1, 'DisplayName', 'Median FFT');
+            xticks(ax(channel), [0, 13, 35, 60, floor(max(freq))]);
             xlabel(ax(channel), 'Frequency [Hz]');
             xlim(ax(channel), [0 ceil(max(freq))]);
             ylabel(ax(channel), 'Magnitude [\muVp]');
@@ -102,6 +103,7 @@ switch nargin
             % Plot mean FFT
 %             plot(ax(channel), freq, mean([temp_FFT{:}], 2), 'black', 'LineWidth', 1, 'DisplayName', 'Mean FFT');
             plot(ax(channel), freq, median([temp_FFT{:}], 2), 'black', 'LineWidth', 1, 'DisplayName', 'Median FFT');
+            xticks(ax(channel), [0, 13, 35, 60, floor(max(freq))]);
             xlabel(ax(channel), 'Frequency [Hz]');
             xlim(ax(channel), [0 ceil(max(freq))]);
             ylabel(ax(channel), 'Magnitude [\muVp]');
@@ -140,6 +142,7 @@ switch nargin
             % Plot mean FFT
 %             plot(freq, mean([temp_FFT{:}], 2), 'black', 'LineWidth', 1, 'DisplayName', 'Mean FFT');
             plot(freq, median([temp_FFT{:}], 2), 'black', 'LineWidth', 1, 'DisplayName', 'Median FFT');
+            xticks([0, 13, 35, 60, floor(max(freq))]);
             xlabel('Frequency [Hz]');
             xlim([0 ceil(max(freq))]);
             ylabel('Magnitude [\muVp]');
@@ -198,6 +201,7 @@ switch nargin
                     plot( freq, median([type_FFT.(['evnt' num2str(type)])], 2), 'black', 'LineWidth', 1, 'DisplayName', 'Median FFT');
                     xlabel(' Frequency [Hz]');
                     ylabel( ' Magnitude [\muVp]');
+                    xticks([0, 13, 35, 60, floor(max(freq))]);
                     xlim([0 ceil(max(freq))]);
                     ylim([0 ceil(max_magnitude)]);
                     title(events_names{type});

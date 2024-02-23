@@ -4,7 +4,7 @@ classdef NCNPERCEPT_BATCH < handle
     %
     % Available at: https://github.com/NCN-Lab/DBScope
     % For referencing, please use: Andreia M. Oliveira, Eduardo Carvalho, Beatriz Barros, Carolina Soares, Manuel Ferreira-Pinto, Rui Vaz, Paulo Aguiar, DBScope:
-    % a versatile computational toolbox for the visualization and analysis of sensing data from Deep Brain Stimulation, doi: https://doi.org/10.1101/2023.07.23.23292136.
+    % a versatile computational toolbox for the visualization and analysis of sensing data from Deep Brain Stimulation, doi:10.1101/2023.07.23.23292136.
     %
     % Andreia M. Oliveira, Eduardo Carvalho, Beatriz Barros & Paulo Aguiar - NCN
     % INEB/i3S 2022
@@ -28,16 +28,17 @@ classdef NCNPERCEPT_BATCH < handle
             
         end
 
-        % Run loadFile
+        % Parsing methods
         [ loading_mode ] = aux_open_batch( obj )
         [ status, text ] = open_batch_files( obj );
         [ status, text ] = open_batch_folder( obj );
         [ status, text, obj ] = open_mat_files( obj );
 
-        saveWorkspace_single( obj )
+        % Anonymization method
+        createAnonymized( obj )
 
-        % Anonymized data 
-        anonymizedata( obj )
+        % Export methods
+        exportWorkspace( obj )
 
     end
 

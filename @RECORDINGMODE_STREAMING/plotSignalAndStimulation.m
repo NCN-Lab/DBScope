@@ -6,102 +6,107 @@ function plotSignalAndStimulation( obj, varargin )
 %   PLOTSIGNALANDSTIMULATION( obj, varargin );
 %
 % Input parameters:
-%    * obj - object containg data
-%    * ax (optional) - axis where you want to plot
-%    * data_type (optional) - type of input data (raw, ecg cleaned or filtered)
-%    * rec (optional) - recording index
-%    * channel (optional) - hemisphere
+%    * obj              DBScope object containg streaming data.
+%    * (optional) ax    Axis where to plot.
+%    * rec              Index of recording.
+%    * channel          Index of channel.
 %
 % Example:
-%   PLOTSIGNALANDSTIMULATION( obj );
-%   PLOTSIGNALANDSTIMULATION( obj, ax, data_type, rec, channel );
+%   PLOTSIGNALANDSTIMULATION( obj, rec, channel );
+%   PLOTSIGNALANDSTIMULATION( obj, ax, rec, channel );
+%
+%
+% PLOTSIGNALANDSTIMULATION(..., 'PARAM1', val1, 'PARAM2', val2, ...)
+%   specifies optional name/value pairs:
+%     'DataType'            Type of input data. Can be of three types: 
+%                           'Raw', 'ECG Cleaned' or 'Latest Filtered'.
+%                           Defaults to 'Raw'
 %
 % Available at: https://github.com/NCN-Lab/DBScope
 % For referencing, please use: Andreia M. Oliveira, Eduardo Carvalho, Beatriz Barros, Carolina Soares, Manuel Ferreira-Pinto, Rui Vaz, Paulo Aguiar, DBScope: 
-% a versatile computational toolbox for the visualization and analysis of sensing data from Deep Brain Stimulation, doi: https://doi.org/10.1101/2023.07.23.23292136.
+% a versatile computational toolbox for the visualization and analysis of sensing data from Deep Brain Stimulation, doi: 10.1101/2023.07.23.23292136.
 %
 % Andreia M. Oliveira, Eduardo Carvalho, Beatriz Barros & Paulo Aguiar - NCN
 % INEB/i3S 2022
 % pauloaguiar@i3s.up.pt
 % -----------------------------------------------------------------------
 
-% Parse input variables
-switch nargin
-    case 5
-        ax          = varargin{1};
-        data_type   = varargin{2};
-        rec         = varargin{3};
-        channel     = varargin{4};
+sampling_frequency = obj.streaming_parameters.time_domain.fs;
 
-        switch data_type
-            case 'Raw'
-                LFP_selected = obj.streaming_parameters.time_domain.data;
-            case 'ECG Cleaned'
-                LFP_selected = obj.streaming_parameters.time_domain.ecg_clean;
-            case 'Latest Filtered'
-                LFP_selected = obj.streaming_parameters.filtered_data.data{end};
+% Create an input parser object
+parser = inputParser;
+
+validScalarNum  = @(x) isnumeric(x) && isscalar(x) && (x > 0);
+defaultDataType = 'Raw';
+validDataType   = {'Raw','ECG Cleaned','Latest Filtered'};
+
+% Define input parameters and their default values
+addRequired(parser, 'Recording', validScalarNum);
+addRequired(parser, 'Channel', validScalarNum);
+addParameter(parser, 'DataType', defaultDataType, @(x) any(validatestring(x,validDataType))); % Default value is 'Raw'
+
+% Parse the input arguments
+if isa(varargin{1}, 'matlab.ui.control.UIAxes') || isa(varargin{1}, 'matlab.graphics.axis.Axes')
+    ax = varargin{1};
+    parse(parser, varargin{2:end});
+else
+    ax = [];
+    parse(parser, varargin{:});
+end
+
+% Access the values of inputs
+rec             = parser.Results.Recording;
+channel         = parser.Results.Channel;
+data_type       = parser.Results.DataType;
+
+switch data_type
+    case 'Raw'
+        LFP_selected = obj.streaming_parameters.time_domain.data;
+    case 'ECG Cleaned'
+        LFP_selected = obj.streaming_parameters.time_domain.ecg_clean;
+        if isempty(LFP_selected)
+            warning(['To visualize an ECG clean recording, you have to apply' ...
+                ' the cleanECG() function first.']);
+            return
         end
-
-        aux_plotSignalAndStimulation( obj, ax, LFP_selected, rec, channel );
-
-    case 1 % No interface; returns at the end
-        if isempty( obj.streaming_parameters.filtered_data.data )
-            disp( 'Data is not filtered' );
-            data_type = questdlg( 'Which data do you want to visualize?', ...
-                '', 'Raw', 'ECG Cleaned', 'ECG Cleaned' );
-        else
-            disp( 'Data is filtered' );
-            data_type = questdlg( 'Which data do you want to visualize?', ...
-                '', 'Raw', 'ECG Cleaned', 'Latest Filtered', 'Latest Filtered' );
-        end
-
-        switch data_type
-            case 'Raw'
-                LFP_selected = obj.streaming_parameters.time_domain.data;
-            case 'ECG Cleaned'
-                LFP_selected = obj.streaming_parameters.time_domain.ecg_clean;
-            case 'Latest Filtered'
-                LFP_selected = obj.streaming_parameters.filtered_data.data{end};
-        end
-
-        for rec = 1:numel( LFP_selected )
-            figure;
-            for channel = 1:numel( LFP_selected{rec}(1,:) )
-                ax = subplot( numel( LFP_selected{rec}(1,:) ), 1, channel );
-                aux_plotSignalAndStimulation( obj, ax, LFP_selected, rec, channel );
-            end
+    case 'Latest Filtered'
+        LFP_selected = obj.streaming_parameters.filtered_data.data{end};
+        if isempty(LFP_selected)
+            warning(['To visualize a filtered recording, you have to create' ...
+                ' a new filter.']);
+            return
         end
 end
 
-
+if isempty(ax)
+    figure("Position", [100 300 1200 300]);
+    ax = axes();
 end
 
-function aux_plotSignalAndStimulation(obj, ax, LFP_selected, rec, channel)
-% Get sampling frequency parameters
-stimAmp                 = obj.streaming_parameters.stim_amp;
-sampling_freq_Hz        = obj.streaming_parameters.time_domain.fs;
-sampling_freq_stimAmp   = obj.streaming_parameters.stim_amp.fs;
+% Get stimulation parameters
+stim_amp_obj        = obj.streaming_parameters.stim_amp;
+sampling_freq_stim  = obj.streaming_parameters.stim_amp.fs;
 
 % Get data
 LFP         = LFP_selected{rec}(:, channel);
-tms         = ( 0:numel( LFP ) - 1 ) / sampling_freq_Hz;
-stim        = stimAmp.data{rec}(:, channel);
-tms_stim    = ( 0:numel( stim ) - 1 ) / sampling_freq_stimAmp;
+tms         = ( 0:numel( LFP ) - 1 ) / sampling_frequency;
+stim        = stim_amp_obj.data{rec}(:, channel);
+tms_stim    = ( 0:numel( stim ) - 1 ) / sampling_freq_stim;
 
 % Plot data
 cla( ax, 'reset' );
 yyaxis( ax, "left" );
 plot( ax, tms, LFP);
-ylabel( ax, 'LFP [\muVp]' );
+ylabel( ax, 'LFP (\muVp)' );
 yyaxis( ax, "right" );
 plot( ax, tms_stim, stim, 'LineWidth', 2 );
-ylabel( ax, stimAmp.ylabel );
+ylabel( ax, "Amplitude (mA)");
 title( ax, 'Signal & Stimulation' );
-xlabel( ax, 'Time [sec]' );
+xlabel( ax, 'Time (s)' );
 xlim( ax, [min(tms) max(tms)] );
 ylim( ax, [0 ceil( max(stim) + 1)] );
 
-end
 
+end
 
 

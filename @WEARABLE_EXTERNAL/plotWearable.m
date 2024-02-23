@@ -1,52 +1,87 @@
 function plotWearable( obj, varargin )
-% PLOTPOWER Plots power of total acceleration in 3-7 Hz range.
+% PLOTPOWER 
+% Plots power of total acceleration in 3-7 Hz range.
 %
-%   Syntax:
-%       PLOTPOWER( obj )
+% Syntax:
+%   PLOTWEARABLE( obj, varargin )
 %
-%   Input parameters:
-%       obj - object containg data
+% Input parameters:
+%    * obj                  DBScope object containg wearable data.
+%    * (optional) ax        Axis where to plot.
+%    * rec                  Index of recording.
+%    * variable             Index of variable (in case there is more than
+%                           one).
+%    * (optional) limits    Plot x limits.
 %
-%   Example:
-%       PLOTPOWER( );
+% PLOTWEARABLE(..., 'PARAM1', val1, 'PARAM2', val2, ...)
+%   specifies optional name/value pairs:
+%     'Limits'              Datetime limits of axis. 
+%                           Defaults to []
+%
+% Example:
+%   obj.PLOTWEARABLE();
+%   PLOTWEARABLE( obj, rec, variable, limits );
+%   PLOTWEARABLE( obj, ax, rec, variable, limits );
 %
 % Available at: https://github.com/NCN-Lab/DBScope
 % For referencing, please use: Andreia M. Oliveira, Eduardo Carvalho, Beatriz Barros, Carolina Soares, Manuel Ferreira-Pinto, Rui Vaz, Paulo Aguiar, DBScope: 
-% a versatile computational toolbox for the visualization and analysis of sensing data from Deep Brain Stimulation, doi: https://doi.org/10.1101/2023.07.23.23292136.
+% a versatile computational toolbox for the visualization and analysis of sensing data from Deep Brain Stimulation, XXX doi: XXX.
 %
 % Eduardo Carvalho, Andreia M. Oliveira & Paulo Aguiar - NCN 
 % INEB/i3S 2022
 % pauloaguiar@i3s.up.pt
 % -----------------------------------------------------------------------
 
-% Parse input variables
-switch nargin
-    case 5
-        ax                      = varargin{1};
-        lbl                     = varargin{2};
-        variable_name           = varargin{3};
-        recording_limits        = varargin{4};
+% Create an input parser object
+parser = inputParser;
 
-    case 1
+validScalarNum  = @(x) isnumeric(x) && isscalar(x) && (x > 0);
 
+% Define input parameters and their default values
+addRequired(parser, 'Recording', validScalarNum);
+addRequired(parser, 'VariableIndx', validScalarNum);
+addParameter(parser, 'Limits', []); % Default value is []
 
+% Parse the input arguments
+if isa(varargin{1}, 'matlab.ui.control.UIAxes') || isa(varargin{1}, 'matlab.graphics.axis.Axes')
+    ax = varargin{1};
+    parse(parser, varargin{2:end});
+else
+    ax = [];
+    parse(parser, varargin{:});
 end
 
-lbl             = strsplit( lbl, ' ' );
-rec             = find( strcmp( [obj.data.wearableID], lbl(1) ) & ...
-                        strcmp( [obj.data.titration], lbl(2)));
-title_str       = obj.data(rec).wearableID;
-[signal, indx]  = rmmissing( obj.data(rec).(variable_name) );
-tms             = obj.data(rec).time(~indx);
+% Access the values of inputs
+rec             = parser.Results.Recording;
+variable        = parser.Results.VariableIndx;
+limits          = parser.Results.Limits;
 
-diff_start      = seconds( recording_limits(1) - tms(1) );
+if isempty(ax)
+    figure("Position", [100 300 1200 300]);
+    ax = axes();
+end
+
+title_str       = obj.data(rec).wearableID;
+
+aux_tbl         = obj.data(rec).data;
+variable_names  = fieldnames(aux_tbl);
+
+% at              = sqrt(aux_tbl.ax.^2 + aux_tbl.ay.^2 + aux_tbl.az.^2);
+% [signal, indx]  = rmmissing( at );
+signal          = aux_tbl{:,variable};
+[signal, indx]  = rmmissing( signal );
+
+aux_time        = obj.data(rec).time;
+tms             = aux_time(~indx);
+
+diff_start      = seconds( limits(1) - tms(1) );
 tms             = seconds(tms - tms(1)) - diff_start;
 
 plot( ax, tms, signal );
-xlabel( ax, "Time [sec]" );
-ylabel( ax, variable_name, 'Interpreter', 'none' );
-xlim( ax, [0 seconds( recording_limits(2) - recording_limits(1) )] );
+xlabel( ax, "Time (s)" );
+ylabel( ax, variable_names(variable), 'Interpreter', 'none' );
+xlim( ax, [0 seconds( limits(2) - limits(1) )] );
 title( ax, title_str );
 box( ax, 'on');
-
+    
 end

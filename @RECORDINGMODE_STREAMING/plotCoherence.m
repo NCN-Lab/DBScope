@@ -1,5 +1,5 @@
 function plotCoherence ( obj, varargin )
-% PLOTCOHERENCE Plot coherence for LFP online streaming mode
+% Plot coherence for LFP online streaming mode
 %
 % Syntax:
 %   PLOTCOHERENCE( obj, varargin );
@@ -16,7 +16,7 @@ function plotCoherence ( obj, varargin )
 %
 % Available at: https://github.com/NCN-Lab/DBScope
 % For referencing, please use: Andreia M. Oliveira, Eduardo Carvalho, Beatriz Barros, Carolina Soares, Manuel Ferreira-Pinto, Rui Vaz, Paulo Aguiar, DBScope: 
-% a versatile computational toolbox for the visualization and analysis of sensing data from Deep Brain Stimulation, doi: https://doi.org/10.1101/2023.07.23.23292136.
+% a versatile computational toolbox for the visualization and analysis of sensing data from Deep Brain Stimulation, doi: 10.1101/2023.07.23.23292136.
 %
 % Andreia M. Oliveira, Eduardo Carvalho, Beatriz Barros & Paulo Aguiar - NCN
 % INEB/i3S 2022
@@ -85,20 +85,12 @@ end
 
 % Calculate coherence
 [wcoh,~,f,coi] = wcoherence(LFP(:,1), LFP(:,2), sampling_freq_Hz);
-wcoh(wcoh<0) = 0; % MATLAB sucks
-
+wcoh(wcoh<0) = 0;
 % Plot data
 cla( ax, 'reset');
-% plot( ax, t, log2(coi), 'w--', 'LineWidth', 2);
-% hold( ax, 'on');
 imagesc(ax, tms, f, wcoh.*0.9999 );
 set( ax, 'YDir','normal' );
-%             h = pcolor(ax, tms, f, wcoh);
-%             h.EdgeColor = 'none';
-%             ytick=round(pow2(get(ax, 'YTick')),3);
-%             ax.YTickLabel = ytick;
 ax.XLabel.String    = 'Time';
-% ax.YLabel.String    = 'Frequency';
 yticklabels( ax, [] );
 ax.Title.String     = 'Cross-hemispherical Coherence';
 ylim(ax, [min(f) max(f)]);

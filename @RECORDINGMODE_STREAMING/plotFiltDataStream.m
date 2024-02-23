@@ -1,5 +1,5 @@
 function plotFiltDataStream( obj, filter_indx, varargin )
-% PLOTFILTDATASTREAM Plot filtered LFP online streaming recordings
+% Plot filtered LFP online streaming recordings
 %
 %Syntax:
 %   PLOTFILTDATASTREAM( obj, filter_indx, varargin );
@@ -14,7 +14,7 @@ function plotFiltDataStream( obj, filter_indx, varargin )
 %
 % Available at: https://github.com/NCN-Lab/DBScope
 % For referencing, please use: Andreia M. Oliveira, Eduardo Carvalho, Beatriz Barros, Carolina Soares, Manuel Ferreira-Pinto, Rui Vaz, Paulo Aguiar, DBScope: 
-% a versatile computational toolbox for the visualization and analysis of sensing data from Deep Brain Stimulation, doi: https://doi.org/10.1101/2023.07.23.23292136.
+% a versatile computational toolbox for the visualization and analysis of sensing data from Deep Brain Stimulation, doi: 10.1101/2023.07.23.23292136.
 %
 % Andreia M. Oliveira, Eduardo Carvalho, Beatriz Barros & Paulo Aguiar - NCN
 % INEB/i3S 2022
@@ -29,14 +29,6 @@ noverlap = round(window/2);
 fmin = 1; %Hz
 fmax = 125; %Hz
 normalizePower = 0;
-
-% % Check if data is filtered
-% if isempty (obj.streaming_parameters.filtered_data.data)
-%     disp('Data is not filtered')
-%     return
-% else
-%     disp('Data is filtered')
-% end
 
 % Get LFP data
 if iscell(obj.streaming_parameters.time_domain.data)
