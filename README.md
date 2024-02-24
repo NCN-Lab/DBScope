@@ -7,7 +7,7 @@ Andreia M. Oliveira, Eduardo Carvalho, Beatriz Barros, Carolina Soares, Manuel F
 https://doi.org/10.1101/2023.07.23.23292136
 ******************************************************************************************************************************************
 
-DBScope version 0.1, 2023
+DBScope version 0.2, 2023
 
 Core contributors: Andreia M Oliveira, Eduardo Carvalho, Beatriz Barros, Paulo Aguiar
 
