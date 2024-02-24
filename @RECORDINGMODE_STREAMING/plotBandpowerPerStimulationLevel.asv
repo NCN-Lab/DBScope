@@ -57,9 +57,9 @@ epoch_step = epoch_duration*(1-parser.Results.EpochOverlap);
 show_statistics = parser.Results.Statistics;
 
 if numel(recording_indx) == 1
-    lbl_recording = "Recording " + string(recording_indx);
+    lbl_recording = "reocrding " + string(recording_indx);
 else
-    lbl_recording = "All Recordings";
+    lbl_recording = "All recordings";
 end
 
 % Streaming variables
@@ -192,7 +192,6 @@ epochs_power_in_bands = table(aux_recording, aux_time, aux_level, aux_channel, a
 
 nChannels = numel(unique_channel_names);
 median_lower_stimulation = zeros(1,nChannels);
-msg = [];
 for channel = 1:nChannels
 
     % Get lowest stimulation median
@@ -204,7 +203,7 @@ for channel = 1:nChannels
     amp_ticks = intersect( channel_table.("Stimulation Amplitude"), unique_titration_levels{channel} );
     
     if numel(amp_ticks) < 2
-        msg = [msg; string(unique_channel_names{channel})];
+        msgbox(unique_channel_names{channel} + " does not have 2 levels or more.");
     else
         
         figure('Position', [50, 200, 600, 400]);
@@ -226,7 +225,7 @@ for channel = 1:nChannels
             'Notch','off', 'MarkerStyle', ".");
         ylabel("Relative Power");
         xlabel("Stimulation Amplitude (mA)");
-        title(unique_channel_names{channel} + " - " + lbl_recording + sprintf("\n%s: %d-%d Hz", data_type, bounds));
+        title(unique_channel_names{channel} + sprintf("\n%s: %d-%d Hz", data_type, bounds));
         max_lim = max_whisker/median_lower_stimulation(channel) * 2;
         if ~isnan(max_lim)
             ylim([0 max_lim]);
@@ -284,10 +283,6 @@ for channel = 1:nChannels
     end
 
 
-end
-
-if ~isempty(msg)
-    msgbox([sprintf("The following channels do not have 2 or more stimulation amplitude levels in %s:", lower(lbl_recording)); msg]);
 end
 
 

@@ -20,10 +20,7 @@ function [ text ] = getPatientInformation( obj )
 % -----------------------------------------------------------------------
 
 text = [ 'Clinical Notes: ', obj.parameters.system_information.clinical_notes, newline...
-    '  ', newline...
-    'Diagnosis: ', obj.parameters.system_information.diagnosis ];
-
-disp(text);
+    'Diagnosis: ', obj.parameters.system_information.diagnosis, newline ];
 
 end
 

@@ -22,9 +22,6 @@ function [ text ] = getBatteryInformation( obj )
 
 
 text = [ 'Battery Percentage: ', num2str(obj.parameters.system_information.battery_percentage), newline...
-    '  ', newline...
-    'Battery Status: ', obj.parameters.system_information.battery_status];
-
-disp(text);
+    'Battery Status: ', obj.parameters.system_information.battery_status, newline];
 
 end

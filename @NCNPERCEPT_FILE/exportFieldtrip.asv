@@ -33,6 +33,7 @@ if isequal(selectedDir, 0)
     return;
 end
 
+
 session_date = obj.parameters.session_date;
 session_date.Format = 'yyyyMMdd''T''HHmmss';
 patient_id = obj.parameters.patient_information.patient_id;
@@ -54,7 +55,7 @@ if obj.status.survey == 1
     survey   = struct("hdr", hdr_survey, "trial", {survey_data}, "time", {survey_time}, "label", {survey_channel_names});
     
     % Save the data to a .mat file
-    filename = selectedDir + "\" + filename_prefix + "_Survey_fieldtrip.mat";
+    filename = filename_prefix + "_Survey_fieldtrip.mat";
     fprintf('Writing %s as FieldTrip file.\n', filename);
     save(filename, 'survey');
 
@@ -214,7 +215,7 @@ if obj.status.chronic == 1 || obj.status.events == 1
     end
 
     % Save the data to a .mat file
-    filename = selectedDir + "\" + filename_prefix + "_Chronic_fieldtrip.mat";
+    filename = filename_prefix + "_Chronic_fieldtrip.mat";
     fprintf('Writing %s as FieldTrip file.\n', filename);
     if obj.status.chronic == 0
         save(filename, 'events');

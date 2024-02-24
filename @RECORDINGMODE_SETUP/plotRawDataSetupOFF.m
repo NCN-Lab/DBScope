@@ -45,8 +45,8 @@ end
 channel         = parser.Results.Channel;
 
 % Get data
-raw_signal          = obj.setup_parameters.stim_off.data;
-time                = obj.setup_parameters.stim_off.time';
+raw_signal          = vertcat(obj.setup_parameters.stim_off.data{:});
+time                = obj.setup_parameters.stim_off.time{1}';
 sampling_frequency  = obj.setup_parameters.stim_off.fs(1); % In survey mode, sampling frequency is the same for all recordings.
 Nyquist             = 0.5*sampling_frequency;
 

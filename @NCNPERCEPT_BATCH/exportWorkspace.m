@@ -19,11 +19,20 @@ function exportWorkspace( obj )
 % pauloaguiar@i3s.up.pt
 % -----------------------------------------------------------------------
 
+% Prompt the user to select a directory
+selectedDir = uigetdir();
+
+% Check if cancelled
+if isequal(selectedDir, 0)
+    disp('Exportation cancelled.');
+    return;
+end
+
 workspace_datetime = datetime('now');
 workspace_datetime.Format = 'yyyyMMdd''T''HHmmss';
-workspace_filename = [workspace_datetime '_Workspace.mat'];
+workspace_filename = string(workspace_datetime) + "_Workspace.mat";
 
-mkdir( workspace_datetime );
-save( [workspace_datetime '/' workspace_filename], "obj" );
+mkdir(selectedDir + "\DBScope_Workspaces");
+save( selectedDir + "\DBScope_Workspaces"  + "\" + workspace_filename, "obj" );
 
 

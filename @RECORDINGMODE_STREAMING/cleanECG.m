@@ -44,6 +44,8 @@ if iscell(LFP_ordered)
             text = text + newline + string([obj.streaming_parameters.time_domain.channel_names{i}{e} ': ' txt]);
         end
     end
+else
+    return;
 end
 
 %Save ECG cleaned data

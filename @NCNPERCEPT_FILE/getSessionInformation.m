@@ -20,10 +20,7 @@ function [ text ] = getSessionInformation( obj )
 % -----------------------------------------------------------------------
 
 text = [ 'Start of Session: ',  obj.parameters.system_information.start_of_session, newline...
-    '  ', newline...
-    'End of Session: ', obj.parameters.system_information.end_of_session ];
-
-disp(text);
+    'End of Session: ', obj.parameters.system_information.end_of_session, newline ];
 
 end
 

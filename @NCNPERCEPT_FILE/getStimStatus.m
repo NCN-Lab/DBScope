@@ -19,9 +19,6 @@ function [ text ] = getStimStatus( obj )
 % pauloaguiar@i3s.up.pt
 % -----------------------------------------------------------------------
 text = [ 'Initial Stimulation Status: ', obj.parameters.system_information.initial_stimulation_status, newline...
-    '  ', newline...
-    'Final Stimulation Status: ', obj.parameters.system_information.final_stimulation_status]; 
-
-disp(text);
+    'Final Stimulation Status: ', obj.parameters.system_information.final_stimulation_status, newline]; 
 
 end
