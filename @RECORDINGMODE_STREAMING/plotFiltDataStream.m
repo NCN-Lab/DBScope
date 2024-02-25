@@ -237,10 +237,11 @@ if iscell(obj.streaming_parameters.time_domain.data)
 
 end
 
-obj.plotSignalAndStimulation( ax(1), 'Raw', rec, channel );
-obj.plotSignalAndStimulation( ax(2), 'Latest Filtered', rec, channel );
-obj.plotSpectrogram( ax(3), 'Raw',  rec, channel, contrast );
-obj.plotSpectrogram( ax(4), 'Latest Filtered',  rec, channel, contrast );
+
+obj.plotSignalAndStimulation( ax(1), rec, channel, 'DataType', 'Raw');
+obj.plotSignalAndStimulation( ax(2), rec, channel, 'DataType', 'Latest Filtered');
+obj.plotSpectrogram( ax(3), rec, channel, 'DataType', 'Raw', 'Contrast', contrast );
+obj.plotSpectrogram( ax(4), rec, channel, 'DataType', 'Latest Filtered', 'Contrast', contrast  );
 
 % Change Titles
 title(ax(1), "Raw - Signal & Stimulation");

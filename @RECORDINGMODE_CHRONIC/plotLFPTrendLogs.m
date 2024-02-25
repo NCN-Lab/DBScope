@@ -93,7 +93,9 @@ switch n_channels
         end
 end
 
-cfs = [LFP.sensing.hemispheres.center_frequency];
+if ~isempty(LFP.sensing)
+    cfs = [LFP.sensing.hemispheres.center_frequency];
+end
 
 for i = 1:n_channels
     if nargin >= 2
@@ -111,9 +113,13 @@ for i = 1:n_channels
     xtickangle(ax(hemisphere_indx(i)), 20);
     ylim(ax(hemisphere_indx(i)),[0 1.1*max(LFP.data(:,hemisphere_indx(i)))]);
 
-
-    title(ax(hemisphere_indx(i)), lbl_subplot(hemisphere_indx(i)) + " (CF: " + ...
-        num2str(cfs(hemisphere_indx(i)),'%.2f') + " Hz)");
+    
+    if ~isempty(LFP.sensing)
+        title(ax(hemisphere_indx(i)), lbl_subplot(hemisphere_indx(i)) + " (CF: " + ...
+            num2str(cfs(hemisphere_indx(i)),'%.2f') + " Hz)");
+    else
+        title(ax(hemisphere_indx(i)), lbl_subplot(hemisphere_indx(i)));
+    end
     hold(ax(hemisphere_indx(i)),'on');
     
 

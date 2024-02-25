@@ -65,7 +65,9 @@ switch n_channels
         end
 end
 
-cfs = [LFP.sensing.hemispheres.center_frequency];
+if ~isempty(LFP.sensing)
+    cfs = [LFP.sensing.hemispheres.center_frequency];
+end
 
 temp_time = datevec(LFP.time + hours(utc));
 temp_time(:, 5) = 10*floor(temp_time(:, 5)/10);
@@ -97,8 +99,13 @@ for i = 1:n_channels
     xlabel(ax(i), "Time of the day");
     ylim(ax(i),[0 1.3*max(upper_qrtl_power)]);
     title(ax(i), lbl_subplot(i));
-    title(ax(i), lbl_subplot(hemisphere_indx(i)) + " (CF: " + ...
-        num2str(cfs(hemisphere_indx(i)),'%.2f') + " Hz)");
+
+    if ~isempty(LFP.sensing)
+        title(ax(i), lbl_subplot(hemisphere_indx(i)) + " (CF: " + ...
+            num2str(cfs(hemisphere_indx(i)),'%.2f') + " Hz)");
+    else
+        title(ax(i), lbl_subplot(hemisphere_indx(i)));
+    end
     legend(ax(i), '25th, 50th and 75th percentiles');
     hold(ax(i),'on');
 

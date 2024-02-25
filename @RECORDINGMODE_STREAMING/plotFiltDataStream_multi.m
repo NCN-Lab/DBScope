@@ -46,7 +46,7 @@ LFP_filtered = [];
 LFP_filtered{1} = obj.streaming_parameters.filtered_data.data{indx_filter(1)};
 LFP_filtered{2} = obj.streaming_parameters.filtered_data.data{indx_filter(2)};
 channel_name =  obj.streaming_parameters.time_domain.channel_names;
-LFP_ylabel = obj.streaming_parameters.time_domain.ylabel;
+LFP_ylabel = "Amplitude (\muVp)";
 
 switch nargin
     case 5
@@ -200,6 +200,6 @@ case 1
 end
 
 disp(['Filter type: ' cell2mat(obj.streaming_parameters.filtered_data.filter_type{end}), newline...
-    'Lower bound: ', num2str(obj.streaming_parameters.filtered_data.low_bound{end}), newline,...
-    'Upper bound: ', num2str(obj.streaming_parameters.filtered_data.up_bound{end})]);
+    'Lower bound: ', num2str(obj.streaming_parameters.filtered_data.bounds{end}(1)), newline,...
+    'Upper bound: ', num2str(obj.streaming_parameters.filtered_data.bounds{end}(2))]);
 end
