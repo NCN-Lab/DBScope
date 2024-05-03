@@ -9,7 +9,8 @@ Andreia M. Oliveira*, Eduardo Carvalho*, Beatriz Barros, Carolina Soares, Manuel
 https://doi.org/10.1101/2023.07.23.23292136
 ******************************************************************************************************************************************
 
-DBScope version 0.2, 2023
+DBScope version 0.2.1, 2024
+# 03.05.2024 minor correction in applyFilt_ordered.m function.
 
 Core contributors: Andreia M Oliveira, Eduardo Carvalho, Beatriz Barros, Paulo Aguiar
 
