@@ -50,10 +50,10 @@ if iscell(LFP_ordered)
         % Apply filter; BUTTER
          switch filterType
             case 'Low pass'
-                fc_normalized = varargin{1}/nyquist_frequency;
+                fc_normalized = varargin{1}{1}/nyquist_frequency;
                 [b, a] = butter(order, fc_normalized, 'low');
             case 'High pass'
-                fc_normalized = varargin{1}/nyquist_frequency;
+                fc_normalized = varargin{1}{1}/nyquist_frequency;
                 [b, a] = butter(order, fc_normalized, 'high');
             case 'Bandpass'
                 low_bound = varargin{1}{1};

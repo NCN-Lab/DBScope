@@ -53,11 +53,11 @@ if isequal(class(obj),'RECORDINGMODE_STREAMING')
     obj.streaming_parameters.filtered_data.filter_type{end+1} = {filterType};
     switch filterType
         case 'Low pass'
-            obj.streaming_parameters.filtered_data.bounds{end+1} = [0 varargin{1}];
+            obj.streaming_parameters.filtered_data.bounds{end+1} = [0 varargin{1,1}];
             disp(['Filter type: ' cell2mat(obj.streaming_parameters.filtered_data.filter_type{end}), newline...
                 'Upper bound: ', num2str(obj.streaming_parameters.filtered_data.bounds{end}(2))]);
         case 'High pass'
-            obj.streaming_parameters.filtered_data.bounds{end+1} = [varargin{1} streaming_obj.streaming_parameters.time_domain.fs];
+            obj.streaming_parameters.filtered_data.bounds{end+1} = [varargin{1,1} obj.streaming_parameters.time_domain.fs];
             disp(['Filter type: ' cell2mat(obj.streaming_parameters.filtered_data.filter_type{end}), newline...
                 'Lower bound: ', num2str(obj.streaming_parameters.filtered_data.bounds{end}(1))]);
         case 'Bandpass'
