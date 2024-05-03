@@ -69,12 +69,12 @@ for m = moments
                         obj.parameters.groups.(lower(m))(group).stimulation.hemispheres(hemisphere).frequency = ...
                             data.Groups.(m)(group).ProgramSettings.RateInHertz;
                     case '3'
-                        if iscell(data.Groups.(m)(group).ProgramSettings.SensingChannel)
+                        if isfield(data.Groups.(m)(group).ProgramSettings, "SensingChannel")
                             obj.parameters.groups.(lower(m))(group).sensing.hemispheres(hemisphere).frequency = ...
                                 data.Groups.(m)(group).ProgramSettings.SensingChannel{hemisphere}.RateInHertz;
                         else
                             obj.parameters.groups.(lower(m))(group).sensing.hemispheres(hemisphere).frequency = ...
-                                data.Groups.(m)(group).ProgramSettings.SensingChannel(hemisphere).RateInHertz;
+                                data.Groups.(m)(group).ProgramSettings.(hemisphere_labels(hemisphere)).Programs.RateInHertz;
                         end
                 end
             else
