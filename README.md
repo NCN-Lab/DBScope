@@ -1,4 +1,4 @@
-# DBScope: Toolbox for import, preprocessing, visualization and analysis of sensing recordings extracted from Deep Brain Stimulation neurostimulators
+# DBScope: a versatile computational toolbox for the visualization and analysis of sensing data from Deep Brain Stimulation
 
 DBScope is currently under review and is described in the following medRxiv preprint:
 
