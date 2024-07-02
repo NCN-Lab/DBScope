@@ -25,11 +25,10 @@ classdef RECORDINGMODE_COMMONMETHODS < handle
         [ i,o ] = aux_perceive_sc( obj, vec, pts )
         [ pow,f,rpow,lpow ] = aux_perceive_fft( obj, data, fs, tw)
         spectroFig = aux_plotSpectrogram( obj, data, channelParams, varargin )
-        channelsFig = plotChannels(obj, data, channelParams)
 
          % Extract methods
-        [ LFP ] = extractLFP( obj, data, obj_file )
-        [ stimAmp ] = extractStimAmp( obj, data, obj_file  )
+        [ LFP ] = extractLFP( obj, data, parameters )
+        [ stimAmp ] = extractStimAmp( obj, data, parameters )
 
         % Filter methods
         [ LFP_filtdata ] = applyFilt_ordered( obj, LFP_ordered, fs, filterType, order, varargin )

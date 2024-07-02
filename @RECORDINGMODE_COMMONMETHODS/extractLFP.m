@@ -1,19 +1,19 @@
-function [ LFP ] = extractLFP( obj, data, obj_file )
+function [ LFP ] = extractLFP( obj, data, parameters )
 % Extract and visualize LFPs from Percept PC - JSON structure
 %
 % Syntax:
-%   [ LFP ] = EXTRACTLFP( obj, data, obj_file );
+%   [ LFP ] = EXTRACTLFP( obj, data, parameters );
 %
 % Input parameters:
 %    * obj - object containg data
 %    * data - data from json file(s)
-%    * obj_file - object to contain data
+%    * parameters - recording mode parameters
 %
 % Output parameters:
-%   LFP
+%    * LFP
 %
 % Example:
-%   [ LFP ] = EXTRACTLFP( data, obj_file );
+%   [ LFP ] = EXTRACTLFP( obj, data, parameters );
 %
 % Adapted from Yohann Thenaisie 02.09.2020 - Lausanne University Hospital
 % (CHUV) https://github.com/YohannThenaisie/PerceptToolbox
@@ -27,10 +27,10 @@ function [ LFP ] = extractLFP( obj, data, obj_file )
 % pauloaguiar@i3s.up.pt
 % -----------------------------------------------------------------------
 
-%Extract parameters for this recording mode
-recordingMode = obj_file.recording_mode.mode;
-nChannels = obj_file.recording_mode.n_channels;
-fname = obj_file.fname;
+% Extract parameters for this recording mode
+recordingMode   = parameters.mode;
+nChannels       = parameters.num_channels;
+
 LFP_out = [];
 
 %Identify the different recordings
@@ -42,8 +42,6 @@ end
 FirstPacketDateTime = categorical(FirstPacketDateTime);
 recNames = unique(FirstPacketDateTime);
 nRecs = numel(recNames);
-
-LFP = [];
 
 %Extract LFPs in a new structure for each recording
 for recId = 1:nRecs
@@ -79,16 +77,37 @@ for recId = 1:nRecs
     LFP.global_packets_ID = str2num(datafield(1).GlobalSequences);
     LFP.global_packets_size = GlobalPacketSizes;
     LFP.global_packets_ticks = TicksInMses;
+    
+    
+    switch recordingMode
+        case 'LfpMontageTimeDomain'
+            % Generate time vector from total number of samples
+            LFP.time = (1:length(LFP.data))/LFP.Fs; % [s]
 
-    LFP.time = (1:length(LFP.data))/LFP.Fs; % [s]
+        case 'BrainSenseTimeDomain'
+            
+            % Generate time vector from total number of samples
+            LFP.time = (1:length(LFP.data))/LFP.Fs; % [s]
+            
+            % Get indices of missing packets
+            diff_ticks = [0, diff(TicksInMses) - 250]; % 250 ms is the default
+            indx_gaps = find(diff_ticks > 0);
+            
+            % Correct time vector
+            cum_packets_size = [0, cumsum(LFP.global_packets_size)];
+            for i = indx_gaps
+                LFP.time(cum_packets_size(i):end) = LFP.time(cum_packets_size(i):end) + diff_ticks(i)/1000;
+            end
+            
+    end
+
     if LFP.nChannels <= 2
         LFP.channel_map = 1:LFP.nChannels;
     else
-        LFP.channel_map = obj_file.recording_mode.channel_map;
+        LFP.channel_map = parameters.channel_map;
     end
     LFP.xlabel = 'Time [s]';
     LFP.ylabel = 'LFP [\muV]';
-    LFP.json = fname;
     LFP.recordingMode = recordingMode;
 
     LFP_out = [LFP_out LFP] ;

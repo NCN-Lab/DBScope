@@ -1,19 +1,19 @@
-function [ stimAmp ] = extractStimAmp( obj, data, obj_file )
+function [ stimAmp ] = extractStimAmp( obj, data, parameters )
 % Extract and visualize stimulation amplitude from Percept PC JSON files
 %
 % Syntax:
-%   [ stimAmp ] = EXTRACTSTIMAMP( obj, data, obj_file );
+%   [ stimAmp ] = EXTRACTSTIMAMP( obj, data, parameters );
 %
 % Input parameters:
 %    * obj - object containg data
 %    * data - data from json file(s)
-%    * obj_file - object to contain data
+%    * parameters - recording mode parameters
 %
 % Output parameters:
 %   stimAmp
 %
 % Example:
-%   [ stimAmp ] = EXTRACTSTIMAMP( data, obj_file );
+%   [ stimAmp ] = obj.EXTRACTSTIMAMP( data, parameters );
 %
 % Adapted from Yohann Thenaisie 02.09.2020 - Lausanne University Hospital
 % (CHUV) https://github.com/YohannThenaisie/PerceptToolbox
@@ -27,12 +27,12 @@ function [ stimAmp ] = extractStimAmp( obj, data, obj_file )
 % pauloaguiar@i3s.up.pt
 % -----------------------------------------------------------------------
 
+% Extract parameters for this recording mode
+recordingMode   = parameters.mode;
+
 stimAmp_out = [];
 
-%Extract parameters for this recording mode
-recordingMode = obj_file.recording_mode.mode;
-
-%Identify the different recordings
+% Identify the different recordings
 nLines = size(data.(recordingMode), 1);
 FirstPacketDateTime = cell(nLines, 1);
 for lineId = 1:nLines
@@ -47,7 +47,7 @@ for recId = 1:nRecs
     commaIdx = regexp(data.(recordingMode)(recId).Channel, ',');
     nChannels = numel(commaIdx)+1;
 
-    %Convert structure to arrays
+    % Convert structure to arrays
     nSamples = size(data.(recordingMode)(recId).LfpData, 1);
     TicksInMs = NaN(nSamples, 1);
     mA = NaN(nSamples, nChannels);
@@ -60,12 +60,26 @@ for recId = 1:nRecs
     stimAmp.global_packets_ID = [data.(recordingMode)(recId).LfpData.Seq];
     stimAmp.global_packets_ticks = [data.(recordingMode)(recId).LfpData.TicksInMs];
 
-    %Make time start at 0 and convert to seconds
+    % Make time start at 0 and convert to seconds
     TicksInS = (TicksInMs - TicksInMs(1))/1000;
 
     Fs = data.(recordingMode)(recId).SampleRateInHz;
 
-    %Store LFP band power and stimulation amplitude in one structure
+    switch recordingMode
+        case 'BrainSenseLfp'
+
+            % Get indices of missing packets
+            diff_ticks = [0, diff(TicksInMs') - 500]; % 500 ms is the default
+            indx_gaps = find(diff_ticks > 0);
+
+            % Correct time vector
+            for i = indx_gaps
+                TicksInS(i:end) = TicksInS(i:end) + diff_ticks(i)/1000;
+            end
+
+    end
+
+    % Store LFP band power and stimulation amplitude in one structure
     stimAmp.data = mA;
     stimAmp.time = TicksInS;
     stimAmp.Fs = Fs;

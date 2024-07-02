@@ -23,7 +23,6 @@ classdef RECORDINGMODE_INDEFINITE < RECORDINGMODE_COMMONMETHODS
 
             obj.indefinite_parameters.time_domain.recording_mode = nan;
             obj.indefinite_parameters.time_domain.n_channels = nan;
-            obj.indefinite_parameters.time_domain.channel_map = nan;
             obj.indefinite_parameters.time_domain.channel_names = nan;
             obj.indefinite_parameters.time_domain.data = nan;
             obj.indefinite_parameters.time_domain.fs = nan;
@@ -34,7 +33,7 @@ classdef RECORDINGMODE_INDEFINITE < RECORDINGMODE_COMMONMETHODS
         end
 
         % Fill methods
-        lfp_indefinite = fillSurveyParametersIndStr( obj, data, fname, obj_file )
+        status = fillIndefiniteParameters( obj, data )
 
         % Plot raw data
         plotRawDataSurveyInd( obj, varargin )
@@ -42,8 +41,7 @@ classdef RECORDINGMODE_INDEFINITE < RECORDINGMODE_COMMONMETHODS
     end
 
     methods ( Hidden )
-        [ lfp ] = extractStimAmp( obj, data, obj_file )
-        channelsFig = plotChannels(obj, channelParams)
+        [ lfp ] = extractStimAmp( obj, data, parameters )
     end
 
 end
