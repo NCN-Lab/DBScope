@@ -2,14 +2,14 @@ function status = getImpedance( obj, data )
 % Extract impedance information.
 %
 % Syntax:
-%  GETIMPEDANCE( obj, data );
+%  status = GETIMPEDANCE( obj, data );
 %
 % Input parameters:
 %    * obj - object containg data
 %    * data - data from json file(s)
 %
 % Example:
-%  GETIMPEDANCE( data )
+%  status = obj.GETIMPEDANCE( data )
 %
 % Available at: https://github.com/NCN-Lab/DBScope
 % For referencing, please use: Andreia M. Oliveira, Eduardo Carvalho, Beatriz Barros, Carolina Soares, Manuel Ferreira-Pinto, Rui Vaz, Paulo Aguiar, DBScope: 
@@ -20,25 +20,25 @@ function status = getImpedance( obj, data )
 % pauloaguiar@i3s.up.pt
 % -----------------------------------------------------------------------
 
-modes = ["Monopolar", "Bipolar"];
-for hemisphere = 1:numel(data.Impedance.Hemisphere)
-    for mode = modes
-        obj.parameters.impedance.hemispheres(hemisphere).label = ...
-            data.Impedance.Hemisphere(hemisphere).Hemisphere;
-
-        imp = data.Impedance.Hemisphere(hemisphere).SessionImpedance.(mode);
-        C = struct2cell(imp)';
-        ResultValues = cell2mat(C(:,3));
-        obj.parameters.impedance.hemispheres(hemisphere).(lower(mode)).results = ResultValues;
-        obj.parameters.impedance.hemispheres(hemisphere).(lower(mode)).electrode1 = {data.Impedance.Hemisphere(hemisphere).SessionImpedance.(mode).Electrode1};
-        obj.parameters.impedance.hemispheres(hemisphere).(lower(mode)).electrode2 = {data.Impedance.Hemisphere(hemisphere).SessionImpedance.(mode).Electrode2};
-    end
-end
-
-if numel(data.Impedance.Hemisphere) > 0 
-    status = 1;
-else
+if isempty(data.Impedance)
     status = 0;
+    warning('There is no impedance data available.');
+else
+    status = 1;
+    modes = ["Monopolar", "Bipolar"];
+    for hemisphere = 1:numel(data.Impedance.Hemisphere)
+        for mode = modes
+            obj.parameters.impedance.hemispheres(hemisphere).label = ...
+                data.Impedance.Hemisphere(hemisphere).Hemisphere;
+    
+            imp = data.Impedance.Hemisphere(hemisphere).SessionImpedance.(mode);
+            C = struct2cell(imp)';
+            ResultValues = cell2mat(C(:,3));
+            obj.parameters.impedance.hemispheres(hemisphere).(lower(mode)).results = ResultValues;
+            obj.parameters.impedance.hemispheres(hemisphere).(lower(mode)).electrode1 = {data.Impedance.Hemisphere(hemisphere).SessionImpedance.(mode).Electrode1};
+            obj.parameters.impedance.hemispheres(hemisphere).(lower(mode)).electrode2 = {data.Impedance.Hemisphere(hemisphere).SessionImpedance.(mode).Electrode2};
+        end
+    end
 end
 
 end

@@ -39,7 +39,6 @@ end
 
 % LFP
 obj.streaming_parameters.time_domain.nchannels = obj.streaming_parameters.time_domain.nchannels(order_indx);
-obj.streaming_parameters.time_domain.channel_map = obj.streaming_parameters.time_domain.channel_map(order_indx);
 obj.streaming_parameters.time_domain.channel_names = obj.streaming_parameters.time_domain.channel_names(order_indx);
 obj.streaming_parameters.time_domain.first_packet_datetimes = obj.streaming_parameters.time_domain.first_packet_datetimes(order_indx);
 obj.streaming_parameters.time_domain.global_packets_ID = obj.streaming_parameters.time_domain.global_packets_ID(order_indx);
@@ -52,7 +51,10 @@ if ~isempty(obj.streaming_parameters.time_domain.ecg_clean)
 end
 
 % Stimulation
-obj.streaming_parameters.stim_amp.channel_names = obj.streaming_parameters.stim_amp.channel_names(order_indx);
+obj.streaming_parameters.stim_amp.group = obj.streaming_parameters.stim_amp.group(order_indx);
+obj.streaming_parameters.stim_amp.therapy_snapshot = obj.streaming_parameters.stim_amp.therapy_snapshot(order_indx);
+obj.streaming_parameters.stim_amp.stim_channel_names = obj.streaming_parameters.stim_amp.stim_channel_names(order_indx);
+obj.streaming_parameters.stim_amp.sensing_channel_names = obj.streaming_parameters.stim_amp.sensing_channel_names(order_indx);
 obj.streaming_parameters.stim_amp.global_packets_ID = obj.streaming_parameters.stim_amp.global_packets_ID(order_indx);
 obj.streaming_parameters.stim_amp.global_packets_ticks = obj.streaming_parameters.stim_amp.global_packets_ticks(order_indx);
 obj.streaming_parameters.stim_amp.data = obj.streaming_parameters.stim_amp.data(order_indx);
