@@ -1,4 +1,4 @@
-function [ LFPTrendLogs ] = extractTrendLogs( obj, data, obj_file )
+function [ LFPTrendLogs ] = extractTrendLogs( obj, data, parameters )
 %Extract LFP and Event logs from Percept PC JSON files
 %
 % Trends: LFP power / power domain
@@ -7,18 +7,18 @@ function [ LFPTrendLogs ] = extractTrendLogs( obj, data, obj_file )
 %         Sampling frequency = 250Hz
 %
 % Syntax:
-%       [ LFPTrendLogs ] = EXTRACTTRENDLOGS( obj, data, obj_file );
+%       [ LFPTrendLogs ] = EXTRACTTRENDLOGS( obj, data, parameters );
 %
 % Input parameters:
 %    * obj - object containg data
 %    * data - data from json file(s)
-%    * obj_file - object structure to contain data
+%    * parameters - recording mode parameters
 %
 % Output parameters:
 %   LFPTrendLogs
 %
 % Example:
-%   [ LFPTrendLogs ] = obj.ExtractTrendLogs( data, obj_file  );
+%   [ LFPTrendLogs ] = obj.ExtractTrendLogs( data, parameters );
 %
 % Adapted from Yohann Thenaisie 02.09.2020 - Lausanne University Hospital
 % (CHUV) https://github.com/YohannThenaisie/PerceptToolbox
@@ -35,8 +35,7 @@ function [ LFPTrendLogs ] = extractTrendLogs( obj, data, obj_file )
 % -----------------------------------------------------------------------
 
 % Extract parameters for this recording mode
-recordingMode = obj_file.recording_mode.mode;
-fname = obj_file.fname;
+recordingMode = parameters.mode;
 LFP.data = [];
 stimAmp.data = [];
 
@@ -90,7 +89,6 @@ stimAmp.ylabel = 'Stimulation amplitude [mA]';
 %Store all information in one structure
 LFPTrendLogs.LFP = LFP;
 LFPTrendLogs.stimAmp = stimAmp;
-LFPTrendLogs.json = fname;
 LFPTrendLogs.recordingMode = recordingMode;
 
 %If patient has marked events, extract them

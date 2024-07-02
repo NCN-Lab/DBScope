@@ -23,7 +23,6 @@ classdef RECORDINGMODE_STREAMING < RECORDINGMODE_COMMONMETHODS
             % Initiate all defined properties for time domain LFP as NaN
             obj.streaming_parameters.time_domain.recording_mode = nan;
             obj.streaming_parameters.time_domain.nchannels = nan;
-            obj.streaming_parameters.time_domain.channel_map = nan;
             obj.streaming_parameters.time_domain.channel_names = nan;
             obj.streaming_parameters.time_domain.fs = nan;
             obj.streaming_parameters.time_domain.first_packet_datetimes = nan;
@@ -56,12 +55,13 @@ classdef RECORDINGMODE_STREAMING < RECORDINGMODE_COMMONMETHODS
         end
         
         % Parsing method
-        [LFP, stimAmp] = fillStreamingParameters( obj, data, obj_file )
+        status = fillStreamingParameters( obj, data )
 
         % Data structure methods
         deleteRecordings( obj, indx )
         concatenateRecordings( obj, indx_alpha, indx_beta )
         reorderRecordings ( obj, order_indx )
+        correctMissingSamples( obj, rec, new_lfp_time, new_stim_time )
 
         % Filtering methods
         filtStreaming( obj, fs, data_type, filterType, order, varargin )

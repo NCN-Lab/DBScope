@@ -23,7 +23,6 @@ classdef RECORDINGMODE_SURVEY < RECORDINGMODE_COMMONMETHODS
             % Initiate all defined properties for time domain as NaN
             obj.survey_parameters.time_domain.recording_mode = nan;
             obj.survey_parameters.time_domain.num_channels = nan;
-            obj.survey_parameters.time_domain.channel_map = nan;
             obj.survey_parameters.time_domain.channel_names = nan;
             obj.survey_parameters.time_domain.data = nan;
             obj.survey_parameters.time_domain.fs = nan;
@@ -47,7 +46,7 @@ classdef RECORDINGMODE_SURVEY < RECORDINGMODE_COMMONMETHODS
 
         % Parsing methods
         [ lfp_montage ] = extractLFPMontage( obj, data )
-        lfp_time_domain = fillSurveyParametersMontage( obj, data, fname, obj_file  )
+        status = fillSurveyParameters( obj, data  )
 
         % Plot methods
         plotRawDataSurvey( obj, varargin )
@@ -63,7 +62,6 @@ classdef RECORDINGMODE_SURVEY < RECORDINGMODE_COMMONMETHODS
 
     methods ( Hidden )
         [ lfp ] = extractStimAmp( obj, data, obj_file )
-        channelsFig = plotChannels(obj, channelParams)
     end
 
 end

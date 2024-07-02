@@ -31,18 +31,11 @@ classdef NCNPERCEPT_FILE < handle
             disp('Initialization of NCNPERCEPT_FILE class');
 
             % Initiate all defined properties as NaN
-            obj.recording_mode.mode = nan;
-            obj.recording_mode.n_channels = nan;
-            obj.recording_mode.channel_map = nan;
-
-            obj.fname = nan;
-
             obj.parameters.session_date = nan;
             obj.parameters.save_pathname = nan;
-            obj.parameters.correct4_missing_samples = nan;
             obj.parameters.programmer_version = nan;
-            obj.parameters.fs = nan;
             obj.parameters.annotations = nan;
+            obj.parameters.group_history = nan;
 
             obj.parameters.impedance.monopolar.hemispheres.results = nan;
             obj.parameters.impedance.bipolar.hemispheres.results = nan;
@@ -69,9 +62,6 @@ classdef NCNPERCEPT_FILE < handle
             obj.parameters.system_information.final_stimulation_status = nan;
             obj.parameters.system_information.medication_state = nan;
 
-            obj.parameters.programsettings = nan;
-            obj.parameters.mode = nan;
-
             obj.parameters.mostrecent.artifactstatus = nan;
 
             obj.status.events = nan;
@@ -95,6 +85,11 @@ classdef NCNPERCEPT_FILE < handle
         % Load data from single json 
         [status, text] = loadFile( obj, file_pathname, filename )
 
+        % Parsing methods
+        status = fillPatientInformation( obj, data )
+        status = fillSystemInformation( obj, data )
+        status = fillGroupsInformation( obj, data )
+
         % Export methods
         exportFieldtrip( obj )
 
@@ -110,6 +105,12 @@ classdef NCNPERCEPT_FILE < handle
         status = getImpedance( obj, data )
         loadWearables( obj )
 
+    end
+
+    methods (Access = private)
+
+        group_obj = extractGroupsInformation( obj, data )
+        
     end
 
 end

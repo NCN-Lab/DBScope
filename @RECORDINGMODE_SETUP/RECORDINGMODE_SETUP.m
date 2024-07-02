@@ -23,8 +23,8 @@ classdef RECORDINGMODE_SETUP < RECORDINGMODE_COMMONMETHODS
             obj.setup_parameters.stim_off.recording_mode = nan;
             obj.setup_parameters.stim_off.num_channels = nan;
             obj.setup_parameters.stim_off.channel_names = nan;
-            obj.setup_parameters.stim_off.data = nan;
             obj.setup_parameters.stim_off.fs = nan;
+            obj.setup_parameters.stim_off.data = nan;
             obj.setup_parameters.stim_off.time = nan;
 
             % Initiate all defined properties for time domain LFP with stimulation on as NaN
@@ -37,8 +37,8 @@ classdef RECORDINGMODE_SETUP < RECORDINGMODE_COMMONMETHODS
         end
         
         % Parsing methods
-        [ LFP_OFF ] = fillSetupParametersOFF( obj, data, fname, obj_file )
-        [ LFP_ON ] = fillSetupParametersON( obj, data, fname, obj_file )
+        status = fillSetupOFFParameters( obj, data )
+        status = fillSetupONParameters( obj, data )
 
         % Plot methods
         plotRawDataSetupOFF( obj, varargin )
@@ -48,9 +48,8 @@ classdef RECORDINGMODE_SETUP < RECORDINGMODE_COMMONMETHODS
     end
 
     methods ( Hidden )
-        [ lfp ] = extractStimAmp( obj, data, obj_file )
+        [ stimAmp ] = extractStimAmp( obj, data, parameters )
         plotFiltData_ordered( obj, data, obj_file )
-        channelsFig = plotChannels(obj, data, channelParams)
     end
 
 end

@@ -1,20 +1,18 @@
-function [ LFP_ON ] = fillSetupParametersON( obj, data, fname, obj_file )
+function [ status ] = fillSetupONParameters( obj, data )
 % Fill setup LFP recordings ON stimulation class
 %
 % Syntax:
-%   [ LFP_ON ] = FILLSETUPPARAMETERSON( obj, data, fname, obj_file );
+%   [ status ] = FILLSETUPONPARAMETERS( obj, data );
 %
 % Input parameters:
 %    * obj - object containg data
 %    * data - data from json file(s)
-%    * fname
-%    * obj_file - object structure to contain data
 %
 % Output parameters:
-%   LFP_ON
+%    * status
 %
 % Example:
-%   [ LFP_ON ] = FILLSETUPPARAMETERSON( data, fname, obj_file );
+%   [ status ] = FILLSETUPPARAMETERSON( obj, data );
 %
 % Adapted from Yohann Thenaisie 02.09.2020 - Lausanne University Hospital
 % (CHUV) https://github.com/YohannThenaisie/PerceptToolbox
@@ -28,21 +26,26 @@ function [ LFP_ON ] = fillSetupParametersON( obj, data, fname, obj_file )
 % pauloaguiar@i3s.up.pt
 % -----------------------------------------------------------------------
 
-%Extract LFPs
-if isfield( data, 'CalibrationTests' ) %Setup ON stimulation
+status = 0;
 
-    obj_file.recording_mode.mode = 'CalibrationTests';
-    obj_file.recording_mode.n_channels = 4;
-    LFP_ON =  obj.extractLFP( data, obj_file  );
+%Extract LFPs
+if isfield( data, 'CalibrationTests' ) % Setup ON stimulation
+    parameters.mode         = 'CalibrationTests';
+    parameters.num_channels = 4;
+    LFP_ON                  = obj.extractLFP( data, parameters  );
+
+
+    %Fill setup parameters
+    obj.setup_parameters.stim_on.recording_mode = LFP_ON.recordingMode;
+    obj.setup_parameters.stim_on.num_channels = LFP_ON.nChannels;
+    obj.setup_parameters.stim_on.channel_names = {LFP_ON.channel_names};
+    obj.setup_parameters.stim_on.data = {LFP_ON.data};
+    obj.setup_parameters.stim_on.fs = LFP_ON.Fs;
+    obj.setup_parameters.stim_on.time = {LFP_ON.time};
+    
+
+    status = 1;
 
 end
-
-%Fill setup parameters
-obj.setup_parameters.stim_on.recording_mode = LFP_ON.recordingMode;
-obj.setup_parameters.stim_on.num_channels = LFP_ON.nChannels;
-obj.setup_parameters.stim_on.channel_names = {LFP_ON.channel_names};
-obj.setup_parameters.stim_on.data = {LFP_ON.data};
-obj.setup_parameters.stim_on.fs = LFP_ON.Fs;
-obj.setup_parameters.stim_on.time = {LFP_ON.time};
 
 end

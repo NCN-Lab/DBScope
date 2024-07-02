@@ -1,17 +1,18 @@
-function lfp_time_domain = fillSurveyParametersMontage( obj, data, fname, obj_file )
+function status = fillSurveyParameters( obj, data )
 % Extract and visualize LFPs from Survey test mode
 %
 %   Syntax:
-%       FILLSURVEYPARAMETERS( obj, data, fname, obj_file )
+%       FILLSURVEYPARAMETERS( obj, data )
 %
-%   Input parameters:
-%       obj
-%       data
-%       fname
-%       obj_file
+% Input parameters:
+%    * obj - parsing object
+%    * data - data from json file
+%
+% Output parameters:
+%   status
 %
 %   Example:
-%       FILLSURVEYPARAMETERS(  data, fname, obj_file );
+%       status = FILLSURVEYPARAMETERS( obj, data );
 %
 % Adapted from Yohann Thenaisie 02.09.2020 - Lausanne University Hospital
 % (CHUV) https://github.com/YohannThenaisie/PerceptToolbox
@@ -25,6 +26,8 @@ function lfp_time_domain = fillSurveyParametersMontage( obj, data, fname, obj_fi
 % pauloaguiar@i3s.up.pt
 % -----------------------------------------------------------------------
 
+status = 0;
+
 if isfield( data, 'LFPMontage' )
 
     % Extract and save LFP Montage Power Spectral Density
@@ -37,15 +40,14 @@ if isfield( data, 'LFPMontage' )
     obj.survey_parameters.frequency_domain.artifact_status = lfp_montage.artifact_status;
 
     % Extract and save LFP Montage Time Domain
-    obj_file.recording_mode.mode = 'LfpMontageTimeDomain';
-    obj_file.recording_mode.num_channels = 6;
-    obj_file.recording_mode.channel_map = [1 2 3 ; 4 5 6];
-    lfp_time_domain = obj.extractLFP( data, obj_file );
+    parameters.mode         = 'LfpMontageTimeDomain';
+    parameters.num_channels = 6;
+    parameters.channel_map  = [1 2 3 ; 4 5 6];
+    lfp_time_domain         = obj.extractLFP( data, parameters );
 
     % Store data extracted
     obj.survey_parameters.time_domain.recording_mode = {lfp_time_domain.recordingMode};
     obj.survey_parameters.time_domain.num_channels = {lfp_time_domain.nChannels};
-    obj.survey_parameters.time_domain.channel_map = {lfp_time_domain.channel_map};
     obj.survey_parameters.time_domain.channel_names = {lfp_time_domain.channel_names};
     obj.survey_parameters.time_domain.data = {lfp_time_domain.data};
     obj.survey_parameters.time_domain.fs = {lfp_time_domain.Fs};
@@ -58,6 +60,8 @@ if isfield( data, 'LFPMontage' )
     obj.survey_parameters.filtered_data.data = {};
     obj.survey_parameters.filtered_data.typeofdata = {};
 
+
+    status = 1;
 end
 
 end

@@ -1,21 +1,18 @@
-function [LFP, stimAmp] = fillStreamingParameters( obj, data, obj_file )
+function status = fillStreamingParameters( obj, data )
 % Extract and visualize LFPs from online streaming mode
 %
 % Syntax:
-%   [LFP, stimAmp] = FILTSTREAMINGPARAMETERS( obj, data, fname, obj_file );
+%   status = FILLSTREAMINGPARAMETERS( obj, data );
 %
 % Input parameters:
 %    * obj - object containg data
 %    * data - data from json file(s)
-%    * fname
-%    * obj_file - object structure to contain data
 %
 % Output parameters:
-%   LFP
-%   stimAMP
+%    * status 
 %
 % Example:
-%   [LFP, stimAmp] = FILTSTREAMINGPARAMETERS( data, fname, obj_file ):
+%   status = FILLSTREAMINGPARAMETERS( obj, data ):
 %
 % Adapted from Yohann Thenaisie 02.09.2020 - Lausanne University Hospital
 % (CHUV) https://github.com/YohannThenaisie/PerceptToolbox
@@ -29,19 +26,18 @@ function [LFP, stimAmp] = fillStreamingParameters( obj, data, obj_file )
 % pauloaguiar@i3s.up.pt
 % -----------------------------------------------------------------------
 
+status = 0;
+
 % Extract LFPs
-if isfield( data, 'BrainSenseTimeDomain' ) % 'BrainSenseTimeDomain'  = Streaming mode
-    
-    obj_file.recording_mode.n_channels  = 2;
-    obj_file.recording_mode.channel_map = 1:obj_file.recording_mode.n_channels;
-    obj_file.recording_mode.mode = 'BrainSenseTimeDomain';
-    
-    % Extract LFP data
-    LFP = obj.extractLFP( data, obj_file );
+if isfield( data, 'BrainSenseTimeDomain' ) % 'BrainSenseTimeDomain' = Streaming mode
+  
+    parameters.mode         = 'BrainSenseTimeDomain';
+    parameters.num_channels = 2;
+    parameters.channel_map  = 1:parameters.num_channels;
+    LFP                     = obj.extractLFP( data, parameters );
 
     obj.streaming_parameters.time_domain.recording_mode = LFP(1).recordingMode;
     obj.streaming_parameters.time_domain.nchannels = {LFP(:).nChannels};
-    obj.streaming_parameters.time_domain.channel_map = {LFP(:).channel_map};
     obj.streaming_parameters.time_domain.channel_names = {LFP(:).channel_names};
     obj.streaming_parameters.time_domain.fs = LFP(1).Fs;
     obj.streaming_parameters.time_domain.first_packet_datetimes = {LFP(:).first_packet_datetimes};
@@ -53,8 +49,8 @@ if isfield( data, 'BrainSenseTimeDomain' ) % 'BrainSenseTimeDomain'  = Streaming
     obj.streaming_parameters.time_domain.ecg_clean = [];
 
     % Extract stimulation data
-    obj_file.recording_mode.mode = 'BrainSenseLfp';
-    stimAmp = obj.extractStimAmp( data, obj_file );
+    parameters.mode         = 'BrainSenseLfp';
+    stimAmp                 = obj.extractStimAmp( data, parameters );
 
     obj.streaming_parameters.stim_amp.recording_mode = 'BrainSenseLfp';
     obj.streaming_parameters.stim_amp.group = {stimAmp(:).group};
@@ -67,8 +63,7 @@ if isfield( data, 'BrainSenseTimeDomain' ) % 'BrainSenseTimeDomain'  = Streaming
     obj.streaming_parameters.stim_amp.data = {stimAmp(:).data};
     obj.streaming_parameters.stim_amp.time = {stimAmp(:).time};
 
-
-    obj.streaming_parameters.filtered_data.recording_mode = 'BrainSenseLfp';
+    % Create filtered data structure
     obj.streaming_parameters.filtered_data.filter_type = {};
     obj.streaming_parameters.filtered_data.bounds = {};
     obj.streaming_parameters.filtered_data.data = {};
@@ -84,6 +79,9 @@ if isfield( data, 'BrainSenseTimeDomain' ) % 'BrainSenseTimeDomain'  = Streaming
             disp('Only one hemispheres available')
         end
     end
+
+    status = 1;
+
 end
 
 end

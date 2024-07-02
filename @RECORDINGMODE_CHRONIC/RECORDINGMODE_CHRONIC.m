@@ -56,7 +56,7 @@ classdef RECORDINGMODE_CHRONIC < RECORDINGMODE_COMMONMETHODS
         end
 
         %Extract LFP methods
-        [ status_events, status_fft, LFP_ordered ] = fillChronicParameters( obj, data, fname, obj_file  )
+        [ status_timeline, status_events, status_events_FFT ] = fillChronicParameters( obj, data )
         h = plotLFPTrendLogs(obj, LFPTrendLogs, ActiveGroup)
 
         %%Event Analysis
@@ -72,13 +72,12 @@ classdef RECORDINGMODE_CHRONIC < RECORDINGMODE_COMMONMETHODS
     end
 
     methods ( Access = private )
-        [ LFPTrendLogs ] = extractTrendLogs( obj, data, obj_file  )
+        [ LFPTrendLogs ] = extractTrendLogs( obj, data, parameters  )
     end
 
     methods ( Hidden )
-        [ lfp ] = extractStimAmp( obj, data, obj_file )
-        [ LFP ] = extractLFP( obj, data, obj_file )
-        channelsFig = plotChannels(obj, data, channelParams)
+        [ stimAmp ] = extractStimAmp( obj, data, parameters )
+        [ LFP ] = extractLFP( obj, data, parameters )
     end
 
 end
