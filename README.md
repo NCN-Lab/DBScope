@@ -9,8 +9,13 @@ Andreia M. Oliveira*, Eduardo Carvalho*, Beatriz Barros, Carolina Soares, Manuel
 https://doi.org/10.1101/2023.07.23.23292136
 ******************************************************************************************************************************************
 
-DBScope version 0.2.1, 2024
-# 03.05.2024 minor correction in applyFilt_ordered.m function.
+DBScope version 0.2, 03.05.2024
+# Minor correction in applyFilt_ordered.m function.
+
+DBScope version 0.3, 02.07.2024
+# Group history is now stored.
+# Missing samples of streaming recordings are now automatically corrected by parser.
+# Parsing functions were renamed for consistency.
 
 Core contributors: Andreia M Oliveira, Eduardo Carvalho, Beatriz Barros, Paulo Aguiar
 
