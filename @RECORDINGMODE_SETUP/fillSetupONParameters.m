@@ -31,7 +31,6 @@ status = 0;
 %Extract LFPs
 if isfield( data, 'CalibrationTests' ) % Setup ON stimulation
     parameters.mode         = 'CalibrationTests';
-    parameters.num_channels = 4;
     LFP_ON                  = obj.extractLFP( data, parameters  );
 
 

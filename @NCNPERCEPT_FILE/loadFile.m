@@ -72,7 +72,7 @@ try
     obj.fillSystemInformation( data );
 
     % Get Artifact Status
-    if ~isempty(data.MostRecentInSessionSignalCheck)
+    if isfield(data.MostRecentInSessionSignalCheck, 'ArtifactStatus')
         obj.parameters.mostrecent.artifactstatus = {data.MostRecentInSessionSignalCheck.ArtifactStatus};
     else
         obj.parameters.mostrecent.artifactstatus = [];
@@ -94,9 +94,8 @@ try
     obj.status.impedance    = obj.getImpedance( data );
 
 catch exception
-    warndlg([error_msg '\nError occurred: ' exception.message], 'Warning');
+    warndlg([error_msg newline 'Error occurred: ' exception.message], 'Warning');
 end
-
 
 availability_string = ["Not available", "Available"];
 

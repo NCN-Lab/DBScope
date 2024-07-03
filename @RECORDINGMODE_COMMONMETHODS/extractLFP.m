@@ -29,7 +29,6 @@ function [ LFP ] = extractLFP( obj, data, parameters )
 
 % Extract parameters for this recording mode
 recordingMode   = parameters.mode;
-nChannels       = parameters.num_channels;
 
 LFP_out = [];
 
@@ -50,9 +49,6 @@ for recId = 1:nRecs
 
     LFP = struct;
     LFP.nChannels = size(datafield, 1);
-    if LFP.nChannels ~= nChannels
-        warning(['There are ' num2str(LFP.nChannels) ' instead of the expected ' num2str(nChannels) ' channels'])
-    end
     LFP.channel_names = cell(1, LFP.nChannels);
     LFP.data = [];
     for chId = 1:LFP.nChannels
@@ -64,9 +60,9 @@ for recId = 1:nRecs
 
     %Extract size of received packets
     GlobalPacketSizes = str2num(datafield(1).GlobalPacketSizes);
-    if sum(GlobalPacketSizes) ~= size(LFP.data, 1) && ~strcmpi(recordingMode, 'SenseChannelTests') && ~strcmpi(recordingMode, 'CalibrationTests')
-        warning([recordingMode ': data length (' num2str(size(LFP.data, 1)) ' samples) differs from the sum of packet sizes (' num2str(sum(GlobalPacketSizes)) ' samples)'])
-    end
+    % if sum(GlobalPacketSizes) ~= size(LFP.data, 1) && ~strcmpi(recordingMode, 'SenseChannelTests') && ~strcmpi(recordingMode, 'CalibrationTests')
+    %     warning([recordingMode ': data length (' num2str(size(LFP.data, 1)) ' samples) differs from the sum of packet sizes (' num2str(sum(GlobalPacketSizes)) ' samples)'])
+    % end
 
     % Calculate first sample tick
     TicksInMses = str2num(datafield(1).TicksInMses);
@@ -78,12 +74,7 @@ for recId = 1:nRecs
     LFP.global_packets_size = GlobalPacketSizes;
     LFP.global_packets_ticks = TicksInMses;
     
-    
     switch recordingMode
-        case 'LfpMontageTimeDomain'
-            % Generate time vector from total number of samples
-            LFP.time = (1:length(LFP.data))/LFP.Fs; % [s]
-
         case 'BrainSenseTimeDomain'
             
             % Generate time vector from total number of samples
@@ -98,7 +89,11 @@ for recId = 1:nRecs
             for i = indx_gaps
                 LFP.time(cum_packets_size(i):end) = LFP.time(cum_packets_size(i):end) + diff_ticks(i)/1000;
             end
-            
+
+        otherwise
+
+            % Generate time vector from total number of samples
+            LFP.time = (1:length(LFP.data))/LFP.Fs; % [s]
     end
 
     if LFP.nChannels <= 2

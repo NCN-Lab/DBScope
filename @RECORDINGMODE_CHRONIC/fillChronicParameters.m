@@ -45,12 +45,11 @@ if isfield( data, 'DiagnosticData' ) && isfield( data.DiagnosticData, 'LFPTrendL
         temp = {data.Groups.Initial([data.Groups.Initial.ActiveGroup]).ProgramSettings.SensingChannel.Channel};
         temp = strrep(temp, '_AND_', ' ');
         temp = strrep(temp, 'SensingElectrodeConfigDef.', '');
-        obj.chronic_parameters.time_domain.channel_names = temp;
+        obj.chronic_parameters.time_domain.sensing = temp';
     else
-        obj.chronic_parameters.time_domain.channel_names = {};
+        obj.chronic_parameters.time_domain.sensing = {};
     end
     obj.chronic_parameters.time_domain.hemispheres = LFPTrendLogs.LFP.hemispheres;
-    obj.chronic_parameters.time_domain.sensing = obj_file.parameters.groups.initial(find([obj_file.parameters.groups.initial.active], 1)).sensing;
     obj.chronic_parameters.time_domain.data = LFPTrendLogs.LFP.data;
     obj.chronic_parameters.time_domain.time = LFPTrendLogs.LFP.time;
     obj.chronic_parameters.time_domain.xlabel = LFPTrendLogs.LFP.xlabel;
@@ -89,7 +88,13 @@ if isfield( data, 'DiagnosticData' ) && isfield( data.DiagnosticData, 'LFPTrendL
     obj.chronic_parameters.stim_amp.time = LFPTrendLogs.stimAmp.time;
     obj.chronic_parameters.stim_amp.xlabel = LFPTrendLogs.stimAmp.xlabel;
     obj.chronic_parameters.stim_amp.ylabel = LFPTrendLogs.stimAmp.ylabel;
-    obj.chronic_parameters.stim_amp.channel_names = LFPTrendLogs.stimAmp.channel_names;
+    if isfield(data.Groups.Initial([data.Groups.Initial.ActiveGroup]).ProgramSettings, 'SensingChannel' )
+        temp = {data.Groups.Initial([data.Groups.Initial.ActiveGroup]).ProgramSettings.SensingChannel.ProgramId};
+        temp = strrep(temp, 'ProgramIdDef.', ' ');
+        obj.chronic_parameters.stim_amp.channel_names = temp';
+    else
+        obj.chronic_parameters.stim_amp.channel_names = {};
+    end
     obj.chronic_parameters.stim_amp.n_channels = LFPTrendLogs.stimAmp.nChannels;
     obj.chronic_parameters.stim_amp.fs = 2; % adapt to PERCEPT specifications
 
@@ -123,13 +128,13 @@ if isfield( data, 'DiagnosticData' ) && isfield( data.DiagnosticData, 'LFPTrendL
 
     % Check available hemispheres
     LFP_ordered = obj.chronic_parameters.time_domain.data;
-    for c = 1:numel(LFP_ordered(1,:))
-        if length(LFP_ordered(1,:)) == 2
-            disp('Two hemispheres available')
-        elseif length(LFP_ordered(1,:)) == 1
-            disp('Only one hemispheres available')
-        end
-    end
+    % for c = 1:numel(LFP_ordered(1,:))
+    %     if length(LFP_ordered(1,:)) == 2
+    %         disp('Two hemispheres available')
+    %     elseif length(LFP_ordered(1,:)) == 1
+    %         disp('Only one hemispheres available')
+    %     end
+    % end
 
     if ~isempty(obj.chronic_parameters.events.lfp_frequency_snapshots_events)
         status_events_FFT = 1;

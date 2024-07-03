@@ -72,13 +72,13 @@ if isfield( data, 'BrainSenseTimeDomain' ) % 'BrainSenseTimeDomain' = Streaming 
 
     nRecordings = obj.streaming_parameters.time_domain.data;
 
-    for c = 1:numel(nRecordings)
-        if length(nRecordings{c}(1,:)) == 2
-            disp('Two hemispheres available')
-        elseif length(nRecordings{c}(1,:)) == 1
-            disp('Only one hemispheres available')
-        end
-    end
+    % for c = 1:numel(nRecordings)
+    %     if length(nRecordings{c}(1,:)) == 2
+    %         disp('Two hemispheres available')
+    %     elseif length(nRecordings{c}(1,:)) == 1
+    %         disp('Only one hemispheres available')
+    %     end
+    % end
 
     status = 1;
 

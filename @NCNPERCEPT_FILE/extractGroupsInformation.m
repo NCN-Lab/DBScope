@@ -111,8 +111,10 @@ for group = 1:length(data)
                     strrep(group_data.ProgramSettings.SensingChannel{hemisphere}.BrainSensingStatus, 'SensingStatusDef.', '');
                 group_obj(group).sensing.hemispheres(hemisphere).center_frequency = ...
                     group_data.ProgramSettings.SensingChannel{hemisphere}.SensingSetup.FrequencyInHertz;
-                group_obj(group).sensing.hemispheres(hemisphere).artifact = ...
-                    strrep(group_data.ProgramSettings.SensingChannel{hemisphere}.SensingSetup.ChannelSignalResult.ArtifactStatus, 'ArtifactStatusDef.', '');
+                if isfield(group_data.ProgramSettings.SensingChannel{hemisphere}.SensingSetup.ChannelSignalResult, 'ArtifactStatus')
+                    group_obj(group).sensing.hemispheres(hemisphere).artifact = ...
+                        strrep(group_data.ProgramSettings.SensingChannel{hemisphere}.SensingSetup.ChannelSignalResult.ArtifactStatus, 'ArtifactStatusDef.', '');
+                end
             else
                 group_obj(group).sensing.hemispheres(hemisphere).location = ...
                     strrep(group_data.ProgramSettings.SensingChannel(hemisphere).HemisphereLocation, 'HemisphereLocationDef.', '');
@@ -122,8 +124,10 @@ for group = 1:length(data)
                     strrep(group_data.ProgramSettings.SensingChannel(hemisphere).BrainSensingStatus, 'SensingStatusDef.', '');
                 group_obj(group).sensing.hemispheres(hemisphere).center_frequency = ...
                     group_data.ProgramSettings.SensingChannel(hemisphere).SensingSetup.FrequencyInHertz;
-                group_obj(group).sensing.hemispheres(hemisphere).artifact = ...
-                    strrep(group_data.ProgramSettings.SensingChannel(hemisphere).SensingSetup.ChannelSignalResult.ArtifactStatus, 'ArtifactStatusDef.', '');
+                if isfield(group_data.ProgramSettings.SensingChannel(hemisphere).SensingSetup.ChannelSignalResult, 'ArtifactStatus')
+                    group_obj(group).sensing.hemispheres(hemisphere).artifact = ...
+                        strrep(group_data.ProgramSettings.SensingChannel(hemisphere).SensingSetup.ChannelSignalResult.ArtifactStatus, 'ArtifactStatusDef.', '');
+                end
             end
         end
     else
