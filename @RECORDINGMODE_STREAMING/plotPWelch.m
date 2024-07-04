@@ -30,7 +30,7 @@ color = lines(2);
 % Get sampling frequency information
 sampling_freq_Hz = obj.streaming_parameters.time_domain.fs;
 window = round(2*sampling_freq_Hz); %default
-noverlap = round(window*0.6); %default
+noverlap = round(window*0.5); %default
 freqResolution = 0.1; %Hz
 fmin = 1; %Hz
 fmax = sampling_freq_Hz/2; %Hz

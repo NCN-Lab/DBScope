@@ -53,16 +53,13 @@ switch nargin
             % [Cxy,f] = mscohere( LFP_raw{1}, LFP_raw{2}, hann(256), sampling_freq_Hz/2, [], sampling_freq_Hz);
             [Cxy,f] = mscohere( LFP{1}, LFP{2}, window, noverlap, [], sampling_freq_Hz);
 
-            f(1) = 0.001;
-            plot( ax, Cxy, log10(f))
+
+            plot( ax, Cxy, f)
             ylabel( ax, 'Frequency [Hz]')
-            xlabel( ax, 'Magnitude-Squared Coherence' );
-            yticks(ax, log10([1, 13, 35, 60]));
-            yticklabels(ax, [1, 13, 35, 60]);
-            ylim( ax, [0 max(log10(f))]);
+            xlabel( ax, 'Magnitude-Squared Coherence' )
+            ylim( ax, [min(f) max(f)])
             xlim( ax, [0 min(1, 1.1*max(Cxy))] );
             title( ax, 'Overall Coherence' )
-            ax.XLimMode = 'auto';
 
 
             % disp( [ 'channel 1: ' char(obj.streaming_parameters.time_domain.channel_names{rec}(:,1)),...

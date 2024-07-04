@@ -91,12 +91,13 @@ cla( ax, 'reset');
 
 imagesc(ax, tms, log10(f), wcoh.*0.9999 );
 yticks(ax, log10([1, 13, 35, 60]));
+yticklabels(ax, [1, 13, 35, 60]);
 
 set( ax, 'YDir','normal' );
 ax.XLabel.String    = 'Time';
-yticklabels( ax, [] );
+% yticklabels( ax, [] );
 ax.Title.String     = 'Cross-hemispherical Coherence';
-ylim(ax, [0 max(log10(f))]);
+ylim(ax, [1 max(log10(f))]);
 xlim(ax, [min(tms) max(tms)]);
 hcol = colorbar(ax);
 hcol.Limits = [0 1];
