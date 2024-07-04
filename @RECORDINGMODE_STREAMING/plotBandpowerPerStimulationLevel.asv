@@ -213,15 +213,16 @@ for channel = 1:nChannels
         max_whisker = 0;
         for level = 1:numel(amp_ticks)
             aux_table = channel_table(channel_table.("Stimulation Amplitude") == amp_ticks(level), :);
-            q1 = quantile(aux_table.Power, 0.25);
-            q3 = quantile(aux_table.Power, 0.75);
+            q1 = quantile(aux_table, 0.25);
+            q3 = quantile(aux_table, 0.75);
             iqr = q3 - q1;
-            upper_whisker = min(max(aux_table.Power), q3 + 1.5 * iqr);
-            if upper_whisker > max_whisker
-                max_whisker = upper_whisker;
+            upper_whisker = min(max(aux_table.Power), q3 + whiskerLength * iqr);
+            prctile_75_level_power = prctile(aux_table.Power, 75);
+            if prctile_75_level_power > max_whisker
+                max_whisker = prctile_75_level_power;
             end
         end
-        aux_table = channel_table;
+        aux_table = epochs_power_in_bands(ismember(epochs_power_in_bands.("Stimulation Amplitude"), amp_ticks), :);
 
         % Boxchart of the power per level
         boxchart(categorical(aux_table.("Stimulation Amplitude")), ...

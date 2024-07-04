@@ -61,7 +61,7 @@ if isempty(ax)
     ax = axes();
 end
 
-title_str       = obj.data(rec).wearableID;
+title_str       = obj.data(rec).wearable_id;
 
 aux_tbl         = obj.data(rec).data;
 variable_names  = fieldnames(aux_tbl);

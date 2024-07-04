@@ -90,8 +90,7 @@ wcoh(wcoh<0) = 0;
 cla( ax, 'reset');
 
 imagesc(ax, tms, log10(f), wcoh.*0.9999 );
-yticks(ax, log10([1, 13, 35, 60]));
-
+yticks(ax, log10([1, 4, 8, 13, 35, 60]));
 set( ax, 'YDir','normal' );
 ax.XLabel.String    = 'Time';
 yticklabels( ax, [] );

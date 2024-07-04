@@ -57,8 +57,8 @@ switch nargin
             plot( ax, Cxy, log10(f))
             ylabel( ax, 'Frequency [Hz]')
             xlabel( ax, 'Magnitude-Squared Coherence' );
-            yticks(ax, log10([1, 13, 35, 60]));
-            yticklabels(ax, [1, 13, 35, 60]);
+            yticks(ax, log10([1, 4, 8, 13, 35, 60]));
+            yticklabels(ax, [1, 4, 8, 13, 35, 60]);
             ylim( ax, [0 max(log10(f))]);
             xlim( ax, [0 min(1, 1.1*max(Cxy))] );
             title( ax, 'Overall Coherence' )
