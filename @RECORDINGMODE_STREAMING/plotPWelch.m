@@ -25,9 +25,11 @@ function plotPWelch ( obj, varargin )
 % pauloaguiar@i3s.up.pt
 % -----------------------------------------------------------------------
 
+color = lines(2);
+
 % Get sampling frequency information
 sampling_freq_Hz = obj.streaming_parameters.time_domain.fs;
-window = round(5*sampling_freq_Hz); %default
+window = round(2*sampling_freq_Hz); %default
 noverlap = round(window*0.6); %default
 freqResolution = 0.1; %Hz
 fmin = 1; %Hz
@@ -48,13 +50,20 @@ switch nargin
             case 'ECG Cleaned'
                 LFP_ordered = obj.streaming_parameters.time_domain.ecg_clean;
         end
-
+        
         [Pxx, F] = pwelch(LFP_ordered{rec}(:,channel), window, noverlap, fmin:freqResolution:fmax, sampling_freq_Hz);
-
-        plot( ax, F, Pxx, 'LineWidth', 1);
-        ylabel( ax, 'PSD [\muVp^2/Hz]');
+        
+        cla( ax, 'reset' );
+        area( ax, [13 35], [1.3*max(Pxx) 1.3*max(Pxx)], 'FaceColor', color(1,:), ...
+            'FaceAlpha', 0.2, 'EdgeColor', 'none', 'PickableParts', 'none');
+        hold( ax, 'on');
+        plot( ax, F, Pxx, 'LineWidth', 1, 'Color', color(1,:));
+        ylabel( ax, 'PSD [\muVp^{2}/Hz]');
         xlabel( ax, 'Frequency [Hz]');
-        title( ax, 'PWelch');
+        title( ax, 'Welch Power Spectral Density Estimate');
+        xticks( ax, [0, 13, 35, 60, sampling_freq_Hz/2]);
+        xlim( ax, [0 sampling_freq_Hz/2] );
+        ylim( ax, [0 1.3*max(Pxx)] );
         
     case 1
 
