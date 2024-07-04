@@ -45,7 +45,7 @@ switch data_type
 end
 
 %Apply filter
-LFP_filtdata = obj.applyFilt_ordered( LFP_ordered, fs, filterType, order, varargin );
+LFP_filtdata = obj.applyFilt_ordered( LFP_ordered, fs, filterType, order, varargin{1} );
 
 % Save filtered data
 if isequal(class(obj),'RECORDINGMODE_STREAMING')
@@ -53,20 +53,20 @@ if isequal(class(obj),'RECORDINGMODE_STREAMING')
     obj.streaming_parameters.filtered_data.filter_type{end+1} = {filterType};
     switch filterType
         case 'Low pass'
-            obj.streaming_parameters.filtered_data.bounds{end+1} = [0 varargin{1,1}];
+            obj.streaming_parameters.filtered_data.bounds{end+1} = [0 varargin{1}(1)];
             disp(['Filter type: ' cell2mat(obj.streaming_parameters.filtered_data.filter_type{end}), newline...
                 'Upper bound: ', num2str(obj.streaming_parameters.filtered_data.bounds{end}(2))]);
         case 'High pass'
-            obj.streaming_parameters.filtered_data.bounds{end+1} = [varargin{1,1} obj.streaming_parameters.time_domain.fs];
+            obj.streaming_parameters.filtered_data.bounds{end+1} = [varargin{1}(1) obj.streaming_parameters.time_domain.fs];
             disp(['Filter type: ' cell2mat(obj.streaming_parameters.filtered_data.filter_type{end}), newline...
                 'Lower bound: ', num2str(obj.streaming_parameters.filtered_data.bounds{end}(1))]);
         case 'Bandpass'
-            obj.streaming_parameters.filtered_data.bounds{end+1} = [varargin{1,1} varargin{1,2}];
+            obj.streaming_parameters.filtered_data.bounds{end+1} = [varargin{1}(1) varargin{1}(2)];
             disp(['Filter type: ' cell2mat(obj.streaming_parameters.filtered_data.filter_type{end}), newline...
                 'Lower bound: ', num2str(obj.streaming_parameters.filtered_data.bounds{end}(1)), newline,...
                 'Upper bound: ', num2str(obj.streaming_parameters.filtered_data.bounds{end}(2))]);
         case 'Stop band'
-            obj.streaming_parameters.filtered_data.bounds{end+1} = [varargin{1,1} varargin{1,2}];
+            obj.streaming_parameters.filtered_data.bounds{end+1} = [varargin{1}(1) varargin{1}(2)];
             disp(['Filter type: ' cell2mat(obj.streaming_parameters.filtered_data.filter_type{end}), newline...
                 'Lower bound: ', num2str(obj.streaming_parameters.filtered_data.bounds{end}(1)), newline,...
                 'Upper bound: ', num2str(obj.streaming_parameters.filtered_data.bounds{end}(2))]);

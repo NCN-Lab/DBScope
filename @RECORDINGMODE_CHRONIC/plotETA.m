@@ -133,11 +133,11 @@ for channel = 1:numel(hemispheres_names)
         ylabel(ax(channel), "LFP Power");
         xlim(ax(channel),[-(n_timestamps-1)*10-.5 (n_timestamps-1)*10+.5]);
         if contains(hemispheres_names(channel), 'Left')
-            title(ax(channel), "Left Hemisphere" + " (CF: " + ...
-                num2str(obj.chronic_parameters.time_domain.sensing.hemispheres(channel).center_frequency,'%.2f') + " Hz)" );
+            title(ax(channel), "Left Hemisphere" + " (Sensing band centered @" + ...
+                num2str(obj.chronic_parameters.time_domain.center_frequency(channel),'%.2f') + " Hz)" );
         else
-            title(ax(channel), "Right Hemisphere" + " (CF: " + ...
-                num2str(obj.chronic_parameters.time_domain.sensing.hemispheres(channel).center_frequency,'%.2f') + " Hz)" );
+            title(ax(channel), "Right Hemisphere" + " (Sensing band centered @" + ...
+                num2str(obj.chronic_parameters.time_domain.center_frequency(channel),'%.2f') + " Hz)" );
         end
         legend(ax(channel));
         hold(ax(channel), 'off');

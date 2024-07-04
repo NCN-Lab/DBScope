@@ -66,7 +66,7 @@ switch n_channels
 end
 
 if ~isempty(LFP.sensing)
-    cfs = [LFP.sensing.hemispheres.center_frequency];
+    cfs = [LFP.center_frequency];
 end
 
 temp_time = datevec(LFP.time + hours(utc));
@@ -101,7 +101,7 @@ for i = 1:n_channels
     title(ax(i), lbl_subplot(i));
 
     if ~isempty(LFP.sensing)
-        title(ax(i), lbl_subplot(hemisphere_indx(i)) + " (CF: " + ...
+        title(ax(i), lbl_subplot(hemisphere_indx(i)) + " (Sensing band centered @" + ...
             num2str(cfs(hemisphere_indx(i)),'%.2f') + " Hz)");
     else
         title(ax(i), lbl_subplot(hemisphere_indx(i)));

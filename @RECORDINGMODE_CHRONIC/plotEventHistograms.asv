@@ -51,61 +51,57 @@ selected_eventtype_datetimes = events_datetimes(strcmp( obj.chronic_parameters.e
 
 t = timeofday(selected_eventtype_datetimes);
 
-if isa(ax(1), 'axes')
-
-    Plot hour of the day histogram
-    cla(ax(1), 'reset');
-    H = histogram(ax(1), hours(t), 'BinEdges', 0:0.5:24);
-    % Highlight bin of selected event
-    hh = hours(timeofday(datetime(event_date,'Format','dd-MMM-yyyy HH:mm:ss')));
-    indx_bin = find(H.BinEdges <= hh, 1, 'last');
-    temp_x = H.BinEdges([indx_bin indx_bin + 1]);
-    temp_x = [temp_x fliplr(temp_x)];
-    temp_y = [0 0 repmat(H.Values(indx_bin), 1, 2)];
-    patch(ax(1), temp_x, temp_y, color(2,:));
-
-    xlabel(ax(1), "Hour of the day");
-    xlim(ax(1), [-0.5, 24.5]);
-    ylabel(ax(1), "Number of occurences");
-    ylim(ax(1), [0, max(H.Values)+2]);
-    xt = 0:4:24;
-    xticks(ax(1), xt);
-    xticklabels(ax(1), string(xt));
-    ax(1).XAxis.MinorTick = 'on';
-    ax(1).XAxis.MinorTickValues = 0:1:24;
-    set(ax(1), 'TickDir', 'out')
-    title(ax(1), [event_type ' distribution throughout the day']);
+% Plot hour of the day histogram
+% cla(ax(1), 'reset');
+% H = histogram(ax(1), hours(t), 'BinEdges', 0:0.5:24);
+if ~isa(ax(1), 'polaraxes')
+    delete(ax(1).Children);
+    pax = polaraxes(ax(1));
 else
-
-    if ~isa(ax(1), 'polaraxes')
-        delete(ax(1).Children);
-        pax = polaraxes(ax(1));
-    else
-        pax = ax(1);
-    end
-    H = polarhistogram(pax, hours(t)/12*pi, 0:pi/12:2*pi, 'FaceAlpha', 0.5, 'EdgeAlpha', 0.4);
-    hold(pax, 'on');
-
-    % % Highlight bin of selected event
-    hh = hours(timeofday(datetime(event_date,'Format','dd-MMM-yyyy HH:mm:ss')));
-    edges_hours = 0:1:24;
-    indx_bin = find(edges_hours <= hh, 1, 'last');
-    highlight_counts = zeros(size(H.Values));
-    highlight_counts(indx_bin) = H.Values(indx_bin);
-    polarhistogram(pax, 'BinEdges', 0:pi/12:2*pi, 'BinCounts', highlight_counts, 'FaceAlpha', 0.7, 'EdgeAlpha', 0.2, 'FaceColor', color(2,:));
-
-    pax.RColor = [0, 0, 0];
-    pax.ThetaColor = [0, 0, 0];
-    pax.ThetaZeroLocation = "top";
-    pax.RAxisLocation = 350;
-    rlims = pax.RLim;
-    pax.RTick = 0:floor(rlims(2)/4)+1:rlims(2);
-    pax.ThetaDir = 'clockwise';
-    thetaticklabels(pax, string(0:2:24)+"h");
-    title(pax, sprintf('''%s'' throughout the day',event_type));
-    axtoolbar( pax, {'export'} );
-
+    pax = ax(1);
 end
+H = polarhistogram(pax, hours(t)/12*pi, 0:pi/12:2*pi, 'FaceAlpha', 0.5, 'EdgeAlpha', 0.4);
+hold(pax, 'on');
+
+% % Highlight bin of selected event
+hh = hours(timeofday(datetime(event_date,'Format','dd-MMM-yyyy HH:mm:ss')));
+edges_hours = 0:1:24;
+indx_bin = find(edges_hours <= hh, 1, 'last');
+highlight_counts = zeros(size(H.Values));
+highlight_counts(indx_bin) = H.Values(indx_bin);
+polarhistogram(pax, 'BinEdges', 0:pi/12:2*pi, 'BinCounts', highlight_counts, 'FaceAlpha', 0.7, 'EdgeAlpha', 0.2, 'FaceColor', color(2,:));
+
+% % Highlight bin of selected event
+% hh = hours(timeofday(datetime(event_date,'Format','dd-MMM-yyyy HH:mm:ss')));
+% indx_bin = find(H.BinEdges <= hh, 1, 'last');
+% temp_x = H.BinEdges([indx_bin indx_bin + 1]);
+% temp_x = [temp_x fliplr(temp_x)];
+% temp_y = [0 0 repmat(H.Values(indx_bin), 1, 2)];
+% patch(ax(1), temp_x, temp_y, color(2,:));
+
+% xlabel(ax(1), "Hour of the day");
+% xlim(ax(1), [-0.5, 24.5]);
+% ylabel(ax(1), "Number of occurences");
+% ylim(ax(1), [0, max(H.Values)+2]);
+% xt = 0:4:24;
+% xticks(ax(1), xt);
+% xticklabels(ax(1), string(xt));
+% ax(1).XAxis.MinorTick = 'on';
+% ax(1).XAxis.MinorTickValues = 0:1:24;
+% set(ax(1), 'TickDir', 'out')
+% title(ax(1), [event_type ' distribution throughout the day']);
+
+pax.ThetaMinorGrid = 'on';
+pax.RColor = [0, 0, 0];
+pax.ThetaColor = [0, 0, 0];
+pax.ThetaZeroLocation = "top";
+pax.RAxisLocation = 350;
+rlims = pax.RLim;
+pax.RTick = 0:floor(rlims(2)/4)+1:rlims(2);
+pax.ThetaDir = 'clockwise';
+thetaticklabels(pax, string(0:2:24)+"h");
+title(pax, [event_type ' distribution throughout the day']);
+axtoolbar( pax, {'export'} );
 
 % Plot elapsed time histograms
 for i = 2:4
@@ -129,7 +125,7 @@ for i = 2:4
     temp_elapsed = y*24*365 + m*24*30 + d*24 + hours(t);
     bin_step = 0.25;
     bin_edges = -TEMPORAL_WINDOW:bin_step:TEMPORAL_WINDOW;
-    H = histogram(ax(i), temp_elapsed, 'BinEdges', bin_edges, 'FaceAlpha', 0.5, 'EdgeAlpha', 0.4);
+    H = histogram(ax(i), temp_elapsed, 'BinEdges', bin_edges);
     set(ax(i), 'TickDir', 'out')    
     hold(ax(i), 'on');
     
@@ -141,7 +137,7 @@ for i = 2:4
             temp_x = H.BinEdges([indx_bin indx_bin + 1]);
             temp_x = [temp_x fliplr(temp_x)];
             temp_y = [0 0 repmat(H.Values(indx_bin), 1, 2)];
-            patch(ax(i), temp_x, temp_y, color(2,:), 'FaceAlpha', 0.7, 'EdgeAlpha', 0.4);
+            patch(ax(i), temp_x, temp_y, color(2,:));
         end
     end
 
@@ -155,7 +151,7 @@ for i = 2:4
     ax(i).XAxis.MinorTickValues = -TEMPORAL_WINDOW:bin_step:TEMPORAL_WINDOW;
     ylabel(ax(i), "Number of occurences");
     ylim(ax(i), [0, max(H.Values)+2]);
-    title(ax(i), sprintf('Relative to ''%s''', other_events_names{i-1}));
+    title(ax(i), ['Relative to ' other_events_names{i-1}]);
 
 end
 

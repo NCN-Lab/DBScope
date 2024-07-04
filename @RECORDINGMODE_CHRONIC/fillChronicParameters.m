@@ -46,8 +46,10 @@ if isfield( data, 'DiagnosticData' ) && isfield( data.DiagnosticData, 'LFPTrendL
         temp = strrep(temp, '_AND_', ' ');
         temp = strrep(temp, 'SensingElectrodeConfigDef.', '');
         obj.chronic_parameters.time_domain.sensing = temp';
+        obj.chronic_parameters.time_domain.center_frequency = cellfun(@(h) h.FrequencyInHertz, {data.Groups.Initial([data.Groups.Initial.ActiveGroup]).ProgramSettings.SensingChannel.SensingSetup});
     else
         obj.chronic_parameters.time_domain.sensing = {};
+        obj.chronic_parameters.time_domain.center_frequency = [];
     end
     obj.chronic_parameters.time_domain.hemispheres = LFPTrendLogs.LFP.hemispheres;
     obj.chronic_parameters.time_domain.data = LFPTrendLogs.LFP.data;

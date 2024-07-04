@@ -94,7 +94,7 @@ switch n_channels
 end
 
 if ~isempty(LFP.sensing)
-    cfs = [LFP.sensing.hemispheres.center_frequency];
+    cfs = [LFP.center_frequency];
 end
 
 for i = 1:n_channels
@@ -115,7 +115,7 @@ for i = 1:n_channels
 
     
     if ~isempty(LFP.sensing)
-        title(ax(hemisphere_indx(i)), lbl_subplot(hemisphere_indx(i)) + " (CF: " + ...
+        title(ax(hemisphere_indx(i)), lbl_subplot(hemisphere_indx(i)) + " (Sensing band centered @" + ...
             num2str(cfs(hemisphere_indx(i)),'%.2f') + " Hz)");
     else
         title(ax(hemisphere_indx(i)), lbl_subplot(hemisphere_indx(i)));
@@ -127,8 +127,9 @@ for i = 1:n_channels
         for eventId = 1:numel(event_names)
             event_DateTime = events.date_time(strcmp(events.event_name, event_names(eventId))) + hours(utc);
             
-            hi = plot([event_DateTime event_DateTime], [0 1.1*max(LFP.data(:,hemisphere_indx(i)))], '--', ...
-                'Color', colors(2 + eventId, :), 'Parent', ax(hemisphere_indx(i)));
+            hi = xline(ax(hemisphere_indx(i)), event_DateTime, '--', 'Color', colors(2 + eventId, :), 'LineWidth', 1.5);
+            % hi = plot([event_DateTime event_DateTime], [0 1.1*max(LFP.data(:,hemisphere_indx(i)))], '--', ...
+            %     'Color', colors(2 + eventId, :), 'Parent', ax(hemisphere_indx(i)));
             h(eventId) = hi(1);
 
         end
