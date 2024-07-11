@@ -18,6 +18,7 @@ function loadWearables( obj, path, filenames )
 % INEB/i3S 2022
 % pauloaguiar@i3s.up.pt
 % -----------------------------------------------------------------------
+
 obj.data = [];
 
 for file = 1:numel( filenames )
@@ -32,7 +33,7 @@ for file = 1:numel( filenames )
     data                    = readtable( [path filenames{file}] );
     obj.data(file).time     = datetime( uint64(data{:,1}), 'ConvertFrom', '.net', 'Format', 'yyyy-MM-dd HH:mm:ss.SSS' );
     obj.data(file).data     = data(:, 2:numel(data.Properties.VariableNames));
-    
+
 end
 
 

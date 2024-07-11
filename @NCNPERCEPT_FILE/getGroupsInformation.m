@@ -19,21 +19,69 @@ function [ text ] = getGroupsInformation( obj )
 % pauloaguiar@i3s.up.pt
 % -----------------------------------------------------------------------
 
-indx_sensing_initial    = cellfun(@(c) isstruct(c) && numel(c.hemispheres) == 2, {obj.parameters.groups.initial(:).sensing});
-indx_sensing_final      = cellfun(@(c) isstruct(c) && numel(c.hemispheres) == 2, {obj.parameters.groups.final(:).sensing});
+text = "";
 
-text = [newline + "Left Channel: " + string(obj.parameters.groups.initial(indx_sensing_initial).sensing.hemispheres(1).channel) + " (" +  ...
-    string(obj.parameters.groups.final(indx_sensing_final).sensing.hemispheres(1).channel) + ")" + newline + ...
-    "Left Stimulation Frequency [Hz]: " + num2str(obj.parameters.groups.initial(indx_sensing_initial).sensing.hemispheres(1).center_frequency) +  " (" + ...
-    num2str(obj.parameters.groups.final(indx_sensing_final).sensing.hemispheres(1).center_frequency) + ")" + newline + ...
-    "Left Pulse Width [" + char(956) + "s]: " + num2str(obj.parameters.groups.initial(indx_sensing_initial).stimulation.hemispheres(1).pulse_width) +  " (" + ...
-    num2str(obj.parameters.groups.final(indx_sensing_final).stimulation.hemispheres(1).pulse_width) + ")" + newline + ...
-    "Right Channel: " + obj.parameters.groups.initial(indx_sensing_initial).sensing.hemispheres(2).channel +  " (" + ...
-    string(obj.parameters.groups.final(indx_sensing_final).sensing.hemispheres(2).channel) + ")" + newline + ...
-    "Right Stimulation Frequency [Hz]: "  + num2str(obj.parameters.groups.initial(indx_sensing_initial).sensing.hemispheres(2).center_frequency) +  " (" + ...
-    num2str(obj.parameters.groups.final(indx_sensing_final).sensing.hemispheres(2).center_frequency) + ")" + newline + ...
-    "Right Pulse Width [" + char(956) + "s]: " + num2str(obj.parameters.groups.initial(indx_sensing_initial).stimulation.hemispheres(2).pulse_width) +  " (" + ...
-    num2str(obj.parameters.groups.final(indx_sensing_final).stimulation.hemispheres(2).pulse_width) + ")" + newline];
+if numel(obj.parameters.groups.final) > numel(obj.parameters.groups.initial)
+    group_ids = {obj.parameters.groups.final(:).group_id};
+else
+    group_ids = {obj.parameters.groups.initial(:).group_id};
+end
+
+channels    = repmat("", 2, 2, numel(group_ids));
+amps        = NaN * zeros(2, 2, numel(group_ids));
+frqs        = NaN * zeros(2, 2, numel(group_ids));
+cfs         = NaN * zeros(2, 2, numel(group_ids));
+pws         = NaN * zeros(2, 2, numel(group_ids));
+moments = ["initial", "final"];
+for i = 1:numel(moments)
+    for g = 1:numel(obj.parameters.groups.(moments(i)))
+        for h = 1:numel(obj.parameters.groups.(moments(i))(g).stimulation.hemispheres)
+            
+            if contains(lower(obj.parameters.groups.(moments(i))(g).stimulation.hemispheres(h).location), "left")
+                if isfield(obj.parameters.groups.(moments(i))(g).stimulation.hemispheres(h), 'amplitude')
+                    amps(1,i,g) = obj.parameters.groups.(moments(i))(g).stimulation.hemispheres(h).amplitude;
+                end
+                frqs(1,i,g) = obj.parameters.groups.(moments(i))(g).stimulation.hemispheres(h).frequency;
+                pws(1,i,g)  = obj.parameters.groups.(moments(i))(g).stimulation.hemispheres(h).pulse_width;
+            else
+                if isfield(obj.parameters.groups.(moments(i))(g).stimulation.hemispheres(h), 'amplitude')
+                    amps(2,i,g) = obj.parameters.groups.(moments(i))(g).stimulation.hemispheres(h).amplitude;
+                end
+                frqs(2,i,g) = obj.parameters.groups.(moments(i))(g).stimulation.hemispheres(h).frequency;
+                pws(2,i,g)  = obj.parameters.groups.(moments(i))(g).stimulation.hemispheres(h).pulse_width;
+            end
+
+            if ~isempty(obj.parameters.groups.(moments(i))(g).sensing)
+                if contains(lower(obj.parameters.groups.(moments(i))(g).stimulation.hemispheres(h).location), "left")
+                    channels(1,i,g) = obj.parameters.groups.(moments(i))(g).sensing.hemispheres(h).channel;
+                    cfs(1,i,g) = obj.parameters.groups.(moments(i))(g).sensing.hemispheres(h).center_frequency;
+                else
+                    channels(2,i,g) = obj.parameters.groups.(moments(i))(g).sensing.hemispheres(h).channel;
+                    cfs(2,i,g) = obj.parameters.groups.(moments(i))(g).sensing.hemispheres(h).center_frequency;
+                end
+            end
+
+        end
+    end
+end
+
+hemispheres = ["Left", "Right"];
+for g = 1:max(numel(obj.parameters.groups.initial), numel(obj.parameters.groups.final))
+    text = text + sprintf('\nGroup %s\n=============================\n', group_ids{g});
+
+    for h = 1:2
+        text = text + sprintf(['\n%s Hemisphere:\n\tFrequency (Hz): %d => %d ...' ...
+            '\n\tAmplitude (mA): %.1f => %.1f\n\tPulse Width (μs): %d => %d ...' ...
+            '\n\tBrainSense Contacts: %s => %s\n\tBrainSense Peak (Hz): %.1f => %.1f\n'], ...
+            hemispheres(h), ...
+            frqs(h,:,g), ...
+            amps(h,:,g), ...
+            pws(h,:,g), ...
+            channels(h,:,g), ...
+            cfs(h,:,g));
+    end
+end
+
 
 end
 

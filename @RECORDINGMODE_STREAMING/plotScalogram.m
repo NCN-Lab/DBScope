@@ -40,6 +40,7 @@ sampling_frequency = obj.streaming_parameters.time_domain.fs;
 parser = inputParser;
 
 validScalarNum  = @(x) isnumeric(x) && isscalar(x) && (x > 0);
+validLimits     = @(x) isnumeric(x) && isvector(x) && length(x) == 2 && x(2) > x(1);
 defaultDataType = 'Raw';
 validDataType   = {'Raw','ECG Cleaned','Latest Filtered'};
 
@@ -47,6 +48,7 @@ validDataType   = {'Raw','ECG Cleaned','Latest Filtered'};
 addRequired(parser, 'Recording', validScalarNum);
 addRequired(parser, 'Channel', validScalarNum);
 addParameter(parser, 'DataType', defaultDataType, @(x) any(validatestring(x,validDataType))); % Default value is 'Raw'
+addParameter(parser, 'Limits', [1 92], validLimits); % Default value is [1 92]
 
 % Parse the input arguments
 if isa(varargin{1}, 'matlab.ui.control.UIAxes') || isa(varargin{1}, 'matlab.graphics.axis.Axes')
@@ -61,6 +63,7 @@ end
 rec             = parser.Results.Recording;
 channel         = parser.Results.Channel;
 data_type       = parser.Results.DataType;
+limits          = parser.Results.Limits;
 
 switch data_type
     case 'Raw'
@@ -95,14 +98,14 @@ tms                     = ( 0:numel( LFP_selected{rec}(:, channel) ) - 1 ) / sam
 cla( ax, 'reset' );
 imagesc( ax, tms, frq, abs(cfs));
 xlabel( ax, 'Time (s)');
-ylim( ax, [0.1 max(frq)]);
-yticks( ax, [0.1, 1, 13, 35, floor(max(frq))] );
+ylim( ax, limits);
+yticks( ax, [0.1, 1, 4, 13, 35, 60, floor(max(frq))] );
 ylabel( ax, 'Frequency (Hz)');
 c = colorbar( ax );
 colormap( ax, 'hot');
 c.Label.String = 'Power/Frequency (dB/Hz)';
-dmax = max( prctile(abs(cfs), 99, "all") );
-clim( ax, [0 dmax] );
+% dmax = max( prctile(abs(cfs), 99, "all") );
+clim( ax, [0 10] );
 set( ax, 'YDir', 'normal', 'YScale', 'log');
 title( ax, 'Scalogram' );
 axtoolbar( ax, {'export'} );

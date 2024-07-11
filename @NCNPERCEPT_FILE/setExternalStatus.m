@@ -1,18 +1,15 @@
-function [ status, text, obj ] = open_mat_files( obj )
-% Select workspace to open.
+function setExternalStatus( obj, value )
+% Change status of external data. 
 %
 % Syntax:
-%   OPEN_MAT_FILES( obj  );
+%   SETEXTERNALSTATUS( obj, value );
 %
 % Input parameters:
 %    * obj - object containg data
-%
-% Output parameters:
-%   status
-%   text
+%    * value - true or false
 %
 % Example:
-%   OPEN_MAT_FILES( multiple_files );
+%   SETEXTERNALSTATUS( obj, value );
 %
 % Available at: https://github.com/NCN-Lab/DBScope
 % For referencing, please use: Andreia M. Oliveira, Eduardo Carvalho, Beatriz Barros, Carolina Soares, Manuel Ferreira-Pinto, Rui Vaz, Paulo Aguiar, DBScope: 
@@ -23,12 +20,7 @@ function [ status, text, obj ] = open_mat_files( obj )
 % pauloaguiar@i3s.up.pt
 % -----------------------------------------------------------------------
 
-[filename, data_pathname] = uigetfile('*.mat','Select .mat file');
-fname_workspace = [data_pathname, filename];
-temp_obj = load( fname_workspace );
-obj = temp_obj.obj;
-
-status = 1;
-text = newline + string(filename);
+obj.status.external = double(value);
 
 end
+

@@ -64,13 +64,14 @@ classdef NCNPERCEPT_FILE < handle
 
             obj.parameters.mostrecent.artifactstatus = nan;
 
-            obj.status.events = nan;
-            obj.status.events_FFT = nan;
-            obj.status.chronic = nan;
-            obj.status.setup_on = nan;
-            obj.status.setup_off = nan;
-            obj.status.survey = nan;
-            obj.status.streaming = nan;
+            obj.status.events       = 0;
+            obj.status.events_FFT   = 0;
+            obj.status.chronic      = 0;
+            obj.status.setup_on     = 0;
+            obj.status.setup_off    = 0;
+            obj.status.survey       = 0;
+            obj.status.streaming    = 0;
+            obj.status.external     = 0;
 
             %Initialize classes
             obj.survey_obj = RECORDINGMODE_SURVEY;
@@ -82,18 +83,20 @@ classdef NCNPERCEPT_FILE < handle
 
         end
 
-        % Load data from single json 
-        [status, text] = loadFile( obj, file_pathname, filename )
-
         % Parsing methods
+        [status, text] = loadFile( obj, file_pathname, filename )
         status = fillPatientInformation( obj, data )
         status = fillSystemInformation( obj, data )
         status = fillGroupsInformation( obj, data )
+        loadWearables( obj )
+
+        % Set methods
+        setExternalStatus( obj, value )
 
         % Export methods
         exportFieldtrip( obj )
 
-        % Get session information
+        % Get Information
         [ text ] = getBatteryInformation( obj )
         [ text ] = getDeviceInformation( obj )
         [ text ] = getLeadConfig( obj )
@@ -103,7 +106,6 @@ classdef NCNPERCEPT_FILE < handle
         [ text ] = getGroupsInformation( obj )
         [ text ] = plotImpedance( obj, varargin )
         status = getImpedance( obj, data )
-        loadWearables( obj )
 
     end
 

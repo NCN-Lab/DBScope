@@ -281,12 +281,9 @@ for channel = 1:nChannels
                         text(mean([k k+2])-0.05, max_lim-(k-2)*max_lim*0.04 - max_lim*0.1, str);
                     end
                 end
-
             end
         end
     end
-
-
 end
 
 if ~isempty(msg)
