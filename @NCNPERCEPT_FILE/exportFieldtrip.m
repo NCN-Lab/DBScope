@@ -128,7 +128,7 @@ if obj.status.streaming == 1
 
     % Create headers
     hdr_lfp = obj.streaming_obj.streaming_parameters.time_domain;
-    hdr_lfp = rmfield(hdr_lfp, {'channel_map', 'data', 'time', 'ecg_clean'});
+    hdr_lfp = rmfield(hdr_lfp, {'data', 'time', 'ecg_clean'});
     hdr_stim = obj.streaming_obj.streaming_parameters.stim_amp;
     hdr_stim = rmfield(hdr_stim, {'data', 'time'});
 
@@ -188,7 +188,7 @@ if obj.status.chronic == 1 || obj.status.events == 1
         % Get variables
         trend_data              = obj.chronic_obj.chronic_parameters.time_domain.data;
         trend_time              = obj.chronic_obj.chronic_parameters.time_domain.time;
-        trend_channel_names     = obj.chronic_obj.chronic_parameters.time_domain.channel_names;
+        trend_channel_names     = obj.chronic_obj.chronic_parameters.time_domain.sensing;
         trend_hemispheres       = obj.chronic_obj.chronic_parameters.time_domain.hemispheres;
         trend_hemispheres       = strrep(trend_hemispheres, 'HemisphereLocationDef_', '');
 

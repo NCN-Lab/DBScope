@@ -62,8 +62,6 @@ classdef NCNPERCEPT_FILE < handle
             obj.parameters.system_information.final_stimulation_status = nan;
             obj.parameters.system_information.medication_state = nan;
 
-            obj.parameters.mostrecent.artifactstatus = nan;
-
             obj.status.events       = 0;
             obj.status.events_FFT   = 0;
             obj.status.chronic      = 0;

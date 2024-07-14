@@ -70,13 +70,6 @@ try
 
     % Get System Information
     obj.fillSystemInformation( data );
-
-    % Get Artifact Status
-    if isfield(data.MostRecentInSessionSignalCheck, 'ArtifactStatus')
-        obj.parameters.mostrecent.artifactstatus = {data.MostRecentInSessionSignalCheck.ArtifactStatus};
-    else
-        obj.parameters.mostrecent.artifactstatus = [];
-    end
     
     % Get Groups Information
     obj.fillGroupsInformation( data );
@@ -110,7 +103,7 @@ text = sprintf("%s\n\n", fname) + ...
     sprintf('%20s : %s\n', modes_strings(5), availability_string(obj.status.setup_on + 1)) + ...
     sprintf('%20s : %s\n', modes_strings(6), availability_string(obj.status.chronic + 1)) + ...
     sprintf('%20s : %s\n', modes_strings(7), availability_string(obj.status.events + 1)) + ...
-    sprintf('%20s : %s\n', modes_strings(8), availability_string(obj.status.streaming + 1));
+    sprintf('%20s : %s\n\n', modes_strings(8), availability_string(obj.status.streaming + 1));
 
 disp(text);
 

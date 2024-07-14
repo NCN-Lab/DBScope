@@ -27,8 +27,8 @@ for file = 1:numel( filenames )
 
     obj.data(file).wearable_id       = string(metadata(1));
     obj.data(file).task_id           = string(metadata(2));
-    obj.data(file).sampling_freq_Hz = str2double(metadata{3});
-    obj.data(file).recording_start  = datetime( metadata(4), "InputFormat", 'yyyyMMdd''T''HHmmss''.csv''' );
+    obj.data(file).sampling_freq_Hz  = str2double(metadata{3});
+    obj.data(file).recording_start   = datetime( metadata(4), "InputFormat", 'yyyyMMdd''T''HHmmss''.csv''' );
 
     data                    = readtable( [path filenames{file}] );
     obj.data(file).time     = datetime( uint64(data{:,1}), 'ConvertFrom', '.net', 'Format', 'yyyy-MM-dd HH:mm:ss.SSS' );
