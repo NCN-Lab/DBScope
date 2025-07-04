@@ -28,8 +28,7 @@ function status = fillSetupOFFParameters( obj, data )
 
 status = 0;
 
-%Extract LFPs
-if isfield( data, 'SenseChannelTests' ) %Setup OFF stimulation
+if isfield( data, 'SenseChannelTests' ) % Setup OFF stimulation
 
     parameters.mode         = 'SenseChannelTests';
     parameters.num_channels = 6;
@@ -40,11 +39,11 @@ if isfield( data, 'SenseChannelTests' ) %Setup OFF stimulation
     obj.setup_parameters.stim_off.recording_mode = LFP_OFF.recordingMode;
     obj.setup_parameters.stim_off.num_channels = LFP_OFF.nChannels;
     obj.setup_parameters.stim_off.channel_names = {LFP_OFF.channel_names};
-    temp_data = {};
-    for i = 1:numel(LFP_OFF)
-        temp_data{end+1} = mat2cell(LFP_OFF(i).data', ones(size(LFP_OFF(i).data, 2), 1), size(LFP_OFF(i).data, 1));
-    end
-    obj.setup_parameters.stim_off.data = temp_data;
+    % temp_data = {};
+    % for i = 1:numel(LFP_OFF)
+    %     temp_data{end+1} = mat2cell(LFP_OFF(i).data', ones(size(LFP_OFF(i).data, 2), 1), size(LFP_OFF(i).data, 1));
+    % end
+    obj.setup_parameters.stim_off.data = {LFP_OFF.data};
     obj.setup_parameters.stim_off.fs = LFP_OFF.Fs;
     obj.setup_parameters.stim_off.time = {LFP_OFF.time};
 

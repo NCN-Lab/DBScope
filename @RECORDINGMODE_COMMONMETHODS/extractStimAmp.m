@@ -60,8 +60,11 @@ for recId = 1:nRecs
     stimAmp.global_packets_ID = [data.(recordingMode)(recId).LfpData.Seq];
     stimAmp.global_packets_ticks = [data.(recordingMode)(recId).LfpData.TicksInMs];
 
-    % Make time start at 0 and convert to seconds
-    TicksInS = (TicksInMs - TicksInMs(1))/1000;
+    % Make time start at 0.5 and convert to seconds
+    %   IPG receives 2 packets per hemisphere before receiving 1 packet of
+    %   stimulation information. In both cases, this results in a 500 ms
+    %   delay.
+    TicksInS = 0.5 + (TicksInMs - TicksInMs(1))/1000;
 
     Fs = data.(recordingMode)(recId).SampleRateInHz;
 

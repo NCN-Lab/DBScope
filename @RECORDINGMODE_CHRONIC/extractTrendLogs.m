@@ -35,84 +35,99 @@ function [ LFPTrendLogs ] = extractTrendLogs( obj, data, parameters )
 % -----------------------------------------------------------------------
 
 % Extract parameters for this recording mode
-recordingMode = parameters.mode;
-LFP.data = [];
-stimAmp.data = [];
+recordingMode   = parameters.mode;
+LFP.data        = [];
+stimAmp.data    = [];
 
 % Extract recordings left and right
 hemisphereLocationNames = fieldnames(data.DiagnosticData.LFPTrendLogs);
-nHemisphereLocations = numel(hemisphereLocationNames);
+nHemisphereLocations    = numel(hemisphereLocationNames);
+
+% Force Left -> Right order
+hemisphereLocationNames = sort(hemisphereLocationNames);
 
 for hemisphereId = 1:nHemisphereLocations
 
     data_hemisphere = data.DiagnosticData.LFPTrendLogs.(hemisphereLocationNames{hemisphereId});
 
-    recFields = fieldnames(data_hemisphere);
-    nRecs = numel(recFields);
-    allDays = table;
+    recFields   = fieldnames(data_hemisphere);
+    nRecs       = numel(recFields);
+    allDays     = table;
 
-    %Concatenate data accross days
+    % Concatenate data accross days
     for recId = 1:nRecs
 
-        datafield = struct2table(data_hemisphere.(recFields{recId}));
-        allDays = [allDays; datafield]; %#ok<*AGROW>
+        datafield   = struct2table(data_hemisphere.(recFields{recId}));
+        allDays     = [allDays; datafield]; %#ok<*AGROW>
 
     end
-
     allDays = sortrows(allDays, 1);
 
-    LFP.data = [LFP.data allDays.LFP]; 
-    stimAmp.data = [stimAmp.data allDays.AmplitudeInMilliAmps];
+    LFP.data        = [LFP.data allDays.LFP]; 
+    stimAmp.data    = [stimAmp.data allDays.AmplitudeInMilliAmps];
 
 end
 
-%Extract LFP, stimulation amplitude and date-time information
+% Extract LFP, stimulation amplitude and date-time information
 nTimepoints = size(allDays, 1);
 for recId = 1:nTimepoints
     DateTime(recId) = datetime(regexprep(allDays.DateTime{recId}(1:end-1),'T',' '));
 end
 
 % Store LFP in a structure
-LFP.time = DateTime;
-LFP.nChannels = nHemisphereLocations;
+LFP.time        = DateTime;
+LFP.nChannels   = nHemisphereLocations;
 LFP.hemispheres = hemisphereLocationNames;
-LFP.xlabel = 'Date Time';
-LFP.ylabel = 'LFP band power';
+LFP.xlabel      = 'Date Time';
+LFP.ylabel      = 'LFP band power';
 
-%Store StimAmp in a structure
-stimAmp.time = DateTime;
-stimAmp.nChannels = nHemisphereLocations;
-stimAmp.channel_names = hemisphereLocationNames;
-stimAmp.xlabel = 'Date Time';
-stimAmp.ylabel = 'Stimulation amplitude [mA]';
+% Store StimAmp in a structure
+stimAmp.time            = DateTime;
+stimAmp.nChannels       = nHemisphereLocations;
+stimAmp.channel_names   = hemisphereLocationNames;
+stimAmp.xlabel          = 'Date Time';
+stimAmp.ylabel          = 'Stimulation amplitude [mA]';
 
-%Store all information in one structure
-LFPTrendLogs.LFP = LFP;
-LFPTrendLogs.stimAmp = stimAmp;
-LFPTrendLogs.recordingMode = recordingMode;
+% Store all information in one structure
+LFPTrendLogs.LFP            = LFP;
+LFPTrendLogs.stimAmp        = stimAmp;
+LFPTrendLogs.recordingMode  = recordingMode;
 
-%If patient has marked events, extract them
+% If patient has marked events, extract them
+
+variable_names_strings = {'DateTime','EventID','EventName','LFP','Cycling', 'LfpFrequencySnapshotEvents'};
+
 if isfield(data.DiagnosticData, 'LfpFrequencySnapshotEvents')
     data_events = data.DiagnosticData.LfpFrequencySnapshotEvents;
-    nEvents = size(data_events, 1);
-    events = table('Size',[nEvents 6],'VariableTypes',...
-        {'cell', 'double', 'cell', 'logical', 'logical', 'cell'},...
-        'VariableNames',{'DateTime','EventID','EventName','LFP','Cycling', 'LfpFrequencySnapshotEvents'});
+    nEvents     = size(data_events, 1);
+    events      = table('Size',[nEvents 6], ...
+        'VariableTypes', ...
+        {'cell', 'double', 'cell', 'logical', 'logical', 'cell'}, ...
+        'VariableNames', ...
+        variable_names_strings);
+    
     for eventId = 1:nEvents
-        if iscell(data_events) %depending on software version
+        if iscell(data_events) % depending on software version
             thisEvent = struct2table(data_events{eventId}, 'AsArray', true);
         else
             thisEvent = struct2table(data_events(eventId), 'AsArray', true);
         end
-        events(eventId, 1:5) = thisEvent(:, 1:5); %remove potential 'LfpFrequencySnapshotEvents'
-        if ismember('LfpFrequencySnapshotEvents', thisEvent.Properties.VariableNames)
-            for hemisphereId = 1:nHemisphereLocations
-                PSD.FFTBinData(:, hemisphereId) = thisEvent.LfpFrequencySnapshotEvents.(hemisphereLocationNames{hemisphereId}).FFTBinData;
-                PSD.channel_names{hemisphereId} = [hemisphereLocationNames{hemisphereId}(23:end), ' ' thisEvent.LfpFrequencySnapshotEvents.(hemisphereLocationNames{hemisphereId}).SenseID(27:end)];
+        
+        for variable_name = variable_names_strings
+            variable_name = string(variable_name{1});
+            if ismember(variable_name, thisEvent.Properties.VariableNames)
+                if strcmp(variable_name,'LfpFrequencySnapshotEvents')
+                    for hemisphereId = 1:nHemisphereLocations
+                        PSD.FFTBinData(:, hemisphereId) = thisEvent.LfpFrequencySnapshotEvents.(hemisphereLocationNames{hemisphereId}).FFTBinData;
+                        PSD.channel_names{hemisphereId} = [hemisphereLocationNames{hemisphereId}(23:end), ' ' thisEvent.LfpFrequencySnapshotEvents.(hemisphereLocationNames{hemisphereId}).SenseID(27:end)];
+                    end
+                        PSD.Frequency = thisEvent.LfpFrequencySnapshotEvents.(hemisphereLocationNames{hemisphereId}).Frequency;
+                        PSD.nChannels = nHemisphereLocations;
+                        events.LfpFrequencySnapshotEvents{eventId} = PSD;
+                else
+                    events{eventId,variable_name} = thisEvent.(variable_name);
+                end
             end
-            PSD.Frequency = thisEvent.LfpFrequencySnapshotEvents.(hemisphereLocationNames{hemisphereId}).Frequency;
-            PSD.nChannels = nHemisphereLocations;
-            events.LfpFrequencySnapshotEvents{eventId} = PSD;
         end
     end
     events.DateTime = cellfun(@(x) datetime(regexprep(x(1:end-1),'T',' ')), events.DateTime);

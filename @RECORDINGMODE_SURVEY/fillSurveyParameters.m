@@ -1,15 +1,15 @@
 function status = fillSurveyParameters( obj, data )
 % Extract and visualize LFPs from Survey test mode
 %
-%   Syntax:
-%       FILLSURVEYPARAMETERS( obj, data )
+% Syntax:
+%   [ status ] = FILLSURVEYPARAMETERS( obj, data )
 %
 % Input parameters:
 %    * obj - parsing object
 %    * data - data from json file
 %
 % Output parameters:
-%   status
+%    * status
 %
 %   Example:
 %       status = FILLSURVEYPARAMETERS( obj, data );

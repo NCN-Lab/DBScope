@@ -41,16 +41,61 @@ if isfield( data, 'DiagnosticData' ) && isfield( data.DiagnosticData, 'LFPTrendL
     % Fill parameters for time domain
     obj.chronic_parameters.time_domain.recording_mode = 'LFPTrendLogs';
     obj.chronic_parameters.time_domain.n_channels = LFPTrendLogs.LFP.nChannels;
+
+    % If there was a change of active BrainSense group within the period 
+    % of DiagnosticData (check EventLogs) divide data in different 
+    % structs [maybe have the Visualization Window with a field to
+    % alternate between periods].
+    % To get the information on sensing channels and center frequency, use
+    % GroupHistory (stores last 5 changes in group settings).
+
     if isfield(data.Groups.Initial([data.Groups.Initial.ActiveGroup]).ProgramSettings, 'SensingChannel' )
         temp = {data.Groups.Initial([data.Groups.Initial.ActiveGroup]).ProgramSettings.SensingChannel.Channel};
         temp = strrep(temp, '_AND_', ' ');
         temp = strrep(temp, 'SensingElectrodeConfigDef.', '');
         obj.chronic_parameters.time_domain.sensing = temp';
         obj.chronic_parameters.time_domain.center_frequency = cellfun(@(h) h.FrequencyInHertz, {data.Groups.Initial([data.Groups.Initial.ActiveGroup]).ProgramSettings.SensingChannel.SensingSetup});
+    elseif ~isempty(data.GroupHistory)
+        aux_endtime_timeline = LFPTrendLogs.LFP.time(end);
+        aux_GroupHistory_SessionDates = arrayfun(@(x) datetime(x.SessionDate, ...
+            'InputFormat', 'yyyy-MM-dd''T''HH:mm:ss''Z'''), data.GroupHistory);
+        aux_idx_groups_in_past_post_end_timeline = find(aux_GroupHistory_SessionDates > aux_endtime_timeline);
+        aux_idx_groups_in_past_post_end_timeline = sort(aux_idx_groups_in_past_post_end_timeline,"descend");
+
+        i = 1; 
+        is_idx_closest_post_end_timeline_with_sensing_found = false;
+        idx_group_sensing = 0;
+
+        while i <= numel(aux_idx_groups_in_past_post_end_timeline) && ~is_idx_closest_post_end_timeline_with_sensing_found
+            aux_idx_GroupHistory_entry_tested = aux_idx_groups_in_past_post_end_timeline(i) ;
+            aux_data_groups = data.GroupHistory(aux_idx_GroupHistory_entry_tested).Groups;
+
+            for j = 1:numel(aux_data_groups)
+                aux_group = aux_data_groups{j};
+                if isfield(aux_group, 'ProgramSettings') 
+                    if isfield(aux_group.ProgramSettings, 'SensingChannel')
+                        if (aux_group.ProgramSettings.SensingChannel(1).SensingSetup.FrequencyInHertz > 0) && (aux_group.ProgramSettings.SensingChannel(2).SensingSetup.FrequencyInHertz > 0)
+                            is_idx_closest_post_end_timeline_with_sensing_found = true;
+                            idx_group_sensing = j;
+                        end
+                    end
+                end
+            end
+
+            i = i + 1;
+        end
+
+        temp = data.GroupHistory(aux_idx_GroupHistory_entry_tested).Groups{idx_group_sensing}.ProgramSettings.SensingChannel.Channel;
+        temp = strrep(temp, '_AND_', ' ');
+        temp = strrep(temp, 'SensingElectrodeConfigDef.', '');
+        obj.chronic_parameters.time_domain.sensing = temp';
+        obj.chronic_parameters.time_domain.center_frequency = cellfun(@(h) h.FrequencyInHertz, {data.GroupHistory(aux_idx_GroupHistory_entry_tested).Groups{idx_group_sensing}.ProgramSettings.SensingChannel.SensingSetup});
+
     else
         obj.chronic_parameters.time_domain.sensing = {};
         obj.chronic_parameters.time_domain.center_frequency = [];
     end
+
     obj.chronic_parameters.time_domain.hemispheres = LFPTrendLogs.LFP.hemispheres;
     obj.chronic_parameters.time_domain.data = LFPTrendLogs.LFP.data;
     obj.chronic_parameters.time_domain.time = LFPTrendLogs.LFP.time;

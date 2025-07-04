@@ -59,7 +59,7 @@ validContrast   = {'normal','high'};
 % Define input parameters and their default values
 % Data parameters
 addRequired(parser, 'Recording', validScalarNum);
-addRequired(parser, 'Channel', validScalarNum);
+addRequired(parser, 'Channel');
 addParameter(parser, 'DataType', defaultDataType, @(x) any(validatestring(x,validDataType))); % Default value is 'Raw'
 % Spectrogram parameters
 addParameter(parser, 'Contrast', defaultContrast, @(x) any(validatestring(x,validContrast))); % Default value is 'normal'
@@ -113,7 +113,14 @@ if isempty(ax)
 end
 
 % Get data
-LFP                     = LFP_selected{rec}(:, channel);
+channel_names_LFP   = obj.streaming_parameters.time_domain.channel_names{rec};
+if contains(channel, "left", "IgnoreCase", true)
+    LFP_indx = find(contains(channel_names_LFP, "left", "IgnoreCase", true));
+else
+    LFP_indx = find(contains(channel_names_LFP, "right", "IgnoreCase", true));
+end
+LFP                     = LFP_selected{rec}(:, LFP_indx);
+tms                     = obj.streaming_parameters.time_domain.time{rec};
 [~, freq, t, p]         = spectrogram( LFP, window, noverlap, f, sampling_frequency, 'yaxis' );
 if normalize_power
     power2plot          = 10 * log10( p ./ mean(p, 2) );
@@ -123,7 +130,7 @@ end
 
 % Plot data
 cla( ax, 'reset' );
-imagesc( ax, t, freq, power2plot );
+imagesc( ax, tms, freq, power2plot );
 xlabel( ax, 'Time (s)' );
 set( ax, 'YDir','normal' );
 ylabel( ax, 'Frequency (Hz)' );
@@ -135,7 +142,7 @@ switch contrast
     case "high"
         dmax = min( 5 * ( floor( prctile(power2plot, 99, "all") / 5 ) - 1 ), 10 );
 end
-dmin = -40;
+dmin = -25;
 clim( ax, [dmin dmax] );
 title( ax, 'Spectrogram' );
 axtoolbar( ax, {'export'} );

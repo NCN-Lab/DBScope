@@ -8,11 +8,12 @@ function plotRawDataSetupON( obj, varargin )
 % Input parameters:
 %    * obj              DBScope object containg streaming data.
 %    * (optional) ax    Axis where to plot.
+%    * rec              Index of recording.
 %    * channel          Index of channel.
 %
 % Example:
-%   PLOTRAWDATASETUPON( obj, channel );
-%   PLOTRAWDATASETUPON( obj, ax, channel );
+%   PLOTRAWDATASETUPON( obj, rec, channel );
+%   PLOTRAWDATASETUPON( obj, ax, rec, channel );
 %
 %
 % Available at: https://github.com/NCN-Lab/DBScope
@@ -30,6 +31,7 @@ parser = inputParser;
 validScalarNum  = @(x) isnumeric(x) && isscalar(x) && (x > 0);
 
 % Define input parameters and their default values
+addRequired(parser, 'Recording', validScalarNum);
 addRequired(parser, 'Channel', validScalarNum);
 
 % Parse the input arguments
@@ -42,6 +44,7 @@ else
 end
 
 % Access the values of inputs
+rec             = parser.Results.Recording;
 channel         = parser.Results.Channel;
 
 % Get data
@@ -58,8 +61,8 @@ end
 
 % Plot
 cla( ax, 'reset');
-plot( ax, time{ceil(channel/2)}, raw_signal{ceil(channel/2)}(:,2-rem(channel,2)) );
-xlim( ax, [0 time{ceil(channel/2)}(end)]);
+plot( ax, time{rec}, raw_signal{rec}(:, channel) );
+xlim( ax, [0 time{rec}(end)]);
 ylabel( ax, 'Amplitude (\muVp)');
 xlabel( ax, 'Time (s)');
 title( ax, 'Raw Signal');

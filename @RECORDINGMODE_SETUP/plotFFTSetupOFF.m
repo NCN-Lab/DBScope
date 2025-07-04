@@ -8,11 +8,12 @@ function plotFFTSetupOFF( obj, varargin )
 % Input parameters:
 %    * obj              DBScope object containg streaming data.
 %    * (optional) ax    Axis where to plot.
+%    * rec              Index of recording.
 %    * channel          Index of channel.
 %
 % Example:
-%   PLOTFFTSETUPOFF( obj, channel );
-%   PLOTFFTSETUPOFF( obj, ax, channel );
+%   PLOTFFTSETUPOFF( obj, rec, channel );
+%   PLOTFFTSETUPOFF( obj, ax, rec, channel );
 %
 %
 % Available at: https://github.com/NCN-Lab/DBScope
@@ -30,6 +31,7 @@ parser = inputParser;
 validScalarNum  = @(x) isnumeric(x) && isscalar(x) && (x > 0);
 
 % Define input parameters and their default values
+addRequired(parser, 'Recording', validScalarNum);
 addRequired(parser, 'Channel', validScalarNum);
 
 % Parse the input arguments
@@ -42,16 +44,17 @@ else
 end
 
 % Access the values of inputs
+rec             = parser.Results.Recording;
 channel         = parser.Results.Channel;
 
 % Get data
-raw_signal          = vertcat(obj.setup_parameters.stim_off.data{:});
-time                = obj.setup_parameters.stim_off.time(1)';
+raw_signal          = obj.setup_parameters.stim_off.data;
+time                = obj.setup_parameters.stim_off.time';
 sampling_frequency  = obj.setup_parameters.stim_off.fs(1); % In survey mode, sampling frequency is the same for all recordings.
 Nyquist             = 0.5*sampling_frequency;
 
 % Calculate FFT
-y = raw_signal{channel};
+y = raw_signal{rec}(:, channel);
 s1 = length(y);
 n = 250;
 m  = s1 - mod(s1, n);
@@ -61,7 +64,7 @@ window_welch = hann(sampling_frequency);
 window_fft = zeros(window_overlap*m/n-(window_overlap-1), (n+6)/2);
 for i = 1:window_overlap*m/n-(window_overlap-1)
     y_clean = detrend(y((i-1)*n/window_overlap+1:(i-1)*n/window_overlap+n));
-    Y = fft( [y_clean.*window_welch', zeros(1,6)]);
+    Y = fft( [y_clean.*window_welch; zeros(6,1)]);
     L = round( length(Y)/2 );
     window_fft(i,:) = abs( Y(1:L) )/L; % CORRECTION: "/L"
     if ~freq_set

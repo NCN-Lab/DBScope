@@ -17,7 +17,7 @@ classdef WEARABLE_EXTERNAL < RECORDINGMODE_COMMONMETHODS
     methods
 
         function obj = WEARABLE_EXTERNAL() % constructor
-            disp('Initialization of WERABLE_EXTERNAL class');
+            disp('Initialization of WEARABLE_EXTERNAL class');
 
         end
         loadWearables( obj, path, filenames );

@@ -34,7 +34,7 @@ text = [];
 % Programmer versions that can be parsed by toolbox
 all_programmer_versions = ["2.0.4584", ...
     "3.0.1057", "3.0.1062", "3.0.1081", "3.0.1098", ...
-    "4.0.1052"];
+    "4.0.1052", "5.0.676"];
 
 error_msg = 'Could not successfully import the provided file.';
 
@@ -49,7 +49,7 @@ end
 % Get Main Parameters
 obj.parameters.fname                = fname;
 obj.parameters.session_date         = datetime( data.SessionDate, "InputFormat", 'yyyy-MM-dd''T''HH:mm:ss''Z''' );
-obj.parameters.save_pathname        = [ file_pathname filesep regexprep(data.SessionDate, {':', '-', 'Z'}, {''}) ];
+obj.parameters.save_pathname        = [ file_pathname regexprep(data.SessionDate, {':', '-', 'Z'}, {''}) ];
 obj.parameters.programmer_version   = data.ProgrammerVersion;
 obj.parameters.programmer_utc       = data.ProgrammerUtcOffset;
 
@@ -75,7 +75,6 @@ try
     obj.fillGroupsInformation( data );
 
     % Check Recording Modes & Fill Classes
-
     obj.status.survey       = obj.survey_obj.fillSurveyParameters( data );
     obj.status.indefinite   = obj.indefinite_obj.fillIndefiniteParameters( data );
     obj.status.setup_off    = obj.setup_obj.fillSetupOFFParameters( data );

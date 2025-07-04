@@ -8,11 +8,12 @@ function plotFFTSetupON( obj, varargin )
 % Input parameters:
 %    * obj              DBScope object containg streaming data.
 %    * (optional) ax    Axis where to plot.
+%    * rec              Index of recording.
 %    * channel          Index of channel.
 %
 % Example:
-%   PLOTFFTSETUPON( obj, channel );
-%   PLOTFFTSETUPON( obj, ax, channel );
+%   PLOTFFTSETUPON( obj, rec, channel );
+%   PLOTFFTSETUPON( obj, ax, rec, channel );
 %
 %
 % Available at: https://github.com/NCN-Lab/DBScope
@@ -30,6 +31,7 @@ parser = inputParser;
 validScalarNum  = @(x) isnumeric(x) && isscalar(x) && (x > 0);
 
 % Define input parameters and their default values
+addRequired(parser, 'Recording', validScalarNum);
 addRequired(parser, 'Channel', validScalarNum);
 
 % Parse the input arguments
@@ -42,6 +44,7 @@ else
 end
 
 % Access the values of inputs
+rec             = parser.Results.Recording;
 channel         = parser.Results.Channel;
 
 % Get data
@@ -51,7 +54,7 @@ sampling_frequency  = obj.setup_parameters.stim_on.fs(1); % In survey mode, samp
 Nyquist             = 0.5*sampling_frequency;
 
 % Calculate FFT
-y = raw_signal{ceil(channel/2)}(:,2-rem(channel,2));
+y = raw_signal{rec}(:, channel);
 s1 = length(y);
 n = 250;
 m  = s1 - mod(s1, n);

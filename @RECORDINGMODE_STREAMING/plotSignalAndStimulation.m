@@ -42,7 +42,7 @@ validDataType   = {'Raw','ECG Cleaned','Latest Filtered'};
 
 % Define input parameters and their default values
 addRequired(parser, 'Recording', validScalarNum);
-addRequired(parser, 'Channel', validScalarNum);
+addRequired(parser, 'Channel');
 addParameter(parser, 'DataType', defaultDataType, @(x) any(validatestring(x,validDataType))); % Default value is 'Raw'
 
 % Parse the input arguments
@@ -88,10 +88,19 @@ stim_amp_obj        = obj.streaming_parameters.stim_amp;
 sampling_freq_stim  = obj.streaming_parameters.stim_amp.fs;
 
 % Get data
-LFP         = LFP_selected{rec}(:, channel);
-tms         = ( 0:numel( LFP ) - 1 ) / sampling_frequency;
-stim        = stim_amp_obj.data{rec}(:, channel);
-tms_stim    = ( 0:numel( stim ) - 1 ) / sampling_freq_stim;
+channel_names_LFP   = obj.streaming_parameters.time_domain.channel_names{rec};
+channel_names_stim  = obj.streaming_parameters.stim_amp.stim_channel_names{rec};
+if contains(channel, "left", "IgnoreCase", true)
+    LFP_indx = find(contains(channel_names_LFP, "left", "IgnoreCase", true));
+    stim_indx = 1;
+else
+    LFP_indx = find(contains(channel_names_LFP, "right", "IgnoreCase", true));
+    stim_indx = 2;
+end
+LFP         = LFP_selected{rec}(:, LFP_indx);
+tms         = obj.streaming_parameters.time_domain.time{rec};
+stim        = stim_amp_obj.data{rec}(:, stim_indx);
+tms_stim    = stim_amp_obj.time{rec};
 
 % Plot data
 cla( ax, 'reset' );

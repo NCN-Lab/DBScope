@@ -50,8 +50,17 @@ switch nargin
             case 'ECG Cleaned'
                 LFP_ordered = obj.streaming_parameters.time_domain.ecg_clean;
         end
+
+        channel_names_LFP   = obj.streaming_parameters.time_domain.channel_names{rec};
+        % if contains(channel, "left", "IgnoreCase", true)
+        %     LFP_indx = find(contains(channel_names_LFP, "left", "IgnoreCase", true));
+        % else
+        %     LFP_indx = find(contains(channel_names_LFP, "right", "IgnoreCase", true));
+        % end
+
+        LFP             = LFP_ordered{rec}(:, channel);
         
-        [Pxx, F] = pwelch(LFP_ordered{rec}(:,channel), window, noverlap, fmin:freqResolution:fmax, sampling_freq_Hz);
+        [Pxx, F] = pwelch(LFP, window, noverlap, fmin:freqResolution:fmax, sampling_freq_Hz);
         
         cla( ax, 'reset' );
         area( ax, [13 35], [1.3*max(Pxx) 1.3*max(Pxx)], 'FaceColor', color(1,:), ...

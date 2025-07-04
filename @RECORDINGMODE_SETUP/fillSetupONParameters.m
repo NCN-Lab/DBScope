@@ -28,13 +28,12 @@ function [ status ] = fillSetupONParameters( obj, data )
 
 status = 0;
 
-%Extract LFPs
 if isfield( data, 'CalibrationTests' ) % Setup ON stimulation
     parameters.mode         = 'CalibrationTests';
     LFP_ON                  = obj.extractLFP( data, parameters  );
 
 
-    %Fill setup parameters
+    % Fill setup parameters
     obj.setup_parameters.stim_on.recording_mode = LFP_ON.recordingMode;
     obj.setup_parameters.stim_on.num_channels = LFP_ON.nChannels;
     obj.setup_parameters.stim_on.channel_names = {LFP_ON.channel_names};

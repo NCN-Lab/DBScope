@@ -46,7 +46,7 @@ if ~isempty(i)
     ndata(1,obj.aux_perceive_sc(nt,0):obj.aux_perceive_sc(nt,0)+size(x,2)-1)=x(1,:); % initialize with first segment 
     n=0; % run through remaining segments and find xcorr lags, align data
     for a = 2:size(x,1)
-        [r,l]=xcorr(nanmean(ndata,1),x(a,:),fs);
+        [r,l]=xcorr(mean(ndata,1,"omitnan"),x(a,:),fs);
         [~,mi] = max(r);
         tlag = l(mi);
         if tlag >0
@@ -54,7 +54,7 @@ if ~isempty(i)
             ndata(n,tlag:tlag+size(x,2)-1)=x(a,:);
         end
     end
-    mdata = nanmean(ndata,1); % average aligned data
+    mdata = mean(ndata,1,"omitnan"); % average aligned data
 
     %% find ECG peak characteristics in xcorr aligned data
     [absm,imax]=findpeaks(abs(mdata),'SortStr','descend','NPeaks',15);

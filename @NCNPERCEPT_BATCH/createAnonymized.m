@@ -28,8 +28,14 @@ function [ anon ] = createAnonymized( obj )
 % pauloaguiar@i3s.up.pt
 % -----------------------------------------------------------------------
 pathname = uigetdir();
+
+if pathname == 0 
+    return;
+end
+
 cd( pathname );
 filelist = dir( '*.json' );
+
 
 for f = 1 : numel( filelist )
 

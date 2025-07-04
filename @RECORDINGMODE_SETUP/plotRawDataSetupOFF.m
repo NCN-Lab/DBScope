@@ -8,11 +8,12 @@ function plotRawDataSetupOFF( obj, varargin )
 % Input parameters:
 %    * obj              DBScope object containg streaming data.
 %    * (optional) ax    Axis where to plot.
+%    * rec              Index of recording.
 %    * channel          Index of channel.
 %
 % Example:
-%   PLOTRAWDATASETUPOFF( obj, channel );
-%   PLOTRAWDATASETUPOFF( obj, ax, channel );
+%   PLOTRAWDATASETUPOFF( obj, rec, channel );
+%   PLOTRAWDATASETUPOFF( obj, ax, rec, channel );
 %
 %
 % Available at: https://github.com/NCN-Lab/DBScope
@@ -30,6 +31,7 @@ parser = inputParser;
 validScalarNum  = @(x) isnumeric(x) && isscalar(x) && (x > 0);
 
 % Define input parameters and their default values
+addRequired(parser, 'Recording', validScalarNum);
 addRequired(parser, 'Channel', validScalarNum);
 
 % Parse the input arguments
@@ -42,11 +44,12 @@ else
 end
 
 % Access the values of inputs
+rec             = parser.Results.Recording;
 channel         = parser.Results.Channel;
 
 % Get data
-raw_signal          = vertcat(obj.setup_parameters.stim_off.data{:});
-time                = obj.setup_parameters.stim_off.time{1}';
+raw_signal          = obj.setup_parameters.stim_off.data;
+time                = obj.setup_parameters.stim_off.time';
 sampling_frequency  = obj.setup_parameters.stim_off.fs(1); % In survey mode, sampling frequency is the same for all recordings.
 Nyquist             = 0.5*sampling_frequency;
 
@@ -57,8 +60,8 @@ end
 
 % Plot
 cla( ax, 'reset');
-plot( ax, time, raw_signal{channel} );
-xlim( ax, [0 time(end)]);
+plot( ax, time{rec}, raw_signal{rec}(:, channel) );
+xlim( ax, [0 time{rec}(end)]);
 ylabel( ax, 'Amplitude (\muVp)');
 xlabel( ax, 'Time (s)');
 title( ax, 'Raw Signal');

@@ -95,6 +95,8 @@ end
 
 if ~isempty(LFP.sensing)
     cfs = [LFP.center_frequency];
+else
+    
 end
 
 for i = 1:n_channels
@@ -131,13 +133,14 @@ for i = 1:n_channels
             % hi = plot([event_DateTime event_DateTime], [0 1.1*max(LFP.data(:,hemisphere_indx(i)))], '--', ...
             %     'Color', colors(2 + eventId, :), 'Parent', ax(hemisphere_indx(i)));
             h(eventId) = hi(1);
-
         end
-        xlabel(ax(hemisphere_indx(i)), LFP.xlabel);
-        lgd = legend(ax(hemisphere_indx(i)), h, unique(events.event_name));
-        ax(hemisphere_indx(i)).InteractionOptions.LimitsDimensions = "x";
-        title(lgd,'Events');
 
+        if exist('h','var')
+            xlabel(ax(hemisphere_indx(i)), LFP.xlabel);
+            lgd = legend(ax(hemisphere_indx(i)), h, unique(events.event_name));
+            ax(hemisphere_indx(i)).InteractionOptions.LimitsDimensions = "x";
+            title(lgd,'Events');
+        end
     end
 
 end

@@ -46,7 +46,7 @@ validDataType   = {'Raw','ECG Cleaned','Latest Filtered'};
 
 % Define input parameters and their default values
 addRequired(parser, 'Recording', validScalarNum);
-addRequired(parser, 'Channel', validScalarNum);
+addRequired(parser, 'Channel');
 addParameter(parser, 'DataType', defaultDataType, @(x) any(validatestring(x,validDataType))); % Default value is 'Raw'
 addParameter(parser, 'Limits', [1 92], validLimits); % Default value is [1 92]
 
@@ -90,9 +90,15 @@ if isempty(ax)
 end
 
 % Get data
-LFP                     = LFP_selected{rec}(:, channel);
-[ cfs, frq ]            = cwt( LFP, 'amor', sampling_frequency );
-tms                     = ( 0:numel( LFP_selected{rec}(:, channel) ) - 1 ) / sampling_frequency;
+channel_names_LFP   = obj.streaming_parameters.time_domain.channel_names{rec};
+if contains(channel, "left", "IgnoreCase", true)
+    LFP_indx = find(contains(channel_names_LFP, "left", "IgnoreCase", true));
+else
+    LFP_indx = find(contains(channel_names_LFP, "right", "IgnoreCase", true));
+end
+LFP             = LFP_selected{rec}(:, LFP_indx);
+[ cfs, frq ]    = cwt( LFP, 'amor', sampling_frequency );
+tms             = obj.streaming_parameters.time_domain.time{rec};
 
 % Plot data
 cla( ax, 'reset' );

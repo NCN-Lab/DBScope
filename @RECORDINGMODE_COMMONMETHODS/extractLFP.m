@@ -32,7 +32,7 @@ recordingMode   = parameters.mode;
 
 LFP_out = [];
 
-%Identify the different recordings
+% Identify the different recordings
 nLines = size(data.(recordingMode), 1);
 FirstPacketDateTime = cell(nLines, 1);
 for lineId = 1:nLines
@@ -42,7 +42,7 @@ FirstPacketDateTime = categorical(FirstPacketDateTime);
 recNames = unique(FirstPacketDateTime);
 nRecs = numel(recNames);
 
-%Extract LFPs in a new structure for each recording
+% Extract LFPs in a new structure for each recording
 for recId = 1:nRecs
 
     datafield = data.(recordingMode)(FirstPacketDateTime == recNames(recId));
@@ -58,7 +58,7 @@ for recId = 1:nRecs
     LFP.Fs = datafield(1).SampleRateInHz;
     LFP.first_packet_datetimes = datetime( datafield(1).FirstPacketDateTime, "InputFormat", 'yyyy-MM-dd''T''HH:mm:ss.SSS''Z''' );
 
-    %Extract size of received packets
+    % Extract size of received packets
     GlobalPacketSizes = str2num(datafield(1).GlobalPacketSizes);
     % if sum(GlobalPacketSizes) ~= size(LFP.data, 1) && ~strcmpi(recordingMode, 'SenseChannelTests') && ~strcmpi(recordingMode, 'CalibrationTests')
     %     warning([recordingMode ': data length (' num2str(size(LFP.data, 1)) ' samples) differs from the sum of packet sizes (' num2str(sum(GlobalPacketSizes)) ' samples)'])
@@ -81,7 +81,7 @@ for recId = 1:nRecs
             LFP.time = (1:length(LFP.data))/LFP.Fs; % [s]
             
             % Get indices of missing packets
-            diff_ticks = [0, diff(TicksInMses) - 250]; % 250 ms is the default
+            diff_ticks = [0, diff(TicksInMses) - 250*(3-LFP.nChannels)]; % 250(500) ms is the default for 2(1) hemispheres
             indx_gaps = find(diff_ticks > 0);
             
             % Correct time vector

@@ -35,6 +35,9 @@ pws         = NaN * zeros(2, 2, numel(group_ids));
 moments = ["initial", "final"];
 for i = 1:numel(moments)
     for g = 1:numel(obj.parameters.groups.(moments(i)))
+        if isempty(obj.parameters.groups.(moments(i))(g).stimulation) 
+            continue;
+        end
         for h = 1:numel(obj.parameters.groups.(moments(i))(g).stimulation.hemispheres)
             
             if contains(lower(obj.parameters.groups.(moments(i))(g).stimulation.hemispheres(h).location), "left")

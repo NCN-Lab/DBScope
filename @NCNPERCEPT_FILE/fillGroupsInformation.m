@@ -21,22 +21,53 @@ function status = fillGroupsInformation( obj, data )
 % -----------------------------------------------------------------------
 
 % Group History
-obj.parameters.group_history = struct;
-for session = 1:numel(data.GroupHistory)
-    obj.parameters.group_history(session).session_date  = datetime(data.GroupHistory(session).SessionDate, "InputFormat", 'yyyy-MM-dd''T''HH:mm:ss''Z''');
-    obj.parameters.group_history(session).groups        = obj.extractGroupsInformation(data.GroupHistory(session).Groups);
-    obj.parameters.group_history(session).changes       = struct;
-end
-if isfield(data.DiagnosticData, 'EventLogs')
-    for event = 1:numel(data.DiagnosticData.EventLogs)
-        if isfield(data.DiagnosticData.EventLogs{event}, 'NewGroupId')
-            event_datetime = datetime(data.DiagnosticData.EventLogs{event}.DateTime, "InputFormat", 'yyyy-MM-dd''T''HH:mm:ss''Z''');
-            indx = find(event_datetime < [obj.parameters.group_history.session_date], 1, "last");
-            obj.parameters.group_history(indx).changes(end+1).datetime = datetime(data.DiagnosticData.EventLogs{event}.DateTime, "InputFormat", 'yyyy-MM-dd''T''HH:mm:ss''Z''');
-            obj.parameters.group_history(indx).changes(end).old = strrep(data.DiagnosticData.EventLogs{event}.OldGroupId, 'GroupIdDef.GROUP_', '');
-            obj.parameters.group_history(indx).changes(end).new = strrep(data.DiagnosticData.EventLogs{event}.NewGroupId, 'GroupIdDef.GROUP_', '');
-        end
+obj.parameters.group_history = [];
+if isfield(data, 'GroupHistory')
+    GroupHistory = table;
+    for session = 1:numel(data.GroupHistory)
+        datafield           = struct2table(data.GroupHistory(session), 'AsArray', true);
+        GroupHistory        = [GroupHistory; datafield]; %#ok<*AGROW>
     end
+    GroupHistory = sortrows(GroupHistory, 1);
+    GroupHistory.SessionDate = cellfun(@(x) datetime(regexprep(x(1:end-1),'T',' ')), GroupHistory.SessionDate);
+    
+    % Define the default values for missing fields
+    defaultGroupValues = {
+        {[]}, ...               % Default for GroupId
+        false, ...              % Default for ActiveGroup
+        struct(), ...           % Default for ProgramSettings
+        struct()                % Default for GroupSettings
+    };
+    for session = 1:numel(data.GroupHistory)
+        GroupsInfo      = table;
+        expectedFields  = {'GroupId','ActiveGroup','ProgramSettings','GroupSettings'};
+    
+        for group = 1:numel(data.GroupHistory(session).Groups)
+            if iscell(data.GroupHistory(session).Groups) % depending on software version
+                thisGroup = struct2table(data.GroupHistory(session).Groups{group}, 'AsArray', true);
+            else
+                thisGroup = struct2table(data.GroupHistory(session).Groups(group), 'AsArray', true);
+            end
+    
+            % For each expected field, check if it's missing in group, and add the default if necessary
+            for fieldIdx = 1:numel(expectedFields)
+                fieldName = expectedFields{fieldIdx};
+                if ~ismember(fieldName, thisGroup.Properties.VariableNames)
+                    thisGroup.(fieldName) = defaultGroupValues{fieldIdx};
+                end
+            end
+    
+            thisGroup.GroupId           = strrep(thisGroup.GroupId, 'GroupIdDef.', '');
+            thisGroup.ProgramSettings   = {thisGroup.ProgramSettings};
+            thisGroup.GroupSettings     = {thisGroup.GroupSettings};
+    
+            GroupsInfo = [GroupsInfo; thisGroup]; %#ok<*AGROW>
+    
+        end    
+        GroupHistory.Groups{session} = GroupsInfo;
+    end
+    
+    obj.parameters.group_history = GroupHistory;
 end
 
 % Session Groups

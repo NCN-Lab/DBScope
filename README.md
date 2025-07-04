@@ -19,7 +19,14 @@ DBScope version 0.3, 02.07.2024
 + Missing samples of streaming recordings are now automatically corrected by parser.
 + Parsing functions were renamed for consistency.
 
-Core contributors: Andreia M Oliveira, Eduardo Carvalho, Beatriz Barros, Paulo Aguiar
+DBScope version 0.4, 04.07.2025
+
++ Added parser for ProgrammerVersion 5.0.676.
++ Added some fail-safes and corrected minor bugs on the plotted VisualizationWindows.
++ Corrected hemisphere mislabeling problem in some files (where hemisphere order in json is right-left).
++ Corrected error where Setup ON and OFF would only show data from first run.
+
+Core contributors: Andreia M Oliveira, Eduardo Carvalho, Pedro Melo, Beatriz Barros, Paulo Aguiar
 
 Neuroengineering and Computational Neuroscience (NCN) Lab,
 
