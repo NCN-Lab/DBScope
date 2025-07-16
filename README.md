@@ -26,7 +26,7 @@ DBScope version 0.4, 04.07.2025
 + Corrected hemisphere mislabeling problem in some files (where hemisphere order in json is right-left).
 + Corrected error where Setup ON and OFF would only show data from first run.
 
-Core contributors: Andreia M Oliveira, Eduardo Carvalho, Pedro Melo, Beatriz Barros, Paulo Aguiar
+Core maintainers: Eduardo Carvalho*, Pedro Melo*, Andreia M Oliveira, Paulo Aguiar
 
 Neuroengineering and Computational Neuroscience (NCN) Lab,
 
