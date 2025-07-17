@@ -2,7 +2,8 @@
 
 DBScope is described in the following paper published in npj Parkinson's Disease:
 
-Oliveira AM*, Carvalho E*, Barros B, Soares C, Ferreira-Pinto MJ, Vaz R, Aguiar P., "<i>DBScope as a versatile computational toolbox for the visualization and analysis of sensing data from deep brain stimulation</i>". npj Parkinson's Disease. 2024 Jul 15;10(1):132.
+Oliveira AM*, Carvalho E*, Barros B, Soares C, Ferreira-Pinto MJ, Vaz R, Aguiar P., <i>DBScope as a versatile computational toolbox for the visualization and analysis of sensing data from deep brain stimulation</i>. npj Parkinson's Disease. 2024 Jul 15;10(1):132.
+
 (* equal contribution)
 
 https://doi.org/10.1038/s41531-024-00740-z
