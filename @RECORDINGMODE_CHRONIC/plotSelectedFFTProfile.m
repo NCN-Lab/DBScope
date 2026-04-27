@@ -30,31 +30,38 @@ switch nargin
     case 3
         ax = varargin{1};
         event_date = varargin{2};
-
+        
         for channel = 1:numel(hemispheres_names)
-            current_FFT = {};
+            current_FFT = [];
+            freq = [];
+            
             for evnt = 1:length(obj.chronic_parameters.events.lfp_frequency_snapshots_events)
                 if strcmp( event_date, datestr(obj.chronic_parameters.events.date_time(evnt,:)) )
-                    current_FFT = obj.chronic_parameters.events.lfp_frequency_snapshots_events{evnt,1}.FFTBinData(:,channel);
-                    freq = obj.chronic_parameters.events.lfp_frequency_snapshots_events{evnt,1}.Frequency;
+                    % Ensure the snapshot actually exists before extracting
+                    if ~isempty(obj.chronic_parameters.events.lfp_frequency_snapshots_events{evnt,1})
+                        current_FFT = obj.chronic_parameters.events.lfp_frequency_snapshots_events{evnt,1}.FFTBinData(:,channel);
+                        freq = obj.chronic_parameters.events.lfp_frequency_snapshots_events{evnt,1}.Frequency;
+                    else
+                        warning('DBScope:MissingSnapshot', 'The event logged at %s does not contain an FFT snapshot.', event_date);
+                    end
                 end
             end
-
+            
             % Left-side axis
             % Delete last selected FFT, if it exists
             if length(ax(channel).Children)==2
                 delete(ax(channel).Children(1));
             end
-            plot(ax(channel), freq, current_FFT, 'Color', [color(2,:), 1], 'LineWidth', 1.5, 'DisplayName', 'Selected FFT');
-            legend(ax(channel));
-            ax(channel).Interactions = [panInteraction('Dimensions','x') zoomInteraction('Dimensions','x')];
+            
+            % Only attempt to plot if we successfully extracted valid data
+            if ~isempty(current_FFT) && ~isempty(freq)
+                plot(ax(channel), freq, current_FFT, 'Color', [color(2,:), 1], 'LineWidth', 1.5, 'DisplayName', 'Selected FFT');
+                legend(ax(channel));
+                ax(channel).Interactions = [panInteraction('Dimensions','x') zoomInteraction('Dimensions','x')];
+            end
         end
-
         linkaxes(ax,'x');
-
     otherwise
         error('Incorrect inputs. For reference: plotSelectedFFTProfile ( obj, ax, event_date )')
-
 end
-
 end

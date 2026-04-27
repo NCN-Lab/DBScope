@@ -9,27 +9,17 @@ function plotETA( obj, varargin )
 %    * ax (optional) - axis where you want to plot
 %    * n_timestamps (optional)
 %    * event_type ( optional ) - type of event to plot
-%    * date_range (optional ) - period of events logs to plot
+%    * event_date (optional ) - specific event log to highlight
 %
-% Example:
-%   obj.plotETA;
-%   PLOTETA( obj );
-%   PLOTETA( obj, n_timestamps, event_type );
-%   PLOTETA( obj, ax, n_timestamps, event_type, event_date );
-%
-% Available at: https://github.com/NCN-Lab/DBScope
-% For referencing, please use: Andreia M. Oliveira, Eduardo Carvalho, Beatriz Barros, Carolina Soares, Manuel Ferreira-Pinto, Rui Vaz, Paulo Aguiar, DBScope: 
-% a versatile computational toolbox for the visualization and analysis of sensing data from Deep Brain Stimulation, doi: 10.1101/2023.07.23.23292136.
-%
-% Andreia M. Oliveira, Eduardo Carvalho, Beatriz Barros & Paulo Aguiar - NCN
-% INEB/i3S 2022
-% pauloaguiar@i3s.up.pt
 % -----------------------------------------------------------------------
-color = lines(4);
-ax = [];
 
 % Get active channels
 hemispheres_names  = obj.chronic_parameters.time_domain.hemispheres;
+% Dynamically assign colors based on available channels 
+color = lines(max(2, numel(hemispheres_names))); 
+
+ax = [];
+event_date = ''; % Initialize securely to avoid undefined variable errors
 
 % Parse input variables
 switch nargin
@@ -38,24 +28,24 @@ switch nargin
         n_timestamps = varargin{2};
         event_type = varargin{3};
         event_date = varargin{4};
-
-        if isempty(n_timestamps)
-            n_timestamps = 6;
-        else
-            n_timestamps = n_timestamps + 1;
-        end
-
+    case 4
+        ax = varargin{1};
+        n_timestamps = varargin{2};
+        event_type = varargin{3};
     case 3
         n_timestamps = varargin{1};
         event_type = varargin{2};
-        if isempty(n_timestamps)
-            n_timestamps = 6;
-        else
-            n_timestamps = n_timestamps + 1;
-        end
-
-    case 1
+    case 2
+        event_type = varargin{1};
         n_timestamps = 6;
+    case 1
+        error('Not enough input arguments. At least event_type must be provided.');
+end
+
+if isempty(n_timestamps)
+    n_timestamps = 6;
+else
+    n_timestamps = n_timestamps + 1;
 end
 
 if isempty(ax)
@@ -71,40 +61,44 @@ chronic_time = obj.chronic_parameters.time_domain.time;
 events_timepoint = obj.chronic_parameters.events.date_time(strcmp(obj.chronic_parameters.events.event_name, event_type));
 
 for channel = 1:numel(hemispheres_names)
-    chronic_LFP = [];
-    chronic_timestamps = [];
+    
+    % Store extracted data in cells to avoid NaN padding issues
+    chronic_LFP_cells = cell(numel(events_timepoint), 1);
+    chronic_time_cells = cell(numel(events_timepoint), 1);
+    evnt_indx = [];
+    
     for evnt = 1:numel(events_timepoint)
-        if strcmp( event_date, datestr(events_timepoint(evnt)) )
+        % Check if this is the specific event to highlight
+        if ~isempty(event_date) && strcmp( event_date, datestr(events_timepoint(evnt)) )
             evnt_indx = evnt;
         end
-        chronic_indx = find(events_timepoint(evnt)<chronic_time(:), 1)-1;
-        if chronic_indx < n_timestamps
-            LFP_before(1:n_timestamps) = NaN;
-            LFP_before(end-chronic_indx+1:end) = ...
-                obj.chronic_parameters.time_domain.data(1:chronic_indx,channel);
-            timestamps_before(1:n_timestamps) = datetime(1900,0,0,0,0,0);
-            timestamps_before(end-chronic_indx+1:end) = chronic_time(1:chronic_indx);
-        else
-            LFP_before(1:n_timestamps) = ...
-                obj.chronic_parameters.time_domain.data(chronic_indx+1-n_timestamps:chronic_indx,channel);
-            timestamps_before(1:n_timestamps) = chronic_time(chronic_indx+1-n_timestamps:chronic_indx);
+        
+        % Find the closest timestamp before or at the event
+        chronic_indx = find(chronic_time <= events_timepoint(evnt), 1, 'last');
+        
+        % Skip if event happens before any recorded timeline data
+        if isempty(chronic_indx)
+            continue; 
         end
-        if numel(chronic_time) - chronic_indx+1 < n_timestamps
-            LFP_after(1:n_timestamps) = NaN;
-            LFP_after(1:numel(chronic_time)-chronic_indx) = ...
-                obj.chronic_parameters.time_domain.data(chronic_indx+1:numel(chronic_time),channel);
-            timestamps_after(1:n_timestamps) = datetime(3100,0,0,0,0,0);
-            timestamps_after(1:numel(chronic_time)-chronic_indx) = chronic_time(chronic_indx+1:numel(chronic_time));
-        else
-            LFP_after(1:n_timestamps) = ...
-                obj.chronic_parameters.time_domain.data(chronic_indx+1:chronic_indx+n_timestamps,channel);
-            timestamps_after(1:n_timestamps) = chronic_time(chronic_indx+1:chronic_indx+n_timestamps);
-        end
-
-        chronic_LFP = [chronic_LFP; LFP_before, LFP_after];
-        chronic_timestamps = [chronic_timestamps; between(events_timepoint(evnt), timestamps_before), ...
-            between(events_timepoint(evnt), timestamps_after)];
-
+        
+        % Define safe bounds for extraction
+        idx_start = max(1, chronic_indx - n_timestamps + 1);
+        idx_end   = min(numel(chronic_time), chronic_indx + n_timestamps);
+        
+        % Extract valid data
+        ext_time = chronic_time(idx_start:idx_end);
+        ext_LFP  = obj.chronic_parameters.time_domain.data(idx_start:idx_end, channel);
+        
+        % Calculate real time difference in minutes
+        rel_time_min = minutes(ext_time - events_timepoint(evnt));
+        
+        % Ensure uniqueness for the interpolation grid
+        [rel_time_min, unique_idx] = unique(rel_time_min);
+        ext_LFP = ext_LFP(unique_idx);
+        
+        % Save to cells
+        chronic_time_cells{evnt} = rel_time_min;
+        chronic_LFP_cells{evnt} = ext_LFP;
     end
     
     if no_axes
@@ -113,37 +107,78 @@ for channel = 1:numel(hemispheres_names)
     else
         cla(ax(channel), 'reset'); % reset axis
     end
-    if ~isempty(chronic_timestamps)
-        t = split(chronic_timestamps,{'time'});
-        total_min = minutes(t);
-        xline(ax(channel), 0, 'HandleVisibility', 'off');
-        hold(ax(channel), 'on');
-        interp_LFP = [];
-        for ii = 1:size(chronic_LFP, 1)
-            [total_min_aux, indx, ~] = unique(total_min(ii,:));
-            interp_LFP(ii,:) = interp1(total_min_aux, ...
-                chronic_LFP(ii,indx), -n_timestamps*10:(n_timestamps+1)*10);
-            plot(ax(channel), total_min_aux, chronic_LFP(ii,indx), 'Color',[color(channel,:), 0.2], 'HandleVisibility', 'off');
-            hold(ax(channel), 'on');
+    
+    % Prepare the interpolation grid for the mean profile
+    query_times = -n_timestamps*10 : 10 : (n_timestamps+1)*10;
+    interp_LFP = nan(numel(events_timepoint), numel(query_times));
+    
+    xline(ax(channel), 0, 'HandleVisibility', 'off');
+    hold(ax(channel), 'on');
+    
+    valid_indices = []; % Track which events actually have plotted data
+    
+    for evnt = 1:numel(events_timepoint)
+        if isempty(chronic_time_cells{evnt}) || numel(chronic_time_cells{evnt}) < 2
+            continue; % Skip events with insufficient data
         end
-        plot(ax(channel), total_min(evnt_indx,:), chronic_LFP(evnt_indx,:), 'Color', [color(channel,:), 1], 'LineWidth', 1, 'DisplayName', 'Selected Event');
-        plot(ax(channel), -n_timestamps*10:(n_timestamps+1)*10, mean(interp_LFP,1,'omitnan'),'Color','black','LineWidth',1, ...
-            'DisplayName', 'Mean Power');
-        xlabel(ax(channel), "Time [min]");
-        ylabel(ax(channel), "LFP Power");
-        xlim(ax(channel),[-(n_timestamps-1)*10-.5 (n_timestamps-1)*10+.5]);
-        if contains(hemispheres_names(channel), 'Left')
-            title(ax(channel), "Left Hemisphere" + " (Sensing band centered @" + ...
-                num2str(obj.chronic_parameters.time_domain.center_frequency(channel),'%.2f') + " Hz)" );
-        else
-            title(ax(channel), "Right Hemisphere" + " (Sensing band centered @" + ...
-                num2str(obj.chronic_parameters.time_domain.center_frequency(channel),'%.2f') + " Hz)" );
-        end
-        legend(ax(channel));
-        hold(ax(channel), 'off');
-        disableDefaultInteractivity(ax(channel));
+        
+        valid_indices(end+1) = evnt;
+        
+        % Plot individual valid traces natively (no NaN breaks)
+        plot(ax(channel), chronic_time_cells{evnt}, chronic_LFP_cells{evnt}, ...
+            'Color',[color(channel,:), 0.2], 'HandleVisibility', 'off');
+        
+        % Interpolate over the query grid for accurate mean alignment
+        interp_LFP(evnt,:) = interp1(chronic_time_cells{evnt}, chronic_LFP_cells{evnt}, ...
+            query_times, 'linear', NaN);
     end
-       
+    
+    % Only attempt to draw Selected and Mean lines if data exists
+    if ~isempty(valid_indices)
+        % Overlay the highlighted event if requested and if it contains valid data
+        if ~isempty(evnt_indx) && ismember(evnt_indx, valid_indices)
+            plot(ax(channel), chronic_time_cells{evnt_indx}, chronic_LFP_cells{evnt_indx}, ...
+                'Color', [color(channel,:), 1], 'LineWidth', 2, 'DisplayName', 'Selected Event');
+        end
+        
+        % EXACT MATCH FIX: If there's only 1 valid trace, map the mean directly to the raw data
+        if numel(valid_indices) == 1
+            the_idx = valid_indices(1);
+            plot(ax(channel), chronic_time_cells{the_idx}, chronic_LFP_cells{the_idx}, ...
+                'Color', 'black', 'LineWidth', 2, 'DisplayName', 'Mean Power');
+        else
+            % Plot Mean Power via the interpolated grid for multiple events
+            valid_means = mean(interp_LFP(valid_indices, :), 1, 'omitnan');
+            plot(ax(channel), query_times, valid_means, 'Color', 'black', 'LineWidth', 2, ...
+                'DisplayName', 'Mean Power');
+        end
+        
+        legend(ax(channel));
+    end
+    
+    % --- ALWAYS EXECUTE LABELS & TITLES (EVEN IF EMPTY) ---
+    
+    xlabel(ax(channel), "Time [min]");
+    ylabel(ax(channel), "LFP Power");
+    xlim(ax(channel),[-(n_timestamps-1)*10-.5 (n_timestamps-1)*10+.5]);
+    
+    % Base title generation
+    if contains(hemispheres_names(channel), 'Left')
+        title_str = "Left Hemisphere (Sensing band centered @" + ...
+            num2str(obj.chronic_parameters.time_domain.center_frequency(channel),'%.2f') + " Hz)";
+    else
+        title_str = "Right Hemisphere (Sensing band centered @" + ...
+            num2str(obj.chronic_parameters.time_domain.center_frequency(channel),'%.2f') + " Hz)";
+    end
+    
+    % Append missing data warning if no valid traces were found
+    if isempty(valid_indices)
+        title_str = title_str + " - No peri-event Timeline Data";
+    end
+    
+    title(ax(channel), title_str);
+    
+    hold(ax(channel), 'off');
+    disableDefaultInteractivity(ax(channel));
 end
-
 end

@@ -113,7 +113,7 @@ for i = 1:n_channels
     ylabel(ax(hemisphere_indx(i)), LFP.ylabel);
     xlim(ax(hemisphere_indx(i)), [min(LFP.time)+ hours(utc) max(LFP.time)+ hours(utc)]);
     xtickangle(ax(hemisphere_indx(i)), 20);
-    ylim(ax(hemisphere_indx(i)),[0 1.1*max(LFP.data(:,hemisphere_indx(i)))]);
+    ylim(ax(hemisphere_indx(i)),[0 1.5*prctile(LFP.data(:,hemisphere_indx(i)), 99)]);
 
     
     if ~isempty(LFP.sensing)

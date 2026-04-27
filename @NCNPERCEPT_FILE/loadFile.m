@@ -23,8 +23,8 @@ function [ parsing_status, text ] = loadFile( obj, file_pathname, filename )
 % For referencing, please use: Andreia M. Oliveira, Eduardo Carvalho, Beatriz Barros, Carolina Soares, Manuel Ferreira-Pinto, Rui Vaz, Paulo Aguiar, DBScope:
 % a versatile computational toolbox for the visualization and analysis of sensing data from Deep Brain Stimulation, doi: 10.1101/2023.07.23.23292136.
 %
-% Andreia M. Oliveira, Eduardo Carvalho, Beatriz Barros & Paulo Aguiar - NCN
-% INEB/i3S 2022
+% Andreia M. Oliveira, Eduardo Carvalho, Pedro Melo, Beatriz Barros & Paulo Aguiar - NCN
+% INEB/i3S 2026
 % pauloaguiar@i3s.up.pt
 % -----------------------------------------------------------------------
 
@@ -34,7 +34,7 @@ text = [];
 % Programmer versions that can be parsed by toolbox
 all_programmer_versions = ["2.0.4584", ...
     "3.0.1057", "3.0.1062", "3.0.1081", "3.0.1098", ...
-    "4.0.1052", "5.0.676"];
+    "4.0.1052", "5.0.676", "5.0.780", "5.0.839"];
 
 error_msg = 'Could not successfully import the provided file.';
 

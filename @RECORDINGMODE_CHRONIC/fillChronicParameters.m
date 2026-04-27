@@ -71,10 +71,15 @@ if isfield( data, 'DiagnosticData' ) && isfield( data.DiagnosticData, 'LFPTrendL
             aux_data_groups = data.GroupHistory(aux_idx_GroupHistory_entry_tested).Groups;
 
             for j = 1:numel(aux_data_groups)
-                aux_group = aux_data_groups{j};
+                if iscell(aux_data_groups)
+                    aux_group = aux_data_groups{j};
+                else 
+                    aux_group = aux_data_groups(j);
+                end
+
                 if isfield(aux_group, 'ProgramSettings') 
                     if isfield(aux_group.ProgramSettings, 'SensingChannel')
-                        if (aux_group.ProgramSettings.SensingChannel(1).SensingSetup.FrequencyInHertz > 0) && (aux_group.ProgramSettings.SensingChannel(2).SensingSetup.FrequencyInHertz > 0)
+                        if (aux_group.ProgramSettings.SensingChannel(1).SensingSetup.FrequencyInHertz > 0) % && (aux_group.ProgramSettings.SensingChannel(2).SensingSetup.FrequencyInHertz > 0) - this bit was removed because it could be that there's only one sensing hemisphere
                             is_idx_closest_post_end_timeline_with_sensing_found = true;
                             idx_group_sensing = j;
                         end
@@ -85,12 +90,18 @@ if isfield( data, 'DiagnosticData' ) && isfield( data.DiagnosticData, 'LFPTrendL
             i = i + 1;
         end
 
-        temp = data.GroupHistory(aux_idx_GroupHistory_entry_tested).Groups{idx_group_sensing}.ProgramSettings.SensingChannel.Channel;
+        if iscell(data.GroupHistory(aux_idx_GroupHistory_entry_tested).Groups)
+            temp = data.GroupHistory(aux_idx_GroupHistory_entry_tested).Groups{idx_group_sensing}.ProgramSettings.SensingChannel.Channel;
+            obj.chronic_parameters.time_domain.center_frequency = cellfun(@(h) h.FrequencyInHertz, {data.GroupHistory(aux_idx_GroupHistory_entry_tested).Groups{idx_group_sensing}.ProgramSettings.SensingChannel.SensingSetup});
+        else
+            temp = data.GroupHistory(aux_idx_GroupHistory_entry_tested).Groups(idx_group_sensing).ProgramSettings.SensingChannel.Channel;
+            obj.chronic_parameters.time_domain.center_frequency = cellfun(@(h) h.FrequencyInHertz, {data.GroupHistory(aux_idx_GroupHistory_entry_tested).Groups(idx_group_sensing).ProgramSettings.SensingChannel.SensingSetup});
+        end
+
         temp = strrep(temp, '_AND_', ' ');
         temp = strrep(temp, 'SensingElectrodeConfigDef.', '');
         obj.chronic_parameters.time_domain.sensing = temp';
-        obj.chronic_parameters.time_domain.center_frequency = cellfun(@(h) h.FrequencyInHertz, {data.GroupHistory(aux_idx_GroupHistory_entry_tested).Groups{idx_group_sensing}.ProgramSettings.SensingChannel.SensingSetup});
-
+        
     else
         obj.chronic_parameters.time_domain.sensing = {};
         obj.chronic_parameters.time_domain.center_frequency = [];
@@ -146,21 +157,47 @@ if isfield( data, 'DiagnosticData' ) && isfield( data.DiagnosticData, 'LFPTrendL
     obj.chronic_parameters.stim_amp.fs = 2; % adapt to PERCEPT specifications
 
     % Fill parameters for events
+    % Fill parameters for events
     if isfield(LFPTrendLogs, 'events')
         status_events = 1;
-        obj.chronic_parameters.type_events = [];
-        for i = 1:length(data.PatientEvents.Initial)
-            obj.chronic_parameters.type_events{i} = [data.PatientEvents.Initial(i).EventName];
-        end
+        
+        % 1. Extract the timeline data from the table first
         obj.chronic_parameters.events.date_time = table2array(LFPTrendLogs.events(:,1));
         obj.chronic_parameters.events.event_id = table2array(LFPTrendLogs.events(:,2));
         obj.chronic_parameters.events.event_name = table2array(LFPTrendLogs.events(:,3));
         obj.chronic_parameters.events.lfp = table2array(LFPTrendLogs.events(:,4));
         obj.chronic_parameters.events.cycling = table2array(LFPTrendLogs.events(:,5));
         obj.chronic_parameters.events.lfp_frequency_snapshots_events = table2array(LFPTrendLogs.events(:,6));
-        obj.chronic_parameters.events.eventslist = {data.PatientEvents.Initial.EventName};
-        obj.chronic_parameters.events.amp_summary = data.EventSummary.LfpAndAmplitudeSummary;
-        obj.chronic_parameters.events.type_event = {data.PatientEvents.Initial.EventName};
+        
+        % Handle EventSummary independently
+        if isfield(data, 'EventSummary') && isfield(data.EventSummary, 'LfpAndAmplitudeSummary')
+            obj.chronic_parameters.events.amp_summary = data.EventSummary.LfpAndAmplitudeSummary;
+        else
+            obj.chronic_parameters.events.amp_summary = [];
+        end
+
+        % 2. Dynamically extract unique events directly from the history logs
+        % Isolate unique EventIDs to find all historically used event types
+        unique_ids = unique(obj.chronic_parameters.events.event_id);
+        aux_list = cell(1, length(unique_ids));
+        
+        for k = 1:length(unique_ids)
+            % Find the first index where this EventID appears to grab its name
+            idx = find(obj.chronic_parameters.events.event_id == unique_ids(k), 1);
+            
+            % Safely extract the corresponding EventName (accounting for cell vs char)
+            if iscell(obj.chronic_parameters.events.event_name)
+                aux_list{k} = obj.chronic_parameters.events.event_name{idx};
+            else
+                aux_list{k} = strtrim(obj.chronic_parameters.events.event_name(idx, :));
+            end
+        end
+        
+        % 3. Populate the toolbox reference lists with the dynamic list
+        obj.chronic_parameters.type_events = aux_list;
+        obj.chronic_parameters.events.eventslist = aux_list;
+        obj.chronic_parameters.events.type_event = aux_list;
+
     else
         obj.chronic_parameters.events.date_time = [];
         obj.chronic_parameters.events.event_id = [];
