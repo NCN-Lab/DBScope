@@ -9,6 +9,10 @@ Oliveira AM*, Carvalho E*, Barros B, Soares C, Ferreira-Pinto MJ, Vaz R, Aguiar 
 https://doi.org/10.1038/s41531-024-00740-z
 
 ******************************************************************************************************************************************
+DBScope version 0.5, 27.04.2026
+
++ Added parser for ProgrammerVersions up to 5.0.839.
++ Chronic data plotting and analyses can now use more than 4 events (parsed by unique EventID).
 
 DBScope version 0.4, 04.07.2025
 + Added parser for ProgrammerVersion 5.0.676.
@@ -16,7 +20,6 @@ DBScope version 0.4, 04.07.2025
 + Corrected hemisphere mislabeling problem in some files (where hemisphere order in json is right-left).
 + Corrected error where Setup ON and OFF would only show data from first run.
 
-<<<<<<< Updated upstream
 DBScope version 0.3, 02.07.2024
 + Group history is now stored.
 + Missing samples of streaming recordings are now automatically corrected by parser.
@@ -27,13 +30,6 @@ DBScope version 0.2, 03.05.2024
 
 Core maintainers: Eduardo Carvalho*, Pedro Melo*, Andreia M Oliveira, Paulo Aguiar
 =======
-DBScope version 0.5, 27.04.2026
-
-+ Added parser for ProgrammerVersions up to 5.0.839.
-+ Chronic data plotting and analyses can now use more than 4 events (parsed by unique EventID).
-
-Core contributors: Andreia M Oliveira, Eduardo Carvalho, Pedro Melo, Beatriz Barros, Paulo Aguiar
->>>>>>> Stashed changes
 
 Neuroengineering and Computational Neuroscience (NCN) Lab,
 
