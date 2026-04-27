@@ -29,6 +29,7 @@ DBScope version 0.2, 03.05.2024
 + Minor correction in applyFilt_ordered.m function.
 
 Core maintainers: Eduardo Carvalho*, Pedro Melo*, Andreia M Oliveira, Paulo Aguiar
+
 =======
 
 Neuroengineering and Computational Neuroscience (NCN) Lab,
