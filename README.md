@@ -8,6 +8,7 @@ Oliveira AM*, Carvalho E*, Barros B, Soares C, Ferreira-Pinto MJ, Vaz R, Aguiar 
 
 https://doi.org/10.1038/s41531-024-00740-z
 
+Core maintainers: Eduardo Carvalho*, Pedro Melo*, Andreia M Oliveira, Paulo Aguiar
 ******************************************************************************************************************************************
 DBScope version 0.5, 27.04.2026
 
@@ -27,8 +28,6 @@ DBScope version 0.3, 02.07.2024
 
 DBScope version 0.2, 03.05.2024
 + Minor correction in applyFilt_ordered.m function.
-
-Core maintainers: Eduardo Carvalho*, Pedro Melo*, Andreia M Oliveira, Paulo Aguiar
 
 =======
 
