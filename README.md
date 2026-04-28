@@ -10,6 +10,10 @@ https://doi.org/10.1038/s41531-024-00740-z
 
 Core maintainers: Eduardo Carvalho*, Pedro Melo*, Andreia M Oliveira, Paulo Aguiar
 ******************************************************************************************************************************************
+DBScope version 0.5.1, 28.04.2026
+
++ Corrected minor display error for main application window
+
 DBScope version 0.5, 27.04.2026
 
 + Added parser for ProgrammerVersions up to 5.0.839.
