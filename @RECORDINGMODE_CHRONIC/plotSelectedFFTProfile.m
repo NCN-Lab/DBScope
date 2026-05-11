@@ -21,7 +21,6 @@ function plotSelectedFFTProfile ( obj, varargin )
 % pauloaguiar@i3s.up.pt
 % -----------------------------------------------------------------------
 color = lines(2);
-
 % Get active channels
 hemispheres_names  = obj.chronic_parameters.time_domain.hemispheres;
 
@@ -42,23 +41,37 @@ switch nargin
                         current_FFT = obj.chronic_parameters.events.lfp_frequency_snapshots_events{evnt,1}.FFTBinData(:,channel);
                         freq = obj.chronic_parameters.events.lfp_frequency_snapshots_events{evnt,1}.Frequency;
                     else
+                        % Warning pushed to console, but we will also handle it visually below
                         warning('DBScope:MissingSnapshot', 'The event logged at %s does not contain an FFT snapshot.', event_date);
                     end
                 end
             end
             
             % Left-side axis
-            % Delete last selected FFT, if it exists
-            if length(ax(channel).Children)==2
+            % --- CHANGE 1: Safer child deletion to prevent UI crashes ---
+            % Only delete the top line if there is more than just the base Mean profile
+            if ~isempty(ax(channel).Children) && length(ax(channel).Children) > 1
                 delete(ax(channel).Children(1));
             end
             
-            % Only attempt to plot if we successfully extracted valid data
-            if ~isempty(current_FFT) && ~isempty(freq)
-                plot(ax(channel), freq, current_FFT, 'Color', [color(2,:), 1], 'LineWidth', 1.5, 'DisplayName', 'Selected FFT');
-                legend(ax(channel));
-                ax(channel).Interactions = [panInteraction('Dimensions','x') zoomInteraction('Dimensions','x')];
+            % --- CHANGE 2: Dynamic Legend Update for Missing/NaN Data ---
+            hold(ax(channel), 'on');
+            
+            if isempty(current_FFT) || all(isnan(current_FFT))
+                % Data is either missing entirely or was padded with NaNs in extractTrendLogs
+                % Plot an invisible line across the current X-axis limits
+                dummy_x = xlim(ax(channel));
+                plot(ax(channel), dummy_x, [NaN NaN], 'Color', [0.5 0.5 0.5], 'LineStyle', ':', ...
+                    'LineWidth', 1.5, 'DisplayName', 'Selected: NO SNAPSHOT DATA');
+            else
+                % Normal valid data plot
+                plot(ax(channel), freq, current_FFT, 'Color', [color(2,:), 1], ...
+                    'LineWidth', 1.5, 'DisplayName', 'Selected FFT');
             end
+            
+            legend(ax(channel));
+            ax(channel).Interactions = [panInteraction('Dimensions','x') zoomInteraction('Dimensions','x')];
+            hold(ax(channel), 'off');
         end
         linkaxes(ax,'x');
     otherwise

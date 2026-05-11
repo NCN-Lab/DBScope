@@ -15,6 +15,7 @@ function plotETA( obj, varargin )
 
 % Get active channels
 hemispheres_names  = obj.chronic_parameters.time_domain.hemispheres;
+
 % Dynamically assign colors based on available channels 
 color = lines(max(2, numel(hemispheres_names))); 
 
@@ -54,14 +55,15 @@ else
     no_axes = 0;
 end
 
-%% Get chronic data timestamps
-chronic_time = obj.chronic_parameters.time_domain.time;
-
-%% Get events data timestamps
+% Get events data timestamps
 events_timepoint = obj.chronic_parameters.events.date_time(strcmp(obj.chronic_parameters.events.event_name, event_type));
 
 for channel = 1:numel(hemispheres_names)
-    
+
+    % --- Extract independent timeline grids from the cell array ---
+    curr_chronic_time = obj.chronic_parameters.time_domain.time{channel};
+    curr_chronic_data = obj.chronic_parameters.time_domain.data{channel};
+
     % Store extracted data in cells to avoid NaN padding issues
     chronic_LFP_cells = cell(numel(events_timepoint), 1);
     chronic_time_cells = cell(numel(events_timepoint), 1);
@@ -73,8 +75,8 @@ for channel = 1:numel(hemispheres_names)
             evnt_indx = evnt;
         end
         
-        % Find the closest timestamp before or at the event
-        chronic_indx = find(chronic_time <= events_timepoint(evnt), 1, 'last');
+        % --- Compare against the specific hemisphere's time vector ---
+        chronic_indx = find(curr_chronic_time <= events_timepoint(evnt), 1, 'last');
         
         % Skip if event happens before any recorded timeline data
         if isempty(chronic_indx)
@@ -83,11 +85,11 @@ for channel = 1:numel(hemispheres_names)
         
         % Define safe bounds for extraction
         idx_start = max(1, chronic_indx - n_timestamps + 1);
-        idx_end   = min(numel(chronic_time), chronic_indx + n_timestamps);
+        idx_end   = min(numel(curr_chronic_time), chronic_indx + n_timestamps);
         
-        % Extract valid data
-        ext_time = chronic_time(idx_start:idx_end);
-        ext_LFP  = obj.chronic_parameters.time_domain.data(idx_start:idx_end, channel);
+        % --- Extract from the specific hemisphere's data vector ---
+        ext_time = curr_chronic_time(idx_start:idx_end);
+        ext_LFP  = curr_chronic_data(idx_start:idx_end);
         
         % Calculate real time difference in minutes
         rel_time_min = minutes(ext_time - events_timepoint(evnt));
@@ -133,7 +135,7 @@ for channel = 1:numel(hemispheres_names)
             query_times, 'linear', NaN);
     end
     
-    % Only attempt to draw Selected and Mean lines if data exists
+    % Only attempt to draw Selected and Median lines if data exists
     if ~isempty(valid_indices)
         % Overlay the highlighted event if requested and if it contains valid data
         if ~isempty(evnt_indx) && ismember(evnt_indx, valid_indices)
@@ -141,19 +143,51 @@ for channel = 1:numel(hemispheres_names)
                 'Color', [color(channel,:), 1], 'LineWidth', 2, 'DisplayName', 'Selected Event');
         end
         
-        % EXACT MATCH FIX: If there's only 1 valid trace, map the mean directly to the raw data
+        % EXACT MATCH FIX: If there's only 1 valid trace, map the median directly to the raw data
         if numel(valid_indices) == 1
             the_idx = valid_indices(1);
             plot(ax(channel), chronic_time_cells{the_idx}, chronic_LFP_cells{the_idx}, ...
-                'Color', 'black', 'LineWidth', 2, 'DisplayName', 'Mean Power');
+                'Color', 'black', 'LineWidth', 2, 'DisplayName', 'Median Power');
+            valid_medians = chronic_LFP_cells{the_idx}; % Store for limit calculation
         else
-            % Plot Mean Power via the interpolated grid for multiple events
-            valid_means = mean(interp_LFP(valid_indices, :), 1, 'omitnan');
-            plot(ax(channel), query_times, valid_means, 'Color', 'black', 'LineWidth', 2, ...
-                'DisplayName', 'Mean Power');
+            % Plot Median Power via the interpolated grid for multiple events
+            valid_medians = median(interp_LFP(valid_indices, :), 1, 'omitnan');
+            plot(ax(channel), query_times, valid_medians, 'Color', 'black', 'LineWidth', 2, ...
+                'DisplayName', 'Median Power');
         end
         
         legend(ax(channel));
+        
+        % ==========================================================
+        % --- ROBUST Y-AXIS LIMITS FOR ETA (SMALL N DATA) ---
+        % ==========================================================
+        
+        % 1. Start by finding the peak of the Median trace
+        max_median = max(valid_medians, [], 'omitnan');
+        
+        % 2. Calculate a much lower percentile (90th) of the background traces
+        flat_data = interp_LFP(valid_indices, :);
+        p90_lfp = prctile(flat_data(:), 90);
+        
+        % 3. Set the base limit to comfortably fit whichever is higher
+        max_lfp = 1.5 * max(max_median, p90_lfp);
+        
+        % 4. If a specific event is clicked, ensure the axis expands to show its peak!
+        if ~isempty(evnt_indx) && ismember(evnt_indx, valid_indices)
+            max_selected = max(chronic_LFP_cells{evnt_indx}, [], 'omitnan');
+            % Use 1.2x buffer so the selected line doesn't touch the very top edge
+            max_lfp = max(max_lfp, 1.2 * max_selected);
+        end
+        
+        % Safety fallback if data is perfectly flat or entirely NaN
+        if isempty(max_lfp) || isnan(max_lfp) || max_lfp == 0
+            max_lfp = 1; 
+        end
+        ylim(ax(channel), [0, max_lfp]);
+        
+    else
+        % Default limits if no data was plotted
+        ylim(ax(channel), [0, 1]);
     end
     
     % --- ALWAYS EXECUTE LABELS & TITLES (EVEN IF EMPTY) ---
@@ -181,4 +215,9 @@ for channel = 1:numel(hemispheres_names)
     hold(ax(channel), 'off');
     disableDefaultInteractivity(ax(channel));
 end
+
+if numel(ax) == 2
+    linkaxes(ax, 'x');
+end
+
 end

@@ -29,22 +29,24 @@ function [ LFPTrendLogs ] = extractTrendLogs( obj, data, parameters )
 % For referencing, please use: Andreia M. Oliveira, Eduardo Carvalho, Beatriz Barros, Carolina Soares, Manuel Ferreira-Pinto, Rui Vaz, Paulo Aguiar, DBScope: 
 % a versatile computational toolbox for the visualization and analysis of sensing data from Deep Brain Stimulation, doi: 10.1101/2023.07.23.23292136.
 %
-% Andreia M. Oliveira, Eduardo Carvalho, Beatriz Barros & Paulo Aguiar - NCN
+% Andreia M. Oliveira, Eduardo Carvalho, Beatriz Barros, Pedro Melo & Paulo Aguiar - NCN
 % INEB/i3S 2022
 % pauloaguiar@i3s.up.pt
 % -----------------------------------------------------------------------
 
 % Extract parameters for this recording mode
-recordingMode   = parameters.mode;
-LFP.data        = [];
-stimAmp.data    = [];
+recordingMode = parameters.mode;
 
 % Extract recordings left and right
 hemisphereLocationNames = fieldnames(data.DiagnosticData.LFPTrendLogs);
-nHemisphereLocations    = numel(hemisphereLocationNames);
+nHemisphereLocations = numel(hemisphereLocationNames);
+hemisphereLocationNames = sort(hemisphereLocationNames); 
 
-% Force Left -> Right order
-hemisphereLocationNames = sort(hemisphereLocationNames);
+% Store data and time in cells to allow different lengths
+LFP.data = cell(1, nHemisphereLocations);
+LFP.time = cell(1, nHemisphereLocations);
+stimAmp.data = cell(1, nHemisphereLocations);
+stimAmp.time = cell(1, nHemisphereLocations);
 
 for hemisphereId = 1:nHemisphereLocations
 
@@ -63,26 +65,24 @@ for hemisphereId = 1:nHemisphereLocations
     end
     allDays = sortrows(allDays, 1);
 
-    LFP.data        = [LFP.data allDays.LFP]; 
-    stimAmp.data    = [stimAmp.data allDays.AmplitudeInMilliAmps];
+    LFP.data{hemisphereId}        = allDays.LFP; 
+    stimAmp.data{hemisphereId}        = allDays.AmplitudeInMilliAmps;
 
-end
+    % Vectorized datetime conversion
+    raw_times = regexprep(allDays.DateTime, 'T', ' ');
+    raw_times = cellfun(@(x) x(1:end-1), raw_times, 'UniformOutput', false);
+    LFP.time{hemisphereId} = datetime(raw_times);
+    stimAmp.time{hemisphereId} = LFP.time{hemisphereId}; % Use the same time for stim
 
-% Extract LFP, stimulation amplitude and date-time information
-nTimepoints = size(allDays, 1);
-for recId = 1:nTimepoints
-    DateTime(recId) = datetime(regexprep(allDays.DateTime{recId}(1:end-1),'T',' '));
 end
 
 % Store LFP in a structure
-LFP.time        = DateTime;
 LFP.nChannels   = nHemisphereLocations;
 LFP.hemispheres = hemisphereLocationNames;
 LFP.xlabel      = 'Date Time';
 LFP.ylabel      = 'LFP band power';
 
 % Store StimAmp in a structure
-stimAmp.time            = DateTime;
 stimAmp.nChannels       = nHemisphereLocations;
 stimAmp.channel_names   = hemisphereLocationNames;
 stimAmp.xlabel          = 'Date Time';
@@ -107,31 +107,96 @@ if isfield(data.DiagnosticData, 'LfpFrequencySnapshotEvents')
         variable_names_strings);
     
     for eventId = 1:nEvents
-        if iscell(data_events) % depending on software version
-            thisEvent = struct2table(data_events{eventId}, 'AsArray', true);
+        % 1. Safely extract the raw struct (DO NOT use struct2table here)
+        if iscell(data_events)
+            thisEventStruct = data_events{eventId};
         else
-            thisEvent = struct2table(data_events(eventId), 'AsArray', true);
+            thisEventStruct = data_events(eventId);
         end
         
-        for variable_name = variable_names_strings
-            variable_name = string(variable_name{1});
-            if ismember(variable_name, thisEvent.Properties.VariableNames)
-                if strcmp(variable_name,'LfpFrequencySnapshotEvents')
-                    for hemisphereId = 1:nHemisphereLocations
-                        PSD.FFTBinData(:, hemisphereId) = thisEvent.LfpFrequencySnapshotEvents.(hemisphereLocationNames{hemisphereId}).FFTBinData;
-                        PSD.channel_names{hemisphereId} = [hemisphereLocationNames{hemisphereId}(23:end), ' ' thisEvent.LfpFrequencySnapshotEvents.(hemisphereLocationNames{hemisphereId}).SenseID(27:end)];
+        for var_cell = variable_names_strings
+            var_name = var_cell{1};
+            
+            % 2. Check if the field exists directly in the struct
+            if isfield(thisEventStruct, var_name)
+                
+                if strcmp(var_name,'LfpFrequencySnapshotEvents')
+                    % --- FFT SNAPSHOT EXTRACTION (Our robust padding logic) ---
+                    present_hemispheres = fieldnames(thisEventStruct.LfpFrequencySnapshotEvents);
+                    
+                    if ~isempty(present_hemispheres)
+                        sample_hemi = present_hemispheres{1};
+                        PSD.Frequency = thisEventStruct.LfpFrequencySnapshotEvents.(sample_hemi).Frequency;
+                        nBins = length(thisEventStruct.LfpFrequencySnapshotEvents.(sample_hemi).FFTBinData);
+                    else
+                        PSD.Frequency = [];
+                        nBins = 0;
                     end
-                        PSD.Frequency = thisEvent.LfpFrequencySnapshotEvents.(hemisphereLocationNames{hemisphereId}).Frequency;
-                        PSD.nChannels = nHemisphereLocations;
-                        events.LfpFrequencySnapshotEvents{eventId} = PSD;
+                    
+                    for hemisphereId = 1:nHemisphereLocations
+                        hName = hemisphereLocationNames{hemisphereId};
+                        
+                        if isfield(thisEventStruct.LfpFrequencySnapshotEvents, hName)
+                            PSD.FFTBinData(:, hemisphereId) = thisEventStruct.LfpFrequencySnapshotEvents.(hName).FFTBinData;
+                            PSD.channel_names{hemisphereId} = [hName(23:end), ' ' thisEventStruct.LfpFrequencySnapshotEvents.(hName).SenseID(27:end)];
+                        else
+                            if nBins > 0
+                                PSD.FFTBinData(:, hemisphereId) = NaN(nBins, 1);
+                            else
+                                PSD.FFTBinData(:, hemisphereId) = NaN;
+                            end
+                            PSD.channel_names{hemisphereId} = [hName(23:end), ' Missing Snapshot'];
+                        end
+                    end
+                    
+                    PSD.nChannels = nHemisphereLocations;
+                    events.LfpFrequencySnapshotEvents{eventId} = PSD;
+                    
                 else
-                    events{eventId,variable_name} = thisEvent.(variable_name);
+                    % --- METADATA EXTRACTION (The Fix) ---
+                    raw_val = thisEventStruct.(var_name);
+                    
+                    % We must wrap text in a cell {} to fit the table's 'cell' column types
+                    if strcmp(var_name, 'DateTime') || strcmp(var_name, 'EventName')
+                        if ischar(raw_val) || isstring(raw_val)
+                            events{eventId, var_name} = {char(raw_val)};
+                        elseif isempty(raw_val)
+                            events{eventId, var_name} = {''};
+                        else
+                            events{eventId, var_name} = {raw_val}; 
+                        end
+                    else
+                        % For EventID (double), LFP (logical), Cycling (logical)
+                        if ~isempty(raw_val)
+                            events{eventId, var_name} = raw_val;
+                        end
+                    end
                 end
             end
         end
     end
-    events.DateTime = cellfun(@(x) datetime(regexprep(x(1:end-1),'T',' ')), events.DateTime);
+    
+    % Handle potential empty events table safely
+    if ~isempty(events)
+        % Pre-allocate a safe datetime array filled with NaT (Not-a-Time)
+        safe_dt_array = NaT(height(events), 1);
+        
+        for eId = 1:height(events)
+            val = events.DateTime{eId};
+            
+            % Only attempt conversion if the value is valid text and not empty
+            if (ischar(val) || isstring(val)) && ~isempty(val)
+                % Remove the trailing 'Z' (or similar) and replace 'T' with a space
+                cleaned_string = regexprep(val(1:end-1), 'T', ' ');
+                safe_dt_array(eId) = datetime(cleaned_string);
+            end
+        end
+        
+        % Replace the cell array column with the properly formatted datetime vector
+        events.DateTime = safe_dt_array;
+    end
     LFPTrendLogs.events = events;
+    
 end
 
 end

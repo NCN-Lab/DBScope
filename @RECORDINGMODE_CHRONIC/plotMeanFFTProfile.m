@@ -29,7 +29,7 @@ function plotMeanFFTProfile ( obj, varargin )
 % Get active channels
 hemispheres_names  = obj.chronic_parameters.time_domain.hemispheres;
 
-% --- 1. SNAPSHOT VALIDATION & WARNINGS ---
+% --- SNAPSHOT VALIDATION & WARNINGS ---
 % Identify all unique event types logged in the history
 all_events_names = unique(obj.chronic_parameters.events.event_name);
 
@@ -48,9 +48,12 @@ base_freq = obj.chronic_parameters.events.lfp_frequency_snapshots_events{ind_fir
 events_names = unique(obj.chronic_parameters.events.event_name(has_snapshot));
 
 % Assign colors dynamically based ONLY on valid events to avoid bounds errors
-color = lines(max(1, numel(events_names))); 
+color = lines(max(1, numel(events_names)));
 
-% --- 2. PLOTTING LOGIC ---
+% Calculate X-center for text placement
+x_center = ceil(max(base_freq)) / 2;
+
+% --- PLOTTING LOGIC ---
 switch nargin
     case 4
         % Get and plot FFT profiles in specified data range from the specified event in specified axis
@@ -71,21 +74,34 @@ switch nargin
             end
             
             cla(ax(channel), 'reset'); % reset axis
-            if ~isempty(temp_FFT)
+
+            % --- YLIM SAFETY FIX ---
+            safe_max = ceil(max([temp_FFT{:}], [], 'all', 'omitnan'));
+            if isempty(safe_max) || isnan(safe_max) || safe_max <= 0, safe_max = 1; end
+      
+
+            if ~isempty(temp_FFT) && ~all(isnan([temp_FFT{:}]), 'all')
                 plot(ax(channel), base_freq, [temp_FFT{:}], 'Color', [color(1,:), 0.3], 'HandleVisibility', 'off');
                 hold(ax(channel), 'on');
-                plot(ax(channel), base_freq, median([temp_FFT{:}], 2), 'black', 'LineWidth', 1, 'DisplayName', 'Median FFT');
+                plot(ax(channel), base_freq, median([temp_FFT{:}], 2, 'omitnan'), 'black', 'LineWidth', 1, 'DisplayName', 'Median FFT');
             else
-                % Plot an empty zero-line placeholder if no snapshots exist in this range
-                placeholder_fft = zeros(size(base_freq));
-                plot(ax(channel), base_freq, placeholder_fft, 'Color', [color(1,:), 0.3], 'HandleVisibility', 'off');
+                % --- Plot Text Watermark ---
+                hold(ax(channel), 'on');
+                plot(ax(channel), base_freq, nan(size(base_freq)), 'black', 'LineWidth', 1, 'DisplayName', 'Median FFT');
+                text(ax(channel), x_center, safe_max/2, 'NO SNAPSHOT DATA', ...
+                    'HorizontalAlignment', 'center', 'VerticalAlignment', 'middle', ...
+                    'Color', [0.6 0.6 0.6], 'FontWeight', 'bold', 'FontSize', 12);
             end
             
             % Universal Labels
             xticks(ax(channel), [0, 13, 35, 60, floor(max(base_freq))]);
             xlabel(ax(channel), 'Frequency [Hz]');
             xlim(ax(channel), [0 ceil(max(base_freq))]);
+            ylim(ax(channel), [0 safe_max]);
             ylabel(ax(channel), 'Magnitude [\muVp]');
+
+            
+
             if contains(hemispheres_names(channel,:), 'Left')
                 title(ax(channel), 'Left Hemisphere' );
             else
@@ -108,18 +124,36 @@ switch nargin
             end
             
             cla(ax(channel), 'reset'); % reset axis
-            if ~isempty(temp_FFT)
+
+            % --- YLIM SAFETY FIX ---
+            safe_max = ceil(max([temp_FFT{:}], [], 'all', 'omitnan'));
+            if isempty(safe_max) || isnan(safe_max) || safe_max <= 0, safe_max = 1; end
+      
+            if ~isempty(temp_FFT) && ~all(isnan([temp_FFT{:}]), 'all')
                 plot(ax(channel), base_freq, [temp_FFT{:}], 'Color', [color(1,:), 0.3], 'HandleVisibility', 'off');
                 hold(ax(channel), 'on');
                 plot(ax(channel), base_freq, median([temp_FFT{:}], 2), 'black', 'LineWidth', 1, 'DisplayName', 'Median FFT');
             else
+                % --- Plot Text Watermark ---
                 warning('DBScope:EmptyRequestedEvent', 'Requested event "%s" has no snapshots.', event_type);
+                hold(ax(channel), 'on');
+                plot(ax(channel), base_freq, nan(size(base_freq)), 'black', 'LineWidth', 1, 'DisplayName', 'Median FFT');
+                text(ax(channel), x_center, safe_max/2, 'NO SNAPSHOT DATA', ...
+                    'HorizontalAlignment', 'center', 'VerticalAlignment', 'middle', ...
+                    'Color', [0.6 0.6 0.6], 'FontWeight', 'bold', 'FontSize', 12);
             end
             
             xticks(ax(channel), [0, 13, 35, 60, floor(max(base_freq))]);
             xlabel(ax(channel), 'Frequency [Hz]');
             xlim(ax(channel), [0 ceil(max(base_freq))]);
+            ylim(ax(channel), [0 safe_max]);
             ylabel(ax(channel), 'Magnitude [\muVp]');
+
+            % --- YLIM SAFETY FIX ---
+            safe_max = ceil(max([temp_FFT{:}], [], 'all', 'omitnan'));
+            if isempty(safe_max) || isnan(safe_max) || safe_max <= 0, safe_max = 1; end
+            ylim(ax(channel), [0 safe_max]);
+
             if contains(hemispheres_names(channel,:), 'Left')
                 title(ax(channel), 'Left Hemisphere' );
             else
@@ -141,18 +175,31 @@ switch nargin
             end
             
             subplot(1,numel(hemispheres_names),channel);
-            if ~isempty(temp_FFT)
+
+            % --- YLIM SAFETY FIX ---
+            safe_max = ceil(max([temp_FFT{:}], [], 'all', 'omitnan'));
+            if isempty(safe_max) || isnan(safe_max) || safe_max <= 0, safe_max = 1; end
+
+            if ~isempty(temp_FFT) && ~all(isnan([temp_FFT{:}]), 'all')
                 plot(base_freq, [temp_FFT{:}], 'Color', [color(channel,:), 0.3], 'HandleVisibility', 'off');
                 hold('on');
                 plot(base_freq, median([temp_FFT{:}], 2), 'black', 'LineWidth', 1, 'DisplayName', 'Median FFT');
             else
                 warning('DBScope:EmptyRequestedEvent', 'Requested event "%s" has no snapshots.', event_type);
+                hold('on');
+                plot(base_freq, nan(size(base_freq)), 'black', 'LineWidth', 1, 'DisplayName', 'Median FFT');
+                text(x_center, safe_max/2, 'NO SNAPSHOT DATA', ...
+                    'HorizontalAlignment', 'center', 'VerticalAlignment', 'middle', ...
+                    'Color', [0.6 0.6 0.6], 'FontWeight', 'bold', 'FontSize', 12);
             end
             
             xticks([0, 13, 35, 60, floor(max(base_freq))]);
             xlabel('Frequency [Hz]');
             xlim([0 ceil(max(base_freq))]);
+            ylim([0 safe_max]);
             ylabel('Magnitude [\muVp]');
+
+
             if contains(hemispheres_names(channel,:), 'Left')
                 title('Left Hemisphere' );
             else
@@ -175,8 +222,10 @@ switch nargin
                     end
                 end
                 type_FFT.(['evnt' num2str(type)]) = [temp_FFT{:}];
+
+                % --- SAFE MAX MAGNITUDE CALCULATION ---
                 temp_magnitude = max([temp_FFT{:}], [], 'all', 'omitnan');
-                if temp_magnitude > max_magnitude
+                if ~isempty(temp_magnitude) && ~isnan(temp_magnitude) && temp_magnitude > max_magnitude
                     max_magnitude = temp_magnitude;
                 end
             end
@@ -193,21 +242,42 @@ switch nargin
             ax = gobjects(0); 
             
             for type = 1:length(events_names)
-                if ~isempty(type_FFT.(['evnt' num2str(type)]))
-                    ax(end+1) = nexttile; 
-                    
-                    plot(base_freq, [type_FFT.(['evnt' num2str(type)])], 'Color', [color(type,:), 0.3], 'HandleVisibility', 'off');
-                    hold on;
-                    
-                    plot( base_freq, median([type_FFT.(['evnt' num2str(type)])], 2), 'black', 'LineWidth', 1, 'DisplayName', 'Median FFT');
-                    xlabel('Frequency [Hz]');
-                    ylabel('Magnitude [\muVp]');
-                    xticks([0, 13, 35, 60, floor(max(base_freq))]);
-                    xlim([0 ceil(max(base_freq))]);
-                    ylim([0 ceil(max_magnitude)]);
-                    title(events_names{type});
-                    legend('show');
+                % --- ALWAYS create the next tile to maintain grid symmetry ---
+                ax(end+1) = nexttile; 
+                
+                % Safely pull the data
+                if isfield(type_FFT, ['evnt' num2str(type)])
+                    current_data = type_FFT.(['evnt' num2str(type)]);
+                else
+                    current_data = [];
                 end
+                
+                % Set Limit safely
+                safe_max = ceil(max_magnitude);
+                if isempty(safe_max) || isnan(safe_max) || safe_max <= 0, safe_max = 1; end
+                
+                if ~isempty(current_data) && ~all(isnan([temp_FFT{:}]), 'all')
+                    % Draw normal data
+                    plot(base_freq, current_data, 'Color', [color(type,:), 0.3], 'HandleVisibility', 'off');
+                    hold on;
+                    plot( base_freq, median(current_data, 2, 'omitnan'), 'black', 'LineWidth', 1, 'DisplayName', 'Median FFT');
+                else
+                    % --- Draw Watermark Text in the empty tile ---
+                    hold on;
+                    plot(base_freq, nan(size(base_freq)), 'black', 'LineWidth', 1, 'DisplayName', 'Median FFT');
+                    text(x_center, safe_max/2, 'NO SNAPSHOT DATA', ...
+                        'HorizontalAlignment', 'center', 'VerticalAlignment', 'middle', ...
+                        'Color', [0.6 0.6 0.6], 'FontWeight', 'bold', 'FontSize', 12);
+                end
+                
+                % Standard Formatting for all tiles
+                xlabel('Frequency [Hz]');
+                ylabel('Magnitude [\muVp]');
+                xticks([0, 13, 35, 60, floor(max(base_freq))]);
+                xlim([0 ceil(max(base_freq))]);
+                ylim([0 safe_max]);
+                title(events_names{type});
+                legend('show');
             end
            
             if ~isempty(ax)
