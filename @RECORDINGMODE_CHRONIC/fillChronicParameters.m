@@ -117,24 +117,31 @@ if isfield( data, 'DiagnosticData' ) && isfield( data.DiagnosticData, 'LFPTrendL
         
         % --- SAFE EXTRACTION: Group History ---
         if iscell(data.GroupHistory(aux_idx_GroupHistory_entry_tested).Groups)
-            targetGroup = data.GroupHistory(aux_idx_GroupHistory_entry_tested).Groups{idx_group_sensing};
+            if idx_group_sensing > 0
+                targetGroup = data.GroupHistory(aux_idx_GroupHistory_entry_tested).Groups{idx_group_sensing};
+            end
         else
-            targetGroup = data.GroupHistory(aux_idx_GroupHistory_entry_tested).Groups(idx_group_sensing);
+            if idx_group_sensing > 0
+                targetGroup = data.GroupHistory(aux_idx_GroupHistory_entry_tested).Groups(idx_group_sensing);
+            end
         end
         
-        sensChanFinal = targetGroup.ProgramSettings.SensingChannel;
-        if iscell(sensChanFinal)
-            temp = cellfun(@(x) x.Channel, sensChanFinal, 'UniformOutput', false);
-            freqs = cellfun(@(x) x.SensingSetup.FrequencyInHertz, sensChanFinal);
-        else
-            temp = {sensChanFinal.Channel};
-            freqs = arrayfun(@(x) x.SensingSetup.FrequencyInHertz, sensChanFinal);
+        if exist("targetGroup","var")
+            sensChanFinal = targetGroup.ProgramSettings.SensingChannel;
+            if iscell(sensChanFinal)
+                temp = cellfun(@(x) x.Channel, sensChanFinal, 'UniformOutput', false);
+                freqs = cellfun(@(x) x.SensingSetup.FrequencyInHertz, sensChanFinal);
+            else
+                temp = {sensChanFinal.Channel};
+                freqs = arrayfun(@(x) x.SensingSetup.FrequencyInHertz, sensChanFinal);
+            end
+            
+            temp = strrep(temp, '_AND_', ' ');
+            temp = strrep(temp, 'SensingElectrodeConfigDef.', '');
+            obj.chronic_parameters.time_domain.sensing = temp';
+            obj.chronic_parameters.time_domain.center_frequency = freqs;
         end
         
-        temp = strrep(temp, '_AND_', ' ');
-        temp = strrep(temp, 'SensingElectrodeConfigDef.', '');
-        obj.chronic_parameters.time_domain.sensing = temp';
-        obj.chronic_parameters.time_domain.center_frequency = freqs;
     else
         obj.chronic_parameters.time_domain.sensing = {};
         obj.chronic_parameters.time_domain.center_frequency = [];
